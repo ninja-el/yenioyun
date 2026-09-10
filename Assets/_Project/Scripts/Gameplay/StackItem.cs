@@ -17,10 +17,21 @@ namespace MatchPack.Gameplay
         [Tooltip("Yığındaki fiziksel davranışı sağlayan rigidbody.")]
         [SerializeField] private Rigidbody _rigidbody;
 
+        private float _boundingRadius;
+
         public ItemType Type { get; private set; }
+
+        /// <summary>Objenin herhangi bir dönüşte kaplayabileceği yarıçap. Doğma aralığı bundan hesaplanır.</summary>
+        public float BoundingRadius => _boundingRadius;
 
         /// <summary>Obje fiziksel olarak durulmuş mu? Yığının oturduğunu anlamak için kullanılır.</summary>
         public bool IsResting => _rigidbody.IsSleeping();
+
+        private void Awake()
+        {
+            // Collider prefab'ta açık ve obje dönmemişken ölçülür; sonradan rotasyon bounds'u bozar.
+            _boundingRadius = _collider.bounds.extents.magnitude;
+        }
 
         /// <summary>Objeyi bir tipe hazırlar. Havuzdan alındıktan sonra çağrılır.</summary>
         public void Setup(ItemType type)

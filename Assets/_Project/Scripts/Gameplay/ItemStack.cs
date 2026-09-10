@@ -16,13 +16,13 @@ namespace MatchPack.Gameplay
         public event Action OnStackSettled;
 
         [Tooltip("Objelerin doğduğu ızgaranın sütun sayısı (yığın kökünün sağ ekseni).")]
-        [SerializeField, Min(1)] private int _spawnColumns = 4;
+        [SerializeField, Min(1)] private int _spawnColumns = 3;
 
         [Tooltip("Objelerin doğduğu ızgaranın sıra sayısı (yığın kökünün ileri ekseni).")]
-        [SerializeField, Min(1)] private int _spawnRows = 4;
+        [SerializeField, Min(1)] private int _spawnRows = 3;
 
-        [Tooltip("Doğma anında objeler arası mesafe. Objeler iç içe doğmasın diye obje boyundan büyük olmalı.")]
-        [SerializeField, Min(0f)] private float _spawnSpacing = 0.6f;
+        [Tooltip("Doğma anında objeler arası en az mesafe. Obje çapı bundan büyükse obje çapı kullanılır.")]
+        [SerializeField, Min(0f)] private float _spawnSpacing = 0.9f;
 
         [Tooltip("İlk katın yığın kökünden yüksekliği.")]
         [SerializeField, Min(0f)] private float _spawnHeight = 1.2f;
@@ -112,6 +112,8 @@ namespace MatchPack.Gameplay
 
         private void Pour(Transform stackRoot)
         {
+            float spacing = _spawnSpacing;
+
             for (int i = 0; i < _typeBuffer.Count; i++)
             {
                 ItemType type = _typeBuffer[i];
@@ -119,21 +121,36 @@ namespace MatchPack.Gameplay
                 if (instance == null) { continue; }
 
                 StackItem item = instance.GetComponent<StackItem>();
+                item.SetSimulated(false);
                 item.Setup(type);
-                instance.transform.SetPositionAndRotation(GetSpawnPosition(stackRoot, i), UnityEngine.Random.rotation);
                 _items.Add(item);
+
+                spacing = Mathf.Max(spacing, item.BoundingRadius * 2f);
+            }
+
+            for (int i = 0; i < _items.Count; i++)
+            {
+                _items[i].transform.SetPositionAndRotation(
+                    GetSpawnPosition(stackRoot, i, spacing),
+                    UnityEngine.Random.rotation);
+            }
+
+            // Fizik ancak tüm objeler yerleştikten sonra açılır; aksi halde solver onları üst üste bulur.
+            for (int i = 0; i < _items.Count; i++)
+            {
+                _items[i].SetSimulated(true);
             }
         }
 
-        private Vector3 GetSpawnPosition(Transform stackRoot, int index)
+        private Vector3 GetSpawnPosition(Transform stackRoot, int index, float spacing)
         {
             int itemsPerLayer = _spawnColumns * _spawnRows;
             int indexInLayer = index % itemsPerLayer;
             int layer = index / itemsPerLayer;
 
-            float offsetRight = (indexInLayer % _spawnColumns - (_spawnColumns - 1) * 0.5f) * _spawnSpacing;
-            float offsetForward = (indexInLayer / _spawnColumns - (_spawnRows - 1) * 0.5f) * _spawnSpacing;
-            float offsetUp = _spawnHeight + layer * _spawnSpacing;
+            float offsetRight = (indexInLayer % _spawnColumns - (_spawnColumns - 1) * 0.5f) * spacing;
+            float offsetForward = (indexInLayer / _spawnColumns - (_spawnRows - 1) * 0.5f) * spacing;
+            float offsetUp = _spawnHeight + layer * spacing;
 
             Vector3 position = stackRoot.position
                 + stackRoot.right * offsetRight

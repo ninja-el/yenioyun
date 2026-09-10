@@ -16,12 +16,12 @@ Değer değişirse önce bu dosya güncellenir.
 | Hatalı hamle süre cezası | Kapalı (3 hatada -5 sn opsiyonu `GameConfig` bayrağı) | `GameConfig` |
 | Objenin kutuya uçuş süresi | 0.35 sn | `GameConfig` |
 | Bant slotları arası mesafe | 1.5 birim | `Conveyor` (prefab alanı) |
-| Yığın doğma ızgarası | 4 sütun x 4 sıra | `ItemStack` |
-| Doğma anında objeler arası mesafe | 0.6 birim | `ItemStack` |
+| Yığın doğma ızgarası | 3 sütun x 3 sıra | `ItemStack` |
+| Doğma anında en az obje aralığı | 0.9 birim (obje çapı büyükse o kullanılır) | `ItemStack` |
 | İlk katın doğma yüksekliği | 1.2 birim | `ItemStack` |
 | Doğma noktası rastgele sapması | 0.05 birim | `ItemStack` |
 | Yığının oturması için zaman aşımı | 5 sn | `ItemStack` |
-| Yığın alanı iç ölçüsü | 2.0 x 2.0, duvar 2.5 yükseklik | `StackBounds.prefab` |
+| Yığın alanı iç ölçüsü | 3.0 x 3.0, iç yükseklik 3.0 (zemin + 4 duvar + tavan) | `StackBounds.prefab` |
 | Objenin uçuş kavisi yüksekliği | 1.5 birim | `MatchResolver` |
 | Hatalı hamlede kamera sarsıntısı | 0.2 sn / 0.15 şiddet | `MatchResolver` |
 | Hedef FPS | 60 | Proje ayarı |
