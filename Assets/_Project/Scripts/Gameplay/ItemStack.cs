@@ -53,6 +53,12 @@ namespace MatchPack.Gameplay
             Pour(stackRoot);
         }
 
+        /// <summary>Objeyi yığından çıkarır. Kutuya uçan obje artık yığının parçası değildir.</summary>
+        public void Remove(StackItem item)
+        {
+            _items.Remove(item);
+        }
+
         /// <summary>Yığındaki objeleri havuza iade eder.</summary>
         public void Clear()
         {

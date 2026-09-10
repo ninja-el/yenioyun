@@ -22,6 +22,8 @@ Değer değişirse önce bu dosya güncellenir.
 | Doğma noktası rastgele sapması | 0.05 birim | `ItemStack` |
 | Yığının oturması için zaman aşımı | 5 sn | `ItemStack` |
 | Yığın alanı iç ölçüsü | 2.0 x 2.0, duvar 2.5 yükseklik | `StackBounds.prefab` |
+| Objenin uçuş kavisi yüksekliği | 1.5 birim | `MatchResolver` |
+| Hatalı hamlede kamera sarsıntısı | 0.2 sn / 0.15 şiddet | `MatchResolver` |
 | Hedef FPS | 60 | Proje ayarı |
 
 ## Meta / Ekonomi

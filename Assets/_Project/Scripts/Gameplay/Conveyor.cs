@@ -43,6 +43,22 @@ namespace MatchPack.Gameplay
             FillEmptySlots();
         }
 
+        /// <summary>Bantta bu tipe uygun ve yuvası kalmış bir kutu varsa döner.</summary>
+        public bool TryGetBoxFor(ItemType type, out Box box)
+        {
+            for (int i = 0; i < _slots.Count; i++)
+            {
+                Box candidate = _slots[i].CurrentBox;
+                if (candidate == null || candidate.IsFilled || candidate.Type != type) { continue; }
+
+                box = candidate;
+                return true;
+            }
+
+            box = null;
+            return false;
+        }
+
         /// <summary>Bandı boşaltır; slotları ve kutuları havuza iade eder.</summary>
         public void Clear()
         {

@@ -71,6 +71,21 @@ namespace MatchPack.Core
             OnLevelFailed?.Invoke();
         }
 
+        /// <summary>Aktif level sahnesini boşaltıp menüye döner.</summary>
+        public void ReturnToMenu()
+        {
+            if (State == GameState.Loading || SceneLoader.Instance.IsBusy) { return; }
+
+            SetState(GameState.Loading);
+            SceneLoader.Instance.UnloadLevel(HandleLevelSceneUnloaded);
+        }
+
+        private void HandleLevelSceneUnloaded()
+        {
+            CurrentLevel = null;
+            SetState(GameState.Menu);
+        }
+
         private void HandleLevelSceneReady(LevelContext context)
         {
             SetState(GameState.Playing);

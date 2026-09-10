@@ -1,42 +1,53 @@
 using MatchPack.Core;
+using MatchPack.Data;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace MatchPack.UI
 {
-    /// <summary>Ana menüdeki Start butonunu game sahnesinin yüklenmesine bağlar.</summary>
+    /// <summary>Ana menü paneli. Start butonunu GameManager'a bağlar, panel görünürlüğünü state'e göre ayarlar.</summary>
     public class MainMenuScreen : MonoBehaviour
     {
-        [Tooltip("Game sahnesinin yüklenmesini başlatan Start butonu.")]
+        [Tooltip("Leveli başlatan Start butonu.")]
         [SerializeField] private Button _startButton;
 
         [Tooltip("Level açıldığında kapatılacak menü paneli.")]
         [SerializeField] private GameObject _menuPanel;
+
+        [Tooltip("Başlatılacak bölüm. İlerleme sistemi gelene kadar elle bağlanır.")]
+        [SerializeField] private LevelData _level;
 
         private void Awake()
         {
             _startButton.onClick.AddListener(StartLevel);
         }
 
+        private void Start()
+        {
+            GameManager.Instance.OnGameStateChanged += HandleGameStateChanged;
+        }
+
         private void OnDestroy()
         {
             _startButton.onClick.RemoveListener(StartLevel);
+
+            if (GameManager.Instance != null)
+            {
+                GameManager.Instance.OnGameStateChanged -= HandleGameStateChanged;
+            }
         }
 
         private void StartLevel()
         {
-            _startButton.interactable = false;
-            SceneLoader.Instance.LoadLevel(OnLevelSceneReady);
+            GameManager.Instance.StartLevel(_level);
         }
 
-        private void OnLevelSceneReady(LevelContext context)
+        private void HandleGameStateChanged(GameState state)
         {
-            _startButton.interactable = true;
+            bool isInMenu = state == GameState.Menu;
 
-            if (_menuPanel != null)
-            {
-                _menuPanel.SetActive(false);
-            }
+            _menuPanel.SetActive(isInMenu);
+            _startButton.interactable = isInMenu;
         }
     }
 }

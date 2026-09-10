@@ -28,24 +28,31 @@ namespace MatchPack.Gameplay
             Type = type;
         }
 
-        public void OnSpawned()
+        /// <summary>
+        /// Objeyi fiziğe katar veya fizik dışına alır. Kutuya uçarken kapatılır; açık kalırsa
+        /// yerçekimi tween ile kavga eder ve uçan obje yığını iter.
+        /// </summary>
+        public void SetSimulated(bool isSimulated)
         {
-            _collider.enabled = true;
-            _rigidbody.isKinematic = false;
-        }
-
-        public void OnDespawned()
-        {
-            transform.DOKill();
-
-            if (!_rigidbody.isKinematic)
+            if (!isSimulated && !_rigidbody.isKinematic)
             {
                 _rigidbody.linearVelocity = Vector3.zero;
                 _rigidbody.angularVelocity = Vector3.zero;
             }
 
-            _rigidbody.isKinematic = true;
-            _collider.enabled = false;
+            _rigidbody.isKinematic = !isSimulated;
+            _collider.enabled = isSimulated;
+        }
+
+        public void OnSpawned()
+        {
+            SetSimulated(true);
+        }
+
+        public void OnDespawned()
+        {
+            transform.DOKill();
+            SetSimulated(false);
             Type = null;
         }
     }
