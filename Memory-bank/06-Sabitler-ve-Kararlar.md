@@ -15,6 +15,13 @@ Değer değişirse önce bu dosya güncellenir.
 | Yığındaki toplam obje | `targetBoxCount * 3` | `LevelData` (kural, ihlal edilemez) |
 | Hatalı hamle süre cezası | Kapalı (3 hatada -5 sn opsiyonu `GameConfig` bayrağı) | `GameConfig` |
 | Objenin kutuya uçuş süresi | 0.35 sn | `GameConfig` |
+| Bant slotları arası mesafe | 1.5 birim | `Conveyor` (prefab alanı) |
+| Yığın doğma ızgarası | 4 sütun x 4 sıra | `ItemStack` |
+| Doğma anında objeler arası mesafe | 0.6 birim | `ItemStack` |
+| İlk katın doğma yüksekliği | 1.2 birim | `ItemStack` |
+| Doğma noktası rastgele sapması | 0.05 birim | `ItemStack` |
+| Yığının oturması için zaman aşımı | 5 sn | `ItemStack` |
+| Yığın alanı iç ölçüsü | 2.0 x 2.0, duvar 2.5 yükseklik | `StackBounds.prefab` |
 | Hedef FPS | 60 | Proje ayarı |
 
 ## Meta / Ekonomi
@@ -51,6 +58,9 @@ Boosterlar envanterden tüketilir, cooldown yoktur, level içinde kullanım limi
 | 4 | Kayıt önce local JSON, Cloud Save Faz 4'te | Cloud bağımlılığı erken fazı bloklamasın |
 | 5 | Reklam/IAP çağrıları arayüz arkasında (`IAdService`, `IPurchaseService`) | SDK seçimi (Unity Ads / AppLovin) sonra netleşecek |
 | 6 | Assembly Definition kullanılmıyor | Küçük projede derleme kazancı, kurulum maliyetini karşılamıyor |
+| 7 | Yığın fiziksel: objeler rigidbody taşır, alttaki çekilince üsttekiler çöker | Oyunun temel hissi; sabit ızgara yerleşimi bu mekaniği vermiyor |
+| 7a | Yığın sınırı görünmez duvar + zemin collider'ı (`StackBounds.prefab`) | Model gerektirmeden objelerin dağılmasını engeller |
+| 7b | Level açılışında objeler yukarıdan dökülür; yığın oturunca (rigidbody sleep) süre başlar | Oyuncu sayaç işlerken yerleşmeyi beklemesin |
 
 ## Açık sorular
 

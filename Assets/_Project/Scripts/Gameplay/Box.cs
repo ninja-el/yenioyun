@@ -7,18 +7,18 @@ using UnityEngine;
 namespace MatchPack.Gameplay
 {
     /// <summary>
-    /// Banttaki tek kutu. Yalnızca kendi tipindeki objeleri kabul eder; dolduğunda içindeki
-    /// objelerle birlikte havuza döner.
+    /// Banttaki tek kutu. Yalnızca kendi tipindeki objeleri kabul eder; havuza iade edilirken
+    /// içindeki objeleri de iade eder.
     /// </summary>
     public class Box : MonoBehaviour, IPoolable
     {
-        /// <summary>Kutu dolduğunda, havuza iade edilmeden hemen önce yayınlanır.</summary>
+        /// <summary>Kutu dolduğunda yayınlanır. Kutuyu havuza iade etmek Conveyor'ın işidir.</summary>
         public event Action<Box> OnBoxFilled;
 
         [Tooltip("Objelerin kutu içinde oturacağı noktalar. Adedi GameConfig'teki kutu kapasitesiyle aynı olmalı.")]
         [SerializeField] private Transform[] _itemSlots;
 
-        private readonly List<GameObject> _items = new List<GameObject>();
+        private readonly List<StackItem> _items = new List<StackItem>();
 
         public ItemType Type { get; private set; }
         public bool IsFilled => _items.Count >= _itemSlots.Length;
@@ -30,16 +30,16 @@ namespace MatchPack.Gameplay
         }
 
         /// <summary>Obje kutuya yerleşebiliyorsa true döner ve objeyi boştaki yuvaya oturtur.</summary>
-        public bool TryAddItem(GameObject item, ItemType type)
+        public bool TryAddItem(StackItem item)
         {
-            if (item == null || IsFilled || type != Type) { return false; }
+            if (item == null || IsFilled || item.Type != Type) { return false; }
 
             Transform slot = _itemSlots[_items.Count];
             item.transform.SetParent(slot, false);
             item.transform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
             _items.Add(item);
 
-            if (IsFilled) { Fill(); }
+            if (IsFilled) { OnBoxFilled?.Invoke(this); }
 
             return true;
         }
@@ -51,20 +51,13 @@ namespace MatchPack.Gameplay
 
         public void OnDespawned()
         {
-            Type = null;
-            _items.Clear();
-        }
-
-        private void Fill()
-        {
-            OnBoxFilled?.Invoke(this);
-
             for (int i = 0; i < _items.Count; i++)
             {
-                PoolManager.Instance.Release(_items[i]);
+                PoolManager.Instance.Release(_items[i].gameObject);
             }
 
-            PoolManager.Instance.Release(gameObject);
+            _items.Clear();
+            Type = null;
         }
     }
 }

@@ -14,5 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _id: car
   _displayName: Car
-  _prefab: {fileID: 0}
+  _prefab: {fileID: 3000010000000000, guid: 9fcfdc1878614557a9c62a200b215fe2, type: 3}
   _icon: {fileID: 0}
