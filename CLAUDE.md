@@ -14,6 +14,7 @@ sonucunu beklemeden bu dokümanlardaki kurallara uyularak tamamlanır.
 | Dosya, prefab, asset isimlendirme + git kuralları | `Memory-bank/04-Varlik-ve-Isimlendirme.md` |
 | Bir Trello kartını tamamlama şablonu ve DoD | `Memory-bank/05-Gorev-Sablonu.md` |
 | Sayısal değerler ve alınmış kararlar | `Memory-bank/06-Sabitler-ve-Kararlar.md` |
+| MVP'ye kalan işler, kart ve promptlarıyla | `Memory-bank/07-MVP-Gorev-Listesi.md` |
 | Kaynak GDD | `Memory-bank/GDD ve Pipeline.pdf` |
 
 ## Değişmez kurallar

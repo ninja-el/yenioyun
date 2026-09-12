@@ -18,6 +18,7 @@ namespace MatchPack.Gameplay
         [SerializeField] private Rigidbody _rigidbody;
 
         private float _boundingRadius;
+        private RigidbodyInterpolation _interpolation;
 
         public ItemType Type { get; private set; }
 
@@ -31,6 +32,7 @@ namespace MatchPack.Gameplay
         {
             // Collider prefab'ta açık ve obje dönmemişken ölçülür; sonradan rotasyon bounds'u bozar.
             _boundingRadius = _collider.bounds.extents.magnitude;
+            _interpolation = _rigidbody.interpolation;
         }
 
         /// <summary>Objeyi bir tipe hazırlar. Havuzdan alındıktan sonra çağrılır.</summary>
@@ -51,13 +53,29 @@ namespace MatchPack.Gameplay
                 _rigidbody.angularVelocity = Vector3.zero;
             }
 
+            // Interpolasyon yalnızca fizik objeyi sürerken doğrudur; kapalıyken transform'a yazılan
+            // her poz bir sonraki karede rigidbody'nin eski pozuyla geri alınır.
+            _rigidbody.interpolation = isSimulated ? _interpolation : RigidbodyInterpolation.None;
             _rigidbody.isKinematic = !isSimulated;
             _collider.enabled = isSimulated;
         }
 
+        /// <summary>
+        /// Objeyi rigidbody ile birlikte ışınlar. Yalnızca transform'a yazmak yetmez: fizik motoru
+        /// pozu bir sonraki sync'e kadar eski değerinde tutar ve objeyi havuzdaki konumuna geri çeker.
+        /// Çağrı öncesi obje <see cref="SetSimulated"/> ile fizik dışına alınmış olmalıdır.
+        /// </summary>
+        public void Teleport(Vector3 position, Quaternion rotation)
+        {
+            transform.SetPositionAndRotation(position, rotation);
+            _rigidbody.position = position;
+            _rigidbody.rotation = rotation;
+        }
+
         public void OnSpawned()
         {
-            SetSimulated(true);
+            // Havuzdan çıkan obje havuz kökünün konumundadır; fizik ancak çağıran onu yerleştirdikten sonra açılır.
+            SetSimulated(false);
         }
 
         public void OnDespawned()

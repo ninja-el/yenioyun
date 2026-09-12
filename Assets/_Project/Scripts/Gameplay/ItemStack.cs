@@ -130,10 +130,11 @@ namespace MatchPack.Gameplay
 
             for (int i = 0; i < _items.Count; i++)
             {
-                _items[i].transform.SetPositionAndRotation(
-                    GetSpawnPosition(stackRoot, i, spacing),
-                    UnityEngine.Random.rotation);
+                _items[i].Teleport(GetSpawnPosition(stackRoot, i, spacing), UnityEngine.Random.rotation);
             }
+
+            // Physics.autoSyncTransforms kapalı; yeni pozlar fizik motoruna ancak bu çağrıyla geçer.
+            Physics.SyncTransforms();
 
             // Fizik ancak tüm objeler yerleştikten sonra açılır; aksi halde solver onları üst üste bulur.
             for (int i = 0; i < _items.Count; i++)

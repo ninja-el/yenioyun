@@ -16,6 +16,13 @@ namespace MatchPack.Gameplay
         /// <summary>Yığındaki bir objeye dokunulduğunda yayınlanır.</summary>
         public event Action<StackItem> OnItemTapped;
 
+        /// <summary>
+        /// Her dokunuşun ham raycast sonucu; ışın hiçbir şeye çarpmasa da yayınlanır.
+        /// DebugManager'ın gizmo çizimi buna dayanır, oyun mantığı bu event'i kullanmaz.
+        /// hit.collider null ise isabet yoktur.
+        /// </summary>
+        public event Action<Ray, RaycastHit> OnTapProbed;
+
         [Tooltip("Raycast'in atılacağı kalıcı kamera.")]
         [SerializeField] private Camera _camera;
 
@@ -75,8 +82,15 @@ namespace MatchPack.Gameplay
             if (!IsEnabled || Pointer.current == null) { return; }
 
             Ray ray = _camera.ScreenPointToRay(Pointer.current.position.ReadValue());
-            if (!Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity, _itemLayers)) { return; }
-            if (!hit.collider.TryGetComponent(out StackItem item)) { return; }
+            bool hasHit = Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity, _itemLayers);
+
+            OnTapProbed?.Invoke(ray, hit);
+
+            if (!hasHit) { return; }
+
+            // Collider obje prefabının alt objesinde olabilir; StackItem her zaman kökte durur.
+            StackItem item = hit.collider.GetComponentInParent<StackItem>();
+            if (item == null) { return; }
 
             OnItemTapped?.Invoke(item);
         }

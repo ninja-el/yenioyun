@@ -859,13 +859,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1465718779}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.4226183, y: 0, z: 0, w: 0.9063078}
-  m_LocalPosition: {x: 0, y: 12, z: -10}
+  m_LocalRotation: {x: 0.5735764, y: 0, z: 0, w: 0.8191521}
+  m_LocalPosition: {x: 0, y: 16, z: -7}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 70, y: 0, z: 0}
 --- !u!114 &1465718783
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -923,6 +923,7 @@ GameObject:
   - component: {fileID: 1765644554}
   - component: {fileID: 1765644558}
   - component: {fileID: 1765644557}
+  - component: {fileID: 1765644559}
   m_Layer: 0
   m_Name: GamePlay
   m_TagString: Untagged
@@ -1010,6 +1011,28 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e3da3d19e7f74945bb126543d15f8667, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MatchPack.Gameplay.LevelTimer
+--- !u!114 &1765644559
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1765644553}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d78801a1833a4f541a6e0244038b5bc9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MatchPack.Core.DebugManager
+  _isGizmosEnabled: 1
+  _tapHistoryCount: 5
+  _tapLifetimeSeconds: 3
+  _hitMarkerRadius: 0.12
+  _missedRayLength: 40
+  _boxMarkerSize: {x: 1, y: 1, z: 1}
+  _matchedColor: {r: 0, g: 1, b: 0, a: 1}
+  _missedColor: {r: 1, g: 0, b: 0, a: 1}
+  _unresolvedColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
+  _boxMarkerColor: {r: 0, g: 1, b: 1, a: 1}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
