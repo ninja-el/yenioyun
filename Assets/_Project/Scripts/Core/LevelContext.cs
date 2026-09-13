@@ -1,3 +1,4 @@
+using MatchPack.Gameplay;
 using UnityEngine;
 
 namespace MatchPack.Core
@@ -17,9 +18,13 @@ namespace MatchPack.Core
         [Tooltip("Kalıcı kameranın bu level için hedefleyeceği pozisyon.")]
         [SerializeField] private Transform _cameraAnchor;
 
+        [Tooltip("Kutuların üzerinde döndüğü bant turu.")]
+        [SerializeField] private ConveyorPath _conveyorPath;
+
         public Transform ConveyorRoot => _conveyorRoot;
         public Transform StackRoot => _stackRoot;
         public Transform CameraAnchor => _cameraAnchor;
+        public ConveyorPath ConveyorPath => _conveyorPath;
 
         public void Activate()
         {

@@ -9,68 +9,80 @@ Sıra önerisi: F0 kartları oyunun şu an oynanamamasının sebebidir, önce on
 
 | # | Faz | Kart | Sahne dosyasına dokunur mu |
 |---|---|---|---|
-| K-01 | F0 | [Gameplay] Level sahnesi yerleşimi | Evet (`GameScene`) |
+| K-01 | F0 | [Gameplay] Level sahnesi yerleşimi ve bant modelinin bağlanması | Evet (`GameScene`) |
+| K-11 | F0 | [Gameplay] Dönen bant sistemi (ConveyorPath + slot karuseli) | Evet (`GameScene`) |
+| K-13 | F0 | [Gameplay] Hareketli kutuya uçuş | Hayır |
 | K-02 | F0 | [Art] Kutu ve obje görselleştirmesi | Hayır |
 | K-03 | F0 | [UI] Level sonu akışı ve UIManager | Evet (`MainScene`) |
 | K-04 | F0 | [UI] Oyun içi HUD | Evet (`MainScene`) |
 | K-05 | F0 | [Gameplay] Hatalı hamle geri bildirimi | Hayır |
-| K-06 | F0 | [Gameplay] Kutu kuyruğu ile level hedefinin doğrulanması | Hayır |
+| K-06 | F0 | [Gameplay] Kutu gönderme kuralının doğrulanması | Hayır |
 | K-07 | F1 | [Meta] EconomyManager: gold ve can | Evet (`MainScene`) |
 | K-08 | F1 | [Meta] Level ilerlemesi ve LevelCatalog | Hayır |
 | K-09 | F1 | [Meta] AudioManager ve SFX bağlantıları | Evet (`MainScene`) |
 | K-10 | F1 | [Gameplay] Kameranın CameraAnchor'a yerleşmesi | Evet (`MainScene`) |
-| K-11 | F2 | [Gameplay] Kutu giriş/çıkış animasyonu | Hayır |
 | K-12 | F2 | [Tooling] StackBounds ölçüsünün dokümanla eşitlenmesi | Hayır |
+
+**K-01 ve K-11 birlikte yürür ve ikisi de `GameScene`'e dokunur; aynı anda iki kişiye verme.**
+K-11 bittiğinde `ConveyorSlot.cs` ve `ConveyorSlot.prefab` silinmiş olur (karar 9a).
 
 Aynı sahne dosyasına dokunan kartları (K-03, K-04, K-07, K-09, K-10) paralel verme; merge
 çakışması çıkar. Sırayla tek kişiye/tek oturuma ver.
 
 ---
 
-## K-01 — [Gameplay] Level sahnesi yerleşimi
+---
 
-    Başlık: [Gameplay] Level sahnesi yerleşimi
+## K-01 — [Gameplay] Level sahnesi yerleşimi ve bant modelinin bağlanması
+
+    Başlık: [Gameplay] Level sahnesi yerleşimi ve bant modelinin bağlanması
 
     Amaç
-    - GameScene'de ConveyorRoot, StackRoot, StackBounds ve CameraAnchor şu an hepsi (0,0,0)'da
-      duruyor; bant kutuları yığının tam içinde doğuyor ve oyun görsel olarak okunamıyor. Bu iş
-      bitince yığın ile bant birbirinden ayrı, kameradan ikisi de görünür halde durur.
+    - GameScene'de ConveyorRoot, StackRoot, StackBounds ve CameraAnchor'ın hepsi (0,0,0)'da;
+      ayrıca bant modeli ("world" objesi) LevelContext kökünün dışında, sahne kökünde duruyor.
+      Bu iş bitince yığın bandın turunun ortasında, bant modeli kökün altında ve kamera ikisini
+      birlikte çerçeveliyor.
 
     Kapsam
     - Assets/_Project/Scenes/GameScene.unity (tek sahne, tek kart)
     - Assets/_Project/Prefabs/Gameplay/StackBounds.prefab (yalnızca konum gerekiyorsa)
-    - Kapsam DIŞI: kod değişikliği, kamera hareketi (K-10), kutu görseli (K-02).
+    - Kapsam DIŞI: kod değişikliği, bant yolu noktaları (K-11), kamera hareketi (K-10),
+      kutu görseli (K-02).
 
     Kabul kriterleri
-    - [ ] StackRoot yığın alanının merkezinde, StackBounds zemininin üstünde.
-    - [ ] ConveyorRoot yığının önünde ve StackBounds collider'larıyla kesişmiyor.
-    - [ ] conveyorCapacity = 3 ve slot aralığı 1.5 iken üç slot da kamera görüş alanında.
-    - [ ] CameraAnchor, yığın + bandı birlikte çerçeveleyen izometrik açıda.
+    - [ ] "world" objesi ConveyorRoot altına taşınmış; sahnede Level'dan başka kök obje yok.
+    - [ ] StackRoot bandın turunun ortasında, StackBounds zemininin üstünde.
+    - [ ] StackBounds collider'ları bant modeliyle ve turun geçtiği şeritle kesişmiyor.
+    - [ ] CameraAnchor turun tamamını ve yığını birlikte çerçeveliyor; bandın hiçbir kenarı
+          ekran dışında kalmıyor (kutular tur boyunca hep görünür olmak zorunda).
     - [ ] Play Mode'da 18 obje yığın alanına düşüyor, hiçbiri duvarlardan taşmıyor.
     - [ ] Level root objesi sahnede hâlâ pasif (m_IsActive: 0) kayıtlı.
 
     Bağımlılık
-    - Yok.
+    - Yok. K-11 bu yerleşimin üstüne kurulur.
 
     Notlar
-    - Slot aralığı 1.5 birim, yığın ızgarası ve doğma yüksekliği 06-Sabitler-ve-Kararlar.md'de.
-    - Level root'u pasif bırakma kuralı 02-Mimari.md "Sahne yaşam döngüsü" bölümünde.
+    - "world" objesinin ölçeği 100; model 1/100 boyutunda çizilmiş. Taşırken dünya ölçeğini
+      bozma, ConveyorRoot ölçeği 1 kalmalı.
+    - Bant modelinin kök altına alınma gerekçesi 06-Sabitler-ve-Kararlar.md karar 13.
+    - Kutular tur boyunca görünür kalmalı; kamera çerçevesi bu kartta buna göre seçilir.
 
 **Prompt:**
 
     Bağlam: CLAUDE.md ve Memory-bank/ altındaki dokümanlara uy.
 
     Görev: GameScene'de level yerleşimini kur. Şu an ConveyorRoot, StackRoot, StackBounds ve
-    CameraAnchor'ın hepsi (0,0,0)'da; bu yüzden bant kutuları yığın alanının içinde doğuyor.
-    StackRoot'u yığın alanının merkezine, ConveyorRoot'u yığının önüne, CameraAnchor'ı ikisini
-    birlikte çerçeveleyen izometrik açıya yerleştir. StackBounds'un zemini StackRoot'un altında
-    kalmalı.
+    CameraAnchor'ın hepsi (0,0,0)'da, ayrıca bant modeli olan "world" objesi LevelContext
+    kökünün (Level) dışında sahne kökünde duruyor. "world"ü ConveyorRoot altına taşı,
+    StackRoot'u bandın turunun ortasına yerleştir, StackBounds'u yığının altına oturt ve
+    CameraAnchor'ı turun tamamını + yığını çerçeveleyen izometrik açıya al.
 
     Kısıtlar:
-    - Sadece bu kapsam. Kod değişikliği yok, yeni prefab yok, yeni paket yok.
+    - Sadece bu kapsam. Kod değişikliği yok, bant yolu noktalarını koyma (o K-11), yeni paket yok.
     - Yalnızca Assets/_Project/Scenes/GameScene.unity dosyasına dokun; MainScene'e dokunma.
     - Level root objesi sahnede pasif kayıtlı kalmalı.
-    - Slot aralığı ve yığın ızgara değerleri 06-Sabitler-ve-Kararlar.md'den gelir, sayı uydurma.
+    - "world" objesinin ölçeği 100; taşırken dünya ölçeğini bozma.
+    - Sayısal değerler 06-Sabitler-ve-Kararlar.md'den gelir, sayı uydurma.
 
     Teslim: değiştirilen transform'ların yeni değerleri + Unity'de elle test adımları +
     06-Sabitler'e eklenmesi gereken yeni konum kararları.
@@ -84,25 +96,25 @@ Aynı sahne dosyasına dokunan kartları (K-03, K-04, K-07, K-09, K-10) paralel 
     Amaç
     - Box.prefab'ın hiç mesh'i yok ve üç ItemType asset'inin de _icon alanı boş; oyuncu hangi
       kutunun hangi objeyi istediğini göremiyor, bu yüzden oyun oynanamıyor. Bu iş bitince her
-      kutu istediği objenin ikonunu ve doluluğunu gösterir.
+      kutu istediği objenin ikonunu ve doluluğunu, bant turunun her noktasından gösterir.
 
     Kapsam
     - Assets/_Project/Prefabs/Gameplay/Box.prefab
-    - Assets/_Project/Prefabs/Gameplay/ConveyorSlot.prefab
     - Assets/_Project/Data/Items/Item_Apple.asset, Item_Ball.asset, Item_Car.asset (_icon alanı)
     - Assets/_Project/Scripts/Gameplay/Box.cs (yalnızca görsel bağlama)
     - Yeni: Assets/_Project/Art/UI/Icons/ altına 3 ikon
-    - Kapsam DIŞI: kutu animasyonu (K-11), ses (K-09), yeni obje tipi eklemek.
+    - Kapsam DIŞI: kutu giriş/çıkış hareketi (K-11), ses (K-09), yeni obje tipi eklemek.
 
     Kabul kriterleri
-    - [ ] Box.prefab'ın gövde mesh'i ve ikon gösteren bir yüzeyi var; izometrik kameradan
-          ikon okunuyor.
+    - [ ] Box.prefab'ın gövde mesh'i ve ikon gösteren bir yüzeyi var.
+    - [ ] Kutu tur boyunca döndüğü için ikon turun her noktasından okunuyor. Tek yüze konan
+          ikon turun yarısında kameraya arkasını döner; üst yüz, dört yüz veya kameraya bakan
+          bir yüzey çözümlerinden birini seç ve gerekçesini yaz.
     - [ ] Box.Setup(type) çağrıldığında ikon o tipin ItemType.Icon'una geçiyor.
     - [ ] Kutuya obje oturdukça doluluk görünüyor (3 yuvanın hangisinin dolduğu ayırt ediliyor).
     - [ ] Üç ItemType asset'inin de _icon alanı dolu.
     - [ ] Kutu havuza iade edilip tekrar alındığında eski ikon/doluluk kalıntısı kalmıyor
           (Box.OnSpawned görseli de sıfırlıyor).
-    - [ ] ConveyorSlot.prefab'ın bant üstünde görünür bir zemini var.
 
     Bağımlılık
     - Yok. Test için K-01 yerleşimi kolaylık sağlar.
@@ -110,8 +122,9 @@ Aynı sahne dosyasına dokunan kartları (K-03, K-04, K-07, K-09, K-10) paralel 
     Notlar
     - ItemType bir ScriptableObject, ikon oradan okunur; Box içinde tip başına switch/if yazma.
     - Kutu kapasitesi GameConfig.BoxCapacity'den gelir, 3 sayısı koda gömülmez.
-    - Üç obje prefabı şu an aynı materyali kullanıyor, yalnızca mesh'leri farklı
-      (küp / küre / silindir). Renk ayrımı da bu kartta verilebilir.
+    - Obje prefabları (Apple_Item, Basketball_Item, Car_Item) gerçek modellerle değişti;
+      ikonların bu modellerle eşleşmesi gerekiyor.
+    - Bant modeli zaten sahnede; ayrı bir bant görseli ya da slot zemini üretilmeyecek.
 
 **Prompt:**
 
@@ -122,18 +135,18 @@ Aynı sahne dosyasına dokunan kartları (K-03, K-04, K-07, K-09, K-10) paralel 
     Item_Apple/Item_Ball/Item_Car asset'lerinin _icon alanları boş. Kutuya gövde mesh'i ve
     ItemType.Icon'u gösteren bir yüzey ekle, Box.Setup çağrıldığında ikonu o tipe geçir,
     kutunun doluluğunu görsel olarak belli et. Üç ItemType asset'ine de ikon bağla.
-    ConveyorSlot.prefab'a bant üstünde görünen bir zemin ver.
+    Kutu bant turunda döndüğü için ikon turun her noktasından okunabilmeli.
 
     Kısıtlar:
-    - Sadece bu kapsam. Kutu animasyonu, ses ve yeni obje tipi bu kartta yok.
+    - Sadece bu kapsam. Kutu giriş/çıkış hareketi, ses ve yeni obje tipi bu kartta yok.
     - Sahne dosyalarına dokunma; iş prefab ve asset üzerinde yapılır.
     - Kutu kapasitesi GameConfig.BoxCapacity'den okunur, koda 3 yazma.
     - Box içinde ItemType'a göre switch/if yazma; görsel veriyi ItemType asset'inden al.
     - Kutu havuzdan tekrar alındığında görsel durumu sıfırlanmalı (OnSpawned).
     - Yeni paket yok.
 
-    Teslim: değişen dosya listesi + Inspector'da yapılacak bağlamalar + elle test adımları +
-    ikon üretimi için varsayımların.
+    Teslim: değişen dosya listesi + ikon yerleşimi için seçtiğin çözüm ve gerekçesi +
+    Inspector'da yapılacak bağlamalar + elle test adımları + varsayımların.
 
 ---
 
@@ -305,51 +318,50 @@ Aynı sahne dosyasına dokunan kartları (K-03, K-04, K-07, K-09, K-10) paralel 
 
 ---
 
-## K-06 — [Gameplay] Kutu kuyruğu ile level hedefinin doğrulanması
+## K-06 — [Gameplay] Kutu gönderme kuralının doğrulanması
 
-    Başlık: [Gameplay] Kutu kuyruğu ile level hedefinin doğrulanması
+    Başlık: [Gameplay] Kutu gönderme kuralının doğrulanması
 
     Amaç
-    - Conveyor.BuildQueue kutu sayısını yalnızca items[].Count / BoxCapacity'den üretiyor ve
-      LevelData.targetBoxCount'u hiç okumuyor; tutarsız bir LevelData sessizce yanlış sayıda
-      kutu üretiyor, level ya erken bitiyor ya hiç bitmiyor. Bu iş bitince tutarsızlık
-      runtime'da net bir hatayla yakalanıyor.
+    - Level boyunca gönderilen toplam kutu sayısı LevelData.targetBoxCount olmak zorunda ve
+      artık obje kalmamalı. Tutarsız bir LevelData bunu sessizce bozabilir; level ya erken
+      biter ya hiç bitmez. Bu iş bitince tutarsızlık runtime'da net bir hatayla yakalanır.
 
     Kapsam
     - Assets/_Project/Scripts/Gameplay/Conveyor.cs
     - Assets/_Project/Scripts/Data/LevelData.cs (yalnızca doğrulama yardımcıları)
-    - Kapsam DIŞI: Level Editor penceresi, yeni level asset'leri.
+    - Kapsam DIŞI: Level Editor penceresi, yeni level asset'leri, bant hareketi (K-11).
 
     Kabul kriterleri
-    - [ ] Level kurulurken kuyruk uzunluğu ile LevelData.TargetBoxCount karşılaştırılıyor;
-          uyuşmazsa tek ve anlaşılır bir Debug.LogError basılıyor.
-    - [ ] Bir obje tipinin adedi BoxCapacity'nin tam katı değilse hata basılıyor
-          (artık obje kalamaz kuralı).
+    - [ ] Level kurulurken üretilecek toplam kutu sayısı LevelData.TargetBoxCount ile
+          karşılaştırılıyor; uyuşmazsa tek ve anlaşılır bir Debug.LogError basılıyor.
+    - [ ] Bir obje tipinin adedi BoxCapacity'nin tam katı değilse hata basılıyor.
+    - [ ] Level bittiğinde gönderilmiş kutu sayısı TargetBoxCount'a eşit; fazla kutu gelmemiş.
+    - [ ] Level bittiğinde yığında obje kalmamış ve bantta dolmamış kutu kalmamış.
     - [ ] Level_001 (3 tip x 6 adet, hedef 6 kutu) hiçbir uyarı üretmeden kuruluyor.
-    - [ ] Kasten bozulmuş bir LevelData ile Play'e basınca oyun sessizce yanlış davranmıyor,
-          Console'da sebebi yazıyor.
     - [ ] Gameplay döngüsünde Debug.Log kalmıyor; log yalnızca kurulum anında ve hata için.
 
     Bağımlılık
-    - Yok.
+    - K-11 bitmeden "fazla kutu gelmedi" kriteri uçtan uca test edilemez.
 
     Notlar
-    - Kural: "Bir levelin obje sayısı, kutu hedefinin tam 3 katı olmak zorundadır"
-      (01-Oyun-Ozeti.md). LevelData.OnValidate zaten editörde uyarıyor; bu kart runtime
-      tarafını kapatıyor.
+    - Gönderme kuralı: yığında kalan obje sayısı, bantta olan kutuların toplam boş yuvasından
+      fazlaysa yeni kutu gönderilir (01-Oyun-Ozeti.md "Bant kuralları").
+    - Toplam obje = targetBoxCount * BoxCapacity kuralı ihlal edilemez.
+    - LevelData.OnValidate zaten editörde uyarıyor; bu kart runtime tarafını kapatıyor.
 
 **Prompt:**
 
     Bağlam: CLAUDE.md ve Memory-bank/ altındaki dokümanlara uy.
 
-    Görev: Conveyor.BuildQueue şu an LevelData.TargetBoxCount'u hiç okumuyor; kutu sayısını
-    sadece items[].Count / BoxCapacity'den üretiyor, bu yüzden tutarsız bir LevelData sessizce
-    yanlış sayıda kutu üretiyor. Level kurulurken kuyruk uzunluğunu TargetBoxCount ile
-    karşılaştır, ayrıca her tipin adedinin BoxCapacity'nin tam katı olduğunu doğrula.
-    Uyuşmazlıkta tek ve anlaşılır bir Debug.LogError bas.
+    Görev: Conveyor'ın kutu gönderme kuralını doğrula. Level kurulurken üretilecek toplam kutu
+    sayısını LevelData.TargetBoxCount ile karşılaştır, her tipin adedinin
+    GameConfig.BoxCapacity'nin tam katı olduğunu kontrol et, uyuşmazlıkta tek ve anlaşılır bir
+    Debug.LogError bas. Ayrıca level bittiğinde gönderilen kutu sayısının TargetBoxCount'a eşit
+    olduğunu, yığında obje ve bantta dolmamış kutu kalmadığını doğrulayan kontrolü ekle.
 
     Kısıtlar:
-    - Sadece bu kapsam. Level Editor penceresi ve yeni level asset'i bu kartta yok.
+    - Sadece bu kapsam. Level Editor penceresi, yeni level asset'i ve bant hareketi bu kartta yok.
     - Sahne ve prefablara dokunma.
     - Gameplay döngüsüne Debug.Log ekleme; log yalnızca level kurulumunda ve yalnızca hata için.
     - Mevcut event ve public API imzalarını değiştirme.
@@ -582,54 +594,91 @@ Aynı sahne dosyasına dokunan kartları (K-03, K-04, K-07, K-09, K-10) paralel 
 
 ---
 
-## K-11 — [Gameplay] Kutu giriş/çıkış animasyonu
+## K-11 — [Gameplay] Dönen bant sistemi (ConveyorPath + slot karuseli)
 
-    Başlık: [Gameplay] Kutu giriş/çıkış animasyonu
+    Başlık: [Gameplay] Dönen bant sistemi (ConveyorPath + slot karuseli)
 
     Amaç
-    - Kutular şu an slot konumuna anında ışınlanıyor; "taşıyıcı bant" hissi yok. Bu iş bitince
-      dolan kutu banttan çıkar, yeni kutu banttan kayarak gelir.
+    - Oyunun ana mekaniği. Kutular şu an slot konumuna ışınlanıp sabit duruyor; olması gereken
+      kapalı bir tur üzerinde sürekli dönmeleri. Bu iş bitince kutular banta girer, tur atar,
+      dolunca çıkış noktasına ilerleyip banttan ayrılır ve gerektiğinde yenisi gelir.
 
     Kapsam
-    - Assets/_Project/Scripts/Gameplay/Conveyor.cs
-    - Assets/_Project/Scripts/Gameplay/ConveyorSlot.cs
-    - Kapsam DIŞI: bant görseli/materyali (K-02), ses (K-09), kutu VFX.
+    - Yeni: Assets/_Project/Scripts/Gameplay/ConveyorPath.cs
+    - Assets/_Project/Scripts/Gameplay/Conveyor.cs (yeniden yazılır)
+    - Assets/_Project/Scripts/Data/GameConfig.cs (bant hızı ve süre alanları)
+    - Assets/_Project/Scenes/GameScene.unity (yol noktaları + 4 çapa)
+    - Silinir: Assets/_Project/Scripts/Gameplay/ConveyorSlot.cs,
+      Assets/_Project/Prefabs/Gameplay/ConveyorSlot.prefab (karar 9a)
+    - Kapsam DIŞI: hareketli hedefe uçuş (K-13), kutu görseli (K-02), ses (K-09),
+      bandın doku kayması animasyonu.
 
     Kabul kriterleri
-    - [ ] Yeni kutu bandın bir ucundan kayarak slotuna geliyor.
-    - [ ] Dolan kutu bandın diğer ucundan çıkıp havuza iade ediliyor.
-    - [ ] Kutu animasyonu sürerken o kutuya obje gönderilemiyor (yarı yolda eşleşme yok).
-    - [ ] Animasyon süresi GameConfig'ten okunuyor, koda gömülü değil.
-    - [ ] Kutu havuza iade edilirken DOKill çağrılıyor; sonraki kullanımda kutu yanlış yerde
-          başlamıyor.
-    - [ ] Sahne boşaltılırken çalışan kutu tween'i kalmıyor (OnBeforeLevelUnload).
+    - [ ] ConveyorPath, sıralı waypoint'lerden kapalı tur kuruyor; Evaluate(distance) poz ve
+          rotasyon veriyor, toplam uzunluğu ve slot sayısını tutuyor. Oyun mantığı içermiyor.
+    - [ ] Tek bir bant offset değeri zamanla ilerliyor; kutular slotlara bağlı, aralarındaki
+          mesafe hiç bozulmuyor, hiçbir kutu bir diğerine binmiyor.
+    - [ ] Kutu EntryStart'tan çıkıp EntryPoint'teki boş slota yerleşiyor; giriş animasyonu
+          sürerken eşleşme kabul etmiyor.
+    - [ ] Tamamlanan kutu turu beklemeden bulunduğu yerde banttan ayrılıyor, ExitPoint'e doğru
+          hareket edip orada kayboluyor ve havuza iade ediliyor.
+    - [ ] Kutu üçüncü objesini aldığı anda kapasiteden düşüyor; yeni kutu onun çıkışını beklemiyor.
+    - [ ] Yeni kutu yalnızca "yığında kalan obje > banttaki toplam boş yuva" iken gönderiliyor;
+          level sonunda fazladan boş kutu gelmiyor.
+    - [ ] Bantta aynı anda en fazla LevelData.conveyorCapacity doldurulabilir kutu bulunuyor.
+    - [ ] Bant hızı, giriş gecikmesi, giriş ve çıkış süreleri GameConfig'ten okunuyor.
+    - [ ] Bant hızı 0 yapıldığında her şey donuyor (Time Freeze booster'ının dayanağı).
+    - [ ] Sahne boşaltılırken kutular havuza iade ediliyor, çalışan tween kalmıyor.
+    - [ ] Slotlar sanal; hiçbir slot GameObject'i üretilmiyor, ConveyorSlot.cs ve prefabı silinmiş.
+    - [ ] Update içinde tahsis yok, GetComponent yok, LINQ yok.
 
     Bağımlılık
-    - K-02 (kutu görseli) olmadan animasyon görünmez.
+    - K-01 (bant modelinin kök altına taşınması ve kamera çerçevesi) bitmeden test edilemez.
+    - K-13 bitmeden objeler hareketli kutuya doğru şekilde uçmaz.
 
     Notlar
-    - Kutu bir havuz objesi; animasyon transform üzerinde DOTween ile yapılır, rigidbody yok.
-    - Yeni süre değeri GameConfig'e alan olarak eklenir ve 06-Sabitler'e yazılır.
+    - Sistem seçimi ve gerekçesi 06-Sabitler-ve-Kararlar.md kararlar 8, 9, 9a, 10, 10a, 11.
+    - Sahne hiyerarşisi ve çapa isimleri 02-Mimari.md "Bant (Conveyor) yapısı" bölümünde.
+    - Sayısal varsayılanlar 06-Sabitler-ve-Kararlar.md Gameplay tablosunda; oynanışa göre
+      ayarlandıktan sonra tablo güncellenir.
+    - Bant modeli 1/100 ölçekte çizilip 100x büyütülmüş; yol noktaları ConveyorRoot altında,
+      ölçek 1'de durmalı.
+    - Köşelerin keskin görünmemesi için köşe başına 2-3 waypoint yeterli.
 
 **Prompt:**
 
-    Bağlam: CLAUDE.md ve Memory-bank/ altındaki dokümanlara uy.
+    Bağlam: CLAUDE.md ve Memory-bank/ altındaki dokümanlara uy. Önce 01-Oyun-Ozeti.md "Bant
+    kuralları" ve 02-Mimari.md "Bant (Conveyor) yapısı" bölümlerini oku.
 
-    Görev: Kutulara bant hissi ver. Şu an kutu slot konumuna anında ışınlanıyor. Yeni kutu
-    bandın bir ucundan kayarak slotuna gelsin, dolan kutu diğer uçtan çıkıp havuza iade
-    edilsin. Animasyon sürerken o kutu eşleşme kabul etmesin.
+    Görev: Dönen bant sistemini kur. Kutular şu an slot konumuna ışınlanıp sabit duruyor;
+    olması gereken kapalı bir tur üzerinde sürekli dönmeleri.
+    1) ConveyorPath yaz: sıralı waypoint'lerden kapalı tur kurar, Evaluate(distance) ile poz ve
+       rotasyon verir, toplam uzunluğu ve slot sayısını tutar, oyun mantığı bilmez.
+    2) Conveyor'ı slot karuseli olarak yeniden yaz: tek bir bant offset değeri zamanla ilerler,
+       kutular sanal slotlara bağlıdır ve konumlarını slot belirler.
+    3) Giriş: kutu EntryStart'tan çıkıp EntryPoint'teki boş slota yerleşir, giriş bitene kadar
+       eşleşme kabul etmez.
+    4) Çıkış: tamamlanan kutu turu beklemez, bulunduğu yerde banttan ayrılıp ExitPoint'e gider
+       ve orada kaybolur. Kutu üçüncü objesini aldığı anda kapasiteden düşer.
+    5) Gönderme kuralı: yeni kutu yalnızca yığında kalan obje sayısı banttaki toplam boş
+       yuvadan fazlayken gönderilir.
+    GameScene'e yol noktalarını ve EntryStart / EntryPoint / ExitPoint çapalarını koy.
 
     Kısıtlar:
-    - Sadece bu kapsam. Bant görseli, ses ve VFX bu kartta yok.
-    - Sahne dosyalarına dokunma.
-    - Animasyon süresi GameConfig'e alan olarak eklenir ve 06-Sabitler-ve-Kararlar.md'ye
-      yazılır; koda sayı gömme.
-    - Kutu bir havuz objesi: iade edilirken DOKill çağrılmalı, sahne boşaltılırken tween
-      kalmamalı.
-    - Instantiate/Destroy yok; kutu ve slot PoolManager üzerinden gelir.
+    - Sadece bu kapsam. Hareketli hedefe uçuş (K-13), kutu görseli, ses ve bandın doku
+      animasyonu bu kartta yok.
+    - Yeni paket yok. Tween gerekiyorsa yalnızca giriş/çıkış geçişlerinde DOTween kullan.
+    - Instantiate/Destroy yok; kutular PoolManager üzerinden gelir, iade edilirken DOKill çağrılır.
+    - Slotlar sanaldır, GameObject üretme. ConveyorSlot.cs ve ConveyorSlot.prefab silinir.
+    - Bant hızı, giriş gecikmesi, giriş ve çıkış süreleri GameConfig'e alan olarak eklenir ve
+      06-Sabitler-ve-Kararlar.md ile eşleşir; koda sayı gömme.
+    - Slot sayısı ConveyorPath'in alanıdır, LevelData'dan gelmez.
+    - Update içinde tahsis, GetComponent ve LINQ yok.
+    - Yalnızca GameScene.unity'ye dokun; MainScene'e dokunma.
 
-    Teslim: değişen dosya listesi + GameConfig'e eklenen alan + elle test adımları +
-    06-Sabitler'e eklenen değer.
+    Teslim: değişen ve silinen dosya listesi + GameScene'de kurulan hiyerarşi ve Inspector
+    bağlamaları + elle test adımları (giriş, tur, dolma, çıkış, gönderme kuralının durması,
+    hız 0) + 06-Sabitler'e yazılması gereken nihai değerler + varsayımların.
 
 ---
 
@@ -677,3 +726,57 @@ Aynı sahne dosyasına dokunan kartları (K-03, K-04, K-07, K-09, K-10) paralel 
     - Kararı 06-Sabitler-ve-Kararlar.md'ye işle; iki kaynak arasında çelişki bırakma.
 
     Teslim: seçtiğin ölçü ve gerekçesi + değişen dosyalar + elle test adımları.
+
+---
+
+## K-13 — [Gameplay] Hareketli kutuya uçuş
+
+    Başlık: [Gameplay] Hareketli kutuya uçuş
+
+    Amaç
+    - MatchResolver objeyi DOJump ile sabit bir noktaya uçuruyor. Kutular bant üzerinde
+      ilerlediği için obje, kutunun uçuş başladığı andaki konumuna gidiyor ve ıskalıyor.
+      Bu iş bitince obje kutunun o anki yuvasına iniyor.
+
+    Kapsam
+    - Assets/_Project/Scripts/Gameplay/MatchResolver.cs
+    - Assets/_Project/Scripts/Gameplay/Box.cs (yuva konumunun dışa açılması gerekiyorsa)
+    - Kapsam DIŞI: bant sisteminin kendisi (K-11), hatalı hamle geri bildirimi (K-05).
+
+    Kabul kriterleri
+    - [ ] Bant hareket halindeyken uçan obje kutunun yuvasına tam oturuyor, yanına düşmüyor.
+    - [ ] Uçuş süresi GameConfig.ItemFlyDuration'dan okunuyor; kavis yüksekliği korunuyor.
+    - [ ] Uçuş sürerken ayrılan yuva başka objeye verilmiyor.
+    - [ ] Kutu banttan ayrılıp çıkışa giderken içindeki objeler onunla birlikte gidiyor; kutu
+          havuza dönerken objeler de dönüyor, hiçbiri ortada kalmıyor.
+    - [ ] Obje havuza dönerken DOKill çağrılıyor, yarım kalan uçuş bir sonraki kullanıma taşmıyor.
+    - [ ] Uçan objenin collider'ı kapalı; raycast onu hedeflemiyor.
+
+    Bağımlılık
+    - K-11 bitmeden test edilemez (kutu hareket etmiyorsa hata görünmez).
+
+    Notlar
+    - Hedefin hareketli olduğu kuralı 01-Oyun-Ozeti.md "Hamle kuralları" ve
+      06-Sabitler-ve-Kararlar.md karar 12.
+    - DOJump sabit bir hedefe uçar; hedefi her kare güncelleyen bir çözüm ya da objeyi yuvaya
+      parent edip yerel uzayda tween'leyen bir çözüm gerekir. Hangisini seçtiğini gerekçesiyle yaz.
+
+**Prompt:**
+
+    Bağlam: CLAUDE.md ve Memory-bank/ altındaki dokümanlara uy.
+
+    Görev: MatchResolver objeyi DOJump ile sabit bir noktaya uçuruyor; kutular bant üzerinde
+    ilerlediği için obje kutunun eski konumuna gidip ıskalıyor. Uçuşu, kutunun o anki yuvasına
+    inecek şekilde düzelt. Kutu banttan ayrılıp çıkışa giderken obje ortada kalmamalı.
+
+    Kısıtlar:
+    - Sadece bu kapsam. Bant sisteminin kendisi ve hatalı hamle geri bildirimi bu kartta yok.
+    - Yeni paket yok; DOTween zaten projede.
+    - Uçuş süresi ve kavis yüksekliği mevcut alanlardan okunur, yeni sayı uydurma.
+    - Obje havuza dönerken DOKill çağrılmalı.
+    - Sahne ve prefablara dokunma.
+    - Hedefi her kare güncelleyen çözümle, objeyi yuvaya parent edip yerel uzayda tween'leyen
+      çözüm arasından seç ve gerekçeni teslimde yaz.
+
+    Teslim: değişen dosya listesi + seçtiğin çözüm ve gerekçesi + elle test adımları
+    (bant dönerken art arda eşleşme, uçuş sırasında kutunun çıkması) + varsayımların.

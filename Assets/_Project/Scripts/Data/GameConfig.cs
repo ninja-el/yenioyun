@@ -16,6 +16,19 @@ namespace MatchPack.Data
         [Tooltip("Objenin yığından kutuya uçuş süresi (saniye).")]
         [SerializeField, Min(0f)] private float _itemFlyDuration = 0.35f;
 
+        [Header("Bant")]
+        [Tooltip("Bandın hızı: saniyede kaç slot ilerlediği.")]
+        [SerializeField, Min(0f)] private float _beltSpeed = 0.8f;
+
+        [Tooltip("Bir kutu gönderildikten sonra bir sonrakinin beklediği süre (saniye).")]
+        [SerializeField, Min(0f)] private float _boxEntryDelay = 0.5f;
+
+        [Tooltip("Kutunun bant dışından slotuna yerleşme süresi (saniye).")]
+        [SerializeField, Min(0.01f)] private float _boxEntryDuration = 0.4f;
+
+        [Tooltip("Dolan kutunun banttan ayrılıp kaybolma süresi (saniye).")]
+        [SerializeField, Min(0.01f)] private float _boxExitDuration = 0.35f;
+
         [Header("Hatalı hamle cezası")]
         [Tooltip("Hatalı hamlede süre cezası uygulansın mı? Varsayılan kapalı.")]
         [SerializeField] private bool _isMissPenaltyEnabled;
@@ -38,6 +51,10 @@ namespace MatchPack.Data
 
         public int BoxCapacity => _boxCapacity;
         public float ItemFlyDuration => _itemFlyDuration;
+        public float BeltSpeed => _beltSpeed;
+        public float BoxEntryDelay => _boxEntryDelay;
+        public float BoxEntryDuration => _boxEntryDuration;
+        public float BoxExitDuration => _boxExitDuration;
         public bool IsMissPenaltyEnabled => _isMissPenaltyEnabled;
         public int MissesBeforePenalty => _missesBeforePenalty;
         public float MissPenaltySeconds => _missPenaltySeconds;

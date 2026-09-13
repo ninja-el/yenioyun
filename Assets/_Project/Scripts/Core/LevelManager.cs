@@ -58,7 +58,7 @@ namespace MatchPack.Core
             _conveyor.OnAllBoxesCompleted += HandleAllBoxesCompleted;
             _itemStack.OnStackSettled += HandleStackSettled;
 
-            _conveyor.Build(level, context.ConveyorRoot);
+            _conveyor.Build(level, context.ConveyorPath);
             _itemStack.Build(level, context.StackRoot);
         }
 

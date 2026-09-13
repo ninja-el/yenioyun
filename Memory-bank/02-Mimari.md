@@ -8,7 +8,7 @@ Bu yapı sabittir. Değiştirmek isteyen önce sorar.
 |---|---|
 | `BootScene` | Yalnızca açılışta çalışır. SDK/Save yüklenir, ardından `MainScene` yüklenip kendini boşaltır. |
 | `MainScene` | Kalıcı sahne. Tüm Core Manager'lar ve UI Canvas'ları buradadır, **asla unload edilmez**. |
-| `GameScene` | `MainScene` açıkken **additive** yüklenir. Sadece 3D içerik: bant, yığın kökü, ışık, kamera hedefleri. |
+| `GameScene` | `MainScene` açıkken **additive** yüklenir. Sadece 3D içerik: bant modeli ve yolu, yığın kökü, ışık, kamera hedefleri. |
 
 Oyun oynanırken ekranda **en az iki sahne birden aktiftir**: `MainScene` (UI + manager'lar) ve
 aktif `GameScene`. Menü sahnesi hiçbir zaman kapatılmaz; menüye dönmek demek, game sahnesini
@@ -44,6 +44,9 @@ Bu yüzden geçiş anında kısa süreliğine üç sahne birden yüklü olabilir
   altındadır; aksi halde sahne unload edilince havuz objeleri de yok olur.
 - Game sahnesinde manager yok; sahne referanslarını taşıyan tek bileşen `LevelContext`'tir.
   Manager'lar sahneye `LevelContext` üzerinden erişir.
+- **Sahnedeki her görsel obje `LevelContext` kökünün altında olmak zorundadır.** Bant modeli
+  dahil hiçbir şey sahne kökünde duramaz; kök pasif yüklendiği için dışarıda kalan obje geçiş
+  anında iki sahnede birden görünür.
 - Bölümler ayrı sahne dosyası olarak çoğaltılmaz: tek `GameScene.unity` dosyası vardır, içerik
   `LevelData`'dan gelir. Aynı sahne dosyası geçiş anında iki kez yüklü olabileceğinden
   `SceneLoader` sahneleri **isimle değil, `Scene` handle'ı ile** takip eder ve unload eder.
@@ -62,6 +65,8 @@ Bu yüzden geçiş anında kısa süreliğine üç sahne birden yüklü olabilir
 | `Scripts/Core/SceneLoader.cs` | Additive yükleme/boşaltma, handle takibi, geçiş sırası |
 | `Scripts/Core/LevelContext.cs` | Game sahnesinin referans noktası (`ConveyorRoot`, `StackRoot`, `CameraAnchor`) |
 | `Scripts/UI/MainMenuScreen.cs` | Start butonunu `SceneLoader.LoadLevel` çağrısına bağlar |
+| `Scripts/Gameplay/ConveyorPath.cs` | Bandın kapalı turu; waypoint'lerden mesafe→poz çözümü |
+| `Scripts/Gameplay/Conveyor.cs` | Slot karuseli, kutu gönderme kuralı, giriş/çıkış |
 
 Kullanım:
 
@@ -105,6 +110,44 @@ Gameplay için ana event'ler: `OnLevelStarted`, `OnLevelCompleted`, `OnLevelFail
 `OnTimerTicked`, `OnBoxFilled`, `OnBoxSpawned`, `OnItemMatched`, `OnItemMissed`,
 `OnGoldChanged`, `OnLivesChanged`, `OnBoosterUsed`.
 
+## Bant (Conveyor) yapısı
+
+Bant kapalı devre bir turdur ve kutular üzerinde sürekli hareket eder. Kural metni
+`01-Oyun-Ozeti.md` "Bant kuralları" bölümündedir; burada yalnızca yapı anlatılır.
+
+### Sahne tarafı
+
+`GameScene` içinde, `LevelContext.ConveyorRoot` altında:
+
+```
+ConveyorRoot
+  BeltModel            bant modelinin kökü (mevcut "world" objesi buraya taşınır)
+  Path
+    Waypoint_00 ... Waypoint_NN   turu çizen sıralı noktalar, köşe başına 2-3 tane
+  EntryStart           kutunun bant dışında doğduğu nokta
+  EntryPoint           kutunun banta katıldığı, tur üzerindeki nokta
+  ExitPoint            tamamlanan kutunun gidip kaybolduğu, tur dışındaki nokta
+```
+
+`EntryPoint` turun üzerinde durur; `ConveyorPath` onun yol üzerindeki en yakın mesafe değerini
+bir kez hesaplar ve boş bir slot o mesafeyi geçtiğinde kutu gönderilir. `EntryStart` turun
+dışındadır ve kutunun hangi yönden geldiğini belirler. `ExitPoint` de tur dışındadır; tamamlanan
+kutu bulunduğu yerden doğrudan oraya gider.
+
+### Kod tarafı
+
+| Sınıf | Sorumluluk |
+|---|---|
+| `ConveyorPath` | Waypoint'lerden kapalı tur kurar. `Evaluate(distance)` ile poz ve rotasyon verir, toplam uzunluğu ve slot sayısını tutar. Oyun mantığı bilmez. |
+| `Conveyor` | Tek bir `_beltOffset` değerini zamanla ilerletir. Slot doluluğunu, kutu gönderme kuralını, giriş ve çıkış geçişlerini yönetir. Kapasiteye yalnızca doldurulabilir kutuları sayar. |
+| `Box` | Yalnızca kendi tipini ve yuvalarını bilir. Konumunu `Conveyor` verir; kutu kendi hareketini hesaplamaz. |
+
+- Slotlar **sanaldır**: GameObject değildir, havuzdan alınmaz. Slot `i`'nin yol üzerindeki
+  mesafesi `(_beltOffset + i / slotCount) * pathLength`'tir.
+- Bandın görsel dönüşü (doku kayması, tahrik silindirleri) `Conveyor`'ın hız değerinden beslenir.
+- Kutu uçuş hedefi hareketlidir; `MatchResolver` sabit bir noktaya değil, kutunun o anki yuvasına
+  uçurur.
+
 ## Veri
 
 - `PlayerData` — düz `[Serializable]` C# sınıfı, JSON'a serialize edilir.
@@ -143,7 +186,7 @@ Assets/_Project/
   Scenes/    BootScene, MainScene, GameScene
   Scripts/
     Core/      GameManager, SceneLoader, PoolManager, SaveManager
-    Gameplay/  Conveyor, Box, StackItem, InputManager, Timer, Boosters
+    Gameplay/  Conveyor, ConveyorPath, Box, StackItem, InputManager, Timer, Boosters
     Meta/      Economy, Lives, IAP, Ads, Notifications
     UI/        Paneller ve HUD
     Data/      PlayerData, LevelData, ItemType

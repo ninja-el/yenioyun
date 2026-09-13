@@ -78,10 +78,16 @@ namespace MatchPack.Gameplay
             _itemStack.Remove(item);
             item.SetSimulated(false);
 
+            // Kutu bant üzerinde ilerlediği için hedef sabit değil; obje yuvaya parent edilip
+            // yerel uzayda uçurulur, böylece uçuş boyunca kutuyla birlikte hareket eder.
+            item.transform.SetParent(slot, true);
+
             item.transform
-                .DOJump(slot.position, _flightArcHeight, 1, _config.ItemFlyDuration)
+                .DOLocalJump(Vector3.zero, _flightArcHeight, 1, _config.ItemFlyDuration)
                 .SetEase(Ease.InOutQuad)
                 .OnComplete(() => box.ConfirmItem(item));
+
+            item.transform.DOLocalRotateQuaternion(Quaternion.identity, _config.ItemFlyDuration);
 
             OnItemMatched?.Invoke(item);
         }
