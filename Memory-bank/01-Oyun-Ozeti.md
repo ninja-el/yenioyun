@@ -26,6 +26,8 @@ süre bitmeden doldurur.
 
 Bant **kapalı bir turdur**; kutular bant üzerinde sürekli hareket eder, sabit yerde durmaz.
 
+- **Duruş:** Kutular tur boyunca **dönmez**; prefab'ta verilmiş sabit yönlerini korurlar, bant
+  yalnızca konumlarını değiştirir. Böylece kutunun üzerindeki ikon turun her noktasından okunur.
 - **Slot:** Tur, eşit aralıklı sanal slotlara bölünür. Slotlar bantla birlikte döner; bir kutu
   daima bir slota bağlıdır ve konumunu slot belirler. Kutular kendi konumunu hesaplamaz, bu
   yüzden birbirine giremez ve aralarındaki mesafe kendiliğinden sabit kalır. Slot sayısı bant

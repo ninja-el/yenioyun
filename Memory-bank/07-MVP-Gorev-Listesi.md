@@ -96,7 +96,7 @@ Aynı sahne dosyasına dokunan kartları (K-03, K-04, K-07, K-09, K-10) paralel 
     Amaç
     - Box.prefab'ın hiç mesh'i yok ve üç ItemType asset'inin de _icon alanı boş; oyuncu hangi
       kutunun hangi objeyi istediğini göremiyor, bu yüzden oyun oynanamıyor. Bu iş bitince her
-      kutu istediği objenin ikonunu ve doluluğunu, bant turunun her noktasından gösterir.
+      kutu istediği objenin ikonunu ve doluluğunu gösterir.
 
     Kapsam
     - Assets/_Project/Prefabs/Gameplay/Box.prefab
@@ -107,9 +107,8 @@ Aynı sahne dosyasına dokunan kartları (K-03, K-04, K-07, K-09, K-10) paralel 
 
     Kabul kriterleri
     - [ ] Box.prefab'ın gövde mesh'i ve ikon gösteren bir yüzeyi var.
-    - [ ] Kutu tur boyunca döndüğü için ikon turun her noktasından okunuyor. Tek yüze konan
-          ikon turun yarısında kameraya arkasını döner; üst yüz, dört yüz veya kameraya bakan
-          bir yüzey çözümlerinden birini seç ve gerekçesini yaz.
+    - [ ] İkon izometrik kameradan okunuyor. Kutu tur boyunca dönmediği (karar 16) için tek bir
+          yüze konan ikon yeterlidir; dört yüz veya billboard gerekmez.
     - [ ] Box.Setup(type) çağrıldığında ikon o tipin ItemType.Icon'una geçiyor.
     - [ ] Kutuya obje oturdukça doluluk görünüyor (3 yuvanın hangisinin dolduğu ayırt ediliyor).
     - [ ] Üç ItemType asset'inin de _icon alanı dolu.
@@ -135,7 +134,7 @@ Aynı sahne dosyasına dokunan kartları (K-03, K-04, K-07, K-09, K-10) paralel 
     Item_Apple/Item_Ball/Item_Car asset'lerinin _icon alanları boş. Kutuya gövde mesh'i ve
     ItemType.Icon'u gösteren bir yüzey ekle, Box.Setup çağrıldığında ikonu o tipe geçir,
     kutunun doluluğunu görsel olarak belli et. Üç ItemType asset'ine de ikon bağla.
-    Kutu bant turunda döndüğü için ikon turun her noktasından okunabilmeli.
+    Kutu bant turunda dönmüyor, sabit yöne bakıyor; ikon için tek yüz yeterli.
 
     Kısıtlar:
     - Sadece bu kapsam. Kutu giriş/çıkış hareketi, ses ve yeni obje tipi bu kartta yok.
@@ -643,7 +642,9 @@ Aynı sahne dosyasına dokunan kartları (K-03, K-04, K-07, K-09, K-10) paralel 
       ayarlandıktan sonra tablo güncellenir.
     - Bant modeli 1/100 ölçekte çizilip 100x büyütülmüş; yol noktaları ConveyorRoot altında,
       ölçek 1'de durmalı.
-    - Köşelerin keskin görünmemesi için köşe başına 2-3 waypoint yeterli.
+    - Yol waypoint'ler arasında centripetal Catmull-Rom ile yumuşatılır (`_smoothingSamples`).
+      Köşe yarıçapını kontrol etmek için köşe başına bir apeks noktası + kenar uçları konur.
+      Üst üste binen nokta konulmaz; kod onları elese de gereksizdir.
 
 **Prompt:**
 

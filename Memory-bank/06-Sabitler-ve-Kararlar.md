@@ -16,6 +16,7 @@ Değer değişirse önce bu dosya güncellenir.
 | Hatalı hamle süre cezası | Kapalı (3 hatada -5 sn opsiyonu `GameConfig` bayrağı) | `GameConfig` |
 | Objenin kutuya uçuş süresi | 0.35 sn | `GameConfig` |
 | Bant slot sayısı | 12 (modele göre ayarlanır) | `ConveyorPath` |
+| Bant yolu yumuşatma örneği | 12 (1 = köşeler keskin) | `ConveyorPath` |
 | Bant hızı | 0.8 slot/sn (12 slotlu turda ~15 sn/tur) | `GameConfig` |
 | Kutu giriş gecikmesi | 0.5 sn | `GameConfig` |
 | Kutu giriş animasyonu süresi | 0.4 sn | `GameConfig` |
@@ -79,6 +80,9 @@ Boosterlar envanterden tüketilir, cooldown yoktur, level içinde kullanım limi
 | 11 | Yeni kutu, yığında kalan obje sayısı banttaki boş yuvalardan fazlaysa gönderilir | Level sonunda gereksiz boş kutu gelmesini engeller; toplam obje = `targetBoxCount * 3` kuralıyla birlikte artık kutu da artık obje de kalmaz |
 | 12 | Objenin uçuş hedefi hareketlidir (kutunun o anki yuvası) | Kutu uçuş sırasında ilerlediği için sabit noktaya uçan obje ıskalıyordu |
 | 13 | Bant modeli `LevelContext` kökünün altında durur | Kök pasif yüklendiği için dışarıda kalan model level geçişinde iki sahnede birden görünüyordu |
+| 14 | Bant yolu waypoint'ler arasında centripetal Catmull-Rom ile yumuşatılır | Düz çizgi bağlamada kutunun rotasyonu her waypoint'te sıçrıyordu; köşeye waypoint eklemek sıçrama sayısını artırıyor, yumuşatmıyordu. Düzgün (uniform) parametreleme, uzun kenar ile kısa köşe parçası yan yana gelince köşede taşma yapıyor; centripetal bunu engelliyor |
+| 15 | Kutunun duruşu prefab'ın kendi rotasyonundan gelir, config alanından değil | Tek kaynak prefab; farklı kutu prefab'ları (Joker Box) kendi duruşunu getirebiliyor |
+| 16 | Kutular tur boyunca dönmez, sabit yöne bakar | Dikdörtgen turda kutu 360° dönüyor ve üzerindeki ikon turun yarısında kameraya arkasını dönüyordu. Sabit duruş bunu tek yüzlü ikonla çözüyor, dört yüze ikon koymaya veya billboard'a gerek kalmıyor |
 
 ## Açık sorular
 

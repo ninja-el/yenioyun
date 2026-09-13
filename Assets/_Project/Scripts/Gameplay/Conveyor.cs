@@ -182,7 +182,7 @@ namespace MatchPack.Gameplay
             Box box = instance.GetComponent<Box>();
             box.Setup(_boxQueue.Dequeue());
             box.OnBoxFilled += HandleBoxCompleted;
-            box.transform.SetPositionAndRotation(_path.EntryStart.position, _path.EntryStart.rotation);
+            box.transform.SetPositionAndRotation(_path.EntryStart.position, box.BaseRotation);
 
             _slotBoxes[slotIndex] = box;
             _slotStates[slotIndex] = SlotState.Entering;
@@ -199,10 +199,9 @@ namespace MatchPack.Gameplay
                 Box box = _slotBoxes[i];
                 if (box == null) { continue; }
 
-                _path.Evaluate(
-                    _path.GetSlotDistance(i, _beltOffset),
-                    out Vector3 position,
-                    out Quaternion rotation);
+                // Kutu tur boyunca dönmez; sabit yönünü korur ki üzerindeki ikon her zaman okunsun.
+                // Bu yüzden yolun rotasyonu kullanılmaz, yalnızca konum yazılır.
+                _path.Evaluate(_path.GetSlotDistance(i, _beltOffset), out Vector3 position, out _);
 
                 if (_slotStates[i] == SlotState.Entering)
                 {
@@ -215,10 +214,9 @@ namespace MatchPack.Gameplay
                     }
 
                     position = Vector3.Lerp(_path.EntryStart.position, position, _slotProgress[i]);
-                    rotation = Quaternion.Slerp(_path.EntryStart.rotation, rotation, _slotProgress[i]);
                 }
 
-                box.transform.SetPositionAndRotation(position, rotation);
+                box.transform.position = position;
             }
         }
 

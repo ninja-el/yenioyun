@@ -20,8 +20,21 @@ namespace MatchPack.Gameplay
 
         private readonly List<StackItem> _items = new List<StackItem>();
         private int _arrivedCount;
+        private Quaternion _baseRotation;
 
         public ItemType Type { get; private set; }
+
+        /// <summary>
+        /// Prefab'ta verilmiş duruş. Kutu bant turunda dönmediği için bu değer kutunun kalıcı
+        /// rotasyonudur; bant yalnızca konumunu değiştirir.
+        /// </summary>
+        public Quaternion BaseRotation => _baseRotation;
+
+        private void Awake()
+        {
+            // Havuz instance'ı prefab'ın yerel değerleriyle üretilir; sonrasında transform'u bant yazar.
+            _baseRotation = transform.localRotation;
+        }
 
         /// <summary>Tüm yuvalar ayrıldıysa true. Uçuşu süren objeler de yuvayı işgal eder.</summary>
         public bool IsFilled => _items.Count >= _itemSlots.Length;
