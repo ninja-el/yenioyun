@@ -140,10 +140,12 @@ kutu bulunduğu yerden doğrudan oraya gider.
 
 | Sınıf | Sorumluluk |
 |---|---|
-| `ConveyorPath` | Waypoint'lerden kapalı tur kurar, aralarını centripetal Catmull-Rom ile yumuşatıp örneklere böler. `Evaluate(distance)` ile poz ve rotasyon verir, toplam uzunluğu ve slot sayısını tutar. Oyun mantığı bilmez. |
+| `ConveyorPath` | Waypoint'lerden kapalı tur kurar. Eksene hizalı kenarlardan dümdüz geçer, yalnızca köşe parçalarını centripetal Catmull-Rom ile yumuşatır ve örneklere böler. `Evaluate(distance)` ile poz ve rotasyon verir, toplam uzunluğu ve slot sayısını tutar. Oyun mantığı bilmez. |
 | `Conveyor` | Tek bir `_beltOffset` değerini zamanla ilerletir. Slot doluluğunu, kutu gönderme kuralını, giriş ve çıkış geçişlerini yönetir. Kapasiteye yalnızca doldurulabilir kutuları sayar. |
 | `Box` | Yalnızca kendi tipini, yuvalarını ve prefab'tan gelen sabit duruşunu bilir. Konumunu `Conveyor` verir; kutu kendi hareketini hesaplamaz ve tur boyunca dönmez. |
 
+- `Conveyor` kutu prefab'ını tek tek değil **liste** olarak tutar ve kutuları sırayla bu
+  listeden alır. `PoolManager` prefab başına ayrı havuz açtığı için ek iş gerekmez.
 - Slotlar **sanaldır**: GameObject değildir, havuzdan alınmaz. Slot `i`'nin yol üzerindeki
   mesafesi `(_beltOffset + i / slotCount) * pathLength`'tir.
 - Kutular tur boyunca dönmez: `Conveyor` yalnızca `transform.position` yazar, rotasyon prefab'tan

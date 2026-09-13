@@ -9,13 +9,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e5abcd8f9fda40eb820889828492997f, type: 3}
-  m_Name: Level_001
+  m_Script: {fileID: 11500000, guid: 57dae5e3582d41cb9f5a42b656805a13, type: 3}
+  m_Name: Item_Watermelon
   m_EditorClassIdentifier: 
-  _levelIndex: 1
-  _duration: 60
-  _targetBoxCount: 12
-  _conveyorCapacity: 12
-  _items:
-  - _type: {fileID: 11400000, guid: 0002a1b69258de249baf9006c6f6afa6, type: 2}
-    _count: 90
+  _id: watermelon
+  _displayName: Watermelon
+  _prefab: {fileID: 3000010000000000, guid: 8ed5a6b8a9344664c9438d071621cba0, type: 3}
+  _icon: {fileID: 0}

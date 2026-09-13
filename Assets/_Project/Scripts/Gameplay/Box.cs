@@ -21,6 +21,7 @@ namespace MatchPack.Gameplay
         private readonly List<StackItem> _items = new List<StackItem>();
         private int _arrivedCount;
         private Quaternion _baseRotation;
+        private float _baseHeight;
 
         public ItemType Type { get; private set; }
 
@@ -30,10 +31,14 @@ namespace MatchPack.Gameplay
         /// </summary>
         public Quaternion BaseRotation => _baseRotation;
 
+        /// <summary>Prefab'ta verilmiş yükseklik. Bant kutuyu tur zemininin bu kadar üstüne oturtur.</summary>
+        public float BaseHeight => _baseHeight;
+
         private void Awake()
         {
             // Havuz instance'ı prefab'ın yerel değerleriyle üretilir; sonrasında transform'u bant yazar.
             _baseRotation = transform.localRotation;
+            _baseHeight = transform.localPosition.y;
         }
 
         /// <summary>Tüm yuvalar ayrıldıysa true. Uçuşu süren objeler de yuvayı işgal eder.</summary>

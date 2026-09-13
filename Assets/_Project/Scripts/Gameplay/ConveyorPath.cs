@@ -22,6 +22,9 @@ namespace MatchPack.Gameplay
         [Tooltip("İki waypoint arasının kaç parçaya bölüneceği. 1 = köşeler keskin, arttıkça yumuşar.")]
         [SerializeField, Min(1)] private int _smoothingSamples = 12;
 
+        [Tooltip("İki nokta aynı x veya z düzleminde sayılması için izin verilen fark. Aradan düz geçilir, eğri uygulanmaz.")]
+        [SerializeField, Min(0f)] private float _straightTolerance = 0.01f;
+
         [Tooltip("Kutunun bant dışında doğduğu nokta. Tur üzerinde değildir.")]
         [SerializeField] private Transform _entryStart;
 
@@ -31,8 +34,6 @@ namespace MatchPack.Gameplay
         [Tooltip("Tamamlanan kutunun banttan ayrılıp gittiği ve kaybolduğu nokta. Tur üzerinde değildir.")]
         [SerializeField] private Transform _exitPoint;
 
-        [Tooltip("Kutunun tur zemininden yüksekliği.")]
-        [SerializeField] private float _boxHeightOffset;
 
 
         [Tooltip("Turu, slotları ve çapaları Scene view'da çizer.")]
@@ -99,7 +100,7 @@ namespace MatchPack.Gameplay
             Vector3 from = _samples[step];
             Vector3 to = _samples[(step + 1) % _samples.Length];
 
-            position = Vector3.Lerp(from, to, t) + Vector3.up * _boxHeightOffset;
+            position = Vector3.Lerp(from, to, t);
 
             Vector3 direction = to - from;
             rotation = direction.sqrMagnitude > 0f
@@ -168,9 +169,15 @@ namespace MatchPack.Gameplay
                 Vector3 p2 = _corners[(i + 1) % cornerCount];
                 Vector3 p3 = _corners[(i + 2) % cornerCount];
 
+                // Kenar eksene hizalıysa eğri ona hiç dokunmaz; yalnızca köşe parçaları yumuşatılır.
+                bool isStraight = IsAxisAligned(p1, p2);
+
                 for (int s = 0; s < _smoothingSamples; s++)
                 {
-                    _samples[i * _smoothingSamples + s] = Spline(p0, p1, p2, p3, (float)s / _smoothingSamples);
+                    float t = (float)s / _smoothingSamples;
+                    _samples[i * _smoothingSamples + s] = isStraight
+                        ? Vector3.Lerp(p1, p2, t)
+                        : Spline(p0, p1, p2, p3, t);
                 }
             }
 
@@ -182,6 +189,12 @@ namespace MatchPack.Gameplay
             }
 
             TotalLength = total;
+        }
+
+        private bool IsAxisAligned(Vector3 from, Vector3 to)
+        {
+            return Mathf.Abs(from.x - to.x) <= _straightTolerance
+                || Mathf.Abs(from.z - to.z) <= _straightTolerance;
         }
 
         private int FindStep(float distance)

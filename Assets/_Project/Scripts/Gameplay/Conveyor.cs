@@ -34,8 +34,8 @@ namespace MatchPack.Gameplay
         [Tooltip("Kutu kapasitesinin ve bant sürelerinin okunduğu config.")]
         [SerializeField] private GameConfig _config;
 
-        [Tooltip("Kutu prefab'ı. Havuzdan alınır.")]
-        [SerializeField] private GameObject _boxPrefab;
+        [Tooltip("Kutu prefab'ları. Kutular sırayla bu listeden alınır, liste sonuna gelince başa döner.")]
+        [SerializeField] private GameObject[] _boxPrefabs;
 
         private readonly Queue<ItemType> _boxQueue = new Queue<ItemType>();
         private readonly List<LeavingBox> _leavingBoxes = new List<LeavingBox>();
@@ -49,6 +49,7 @@ namespace MatchPack.Gameplay
         private float _speedScale = 1f;
         private float _entryTimer;
         private int _capacity;
+        private int _dispatchedBoxCount;
         private bool _isRunning;
 
         /// <summary>Henüz banta girmemiş kutu sayısı.</summary>
@@ -65,6 +66,12 @@ namespace MatchPack.Gameplay
                 return;
             }
 
+            if (_boxPrefabs == null || _boxPrefabs.Length == 0)
+            {
+                Debug.LogError("Conveyor has no box prefabs assigned; the belt will not run.", this);
+                return;
+            }
+
             _path = path;
             _capacity = Mathf.Min(level.ConveyorCapacity, _path.SlotCount);
 
@@ -77,6 +84,7 @@ namespace MatchPack.Gameplay
             _beltOffset = 0f;
             _entryTimer = 0f;
             _speedScale = 1f;
+            _dispatchedBoxCount = 0;
             _isRunning = true;
         }
 
@@ -176,8 +184,11 @@ namespace MatchPack.Gameplay
 
         private void DispatchBox(int slotIndex)
         {
-            GameObject instance = PoolManager.Instance.Get(_boxPrefab);
+            GameObject prefab = _boxPrefabs[_dispatchedBoxCount % _boxPrefabs.Length];
+            GameObject instance = PoolManager.Instance.Get(prefab);
             if (instance == null) { return; }
+
+            _dispatchedBoxCount++;
 
             Box box = instance.GetComponent<Box>();
             box.Setup(_boxQueue.Dequeue());
@@ -202,6 +213,7 @@ namespace MatchPack.Gameplay
                 // Kutu tur boyunca dönmez; sabit yönünü korur ki üzerindeki ikon her zaman okunsun.
                 // Bu yüzden yolun rotasyonu kullanılmaz, yalnızca konum yazılır.
                 _path.Evaluate(_path.GetSlotDistance(i, _beltOffset), out Vector3 position, out _);
+                position += Vector3.up * box.BaseHeight;
 
                 if (_slotStates[i] == SlotState.Entering)
                 {

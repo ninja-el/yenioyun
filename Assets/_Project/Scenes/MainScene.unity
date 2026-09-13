@@ -813,12 +813,12 @@ Camera:
   m_BackGroundColor: {r: 0.09, g: 0.11, b: 0.16, a: 1}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
-  m_FOVAxisMode: 0
+  m_FOVAxisMode: 1
   m_Iso: 200
   m_ShutterSpeed: 0.005
   m_Aperture: 16
   m_FocusDistance: 10
-  m_FocalLength: 50
+  m_FocalLength: 67.54998
   m_BladeCount: 5
   m_Curvature: {x: 2, y: 11}
   m_BarrelClipping: 0.25
@@ -859,13 +859,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1465718779}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.5735764, y: 0, z: 0, w: 0.8191521}
-  m_LocalPosition: {x: 0, y: 16, z: -7}
+  m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
+  m_LocalPosition: {x: 0, y: 22, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 70, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
 --- !u!114 &1465718783
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -943,10 +943,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bd07e22560ad4a3cbd4659c886071c4d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MatchPack.Gameplay.ItemStack
-  _spawnColumns: 4
-  _spawnRows: 4
-  _spawnSpacing: 0.6
-  _spawnHeight: 1.2
+  _spawnColumns: 5
+  _spawnRows: 5
+  _spawnSpacing: 0.2
+  _spawnHeight: 0
   _spawnJitter: 0.05
   _settleTimeout: 5
 --- !u!114 &1765644555
@@ -962,9 +962,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MatchPack.Gameplay.Conveyor
   _config: {fileID: 11400000, guid: 8de2ebc82b4c4471a195fc3b3b9a154c, type: 2}
-  _slotPrefab: {fileID: 2000010000000000, guid: 64fb1ed064b14cf9923af6a8b919717c, type: 3}
-  _boxPrefab: {fileID: 1000010000000000, guid: cde9db4e18234334bcca4e485cc0cee1, type: 3}
-  _slotSpacing: 1.5
+  _boxPrefabs:
+  - {fileID: 1795490364686581993, guid: c4b59db11855ebc48b96e77ae94f75e1, type: 3}
+  - {fileID: 2384425223237347884, guid: 21938512886961841895a35eed48c22e, type: 3}
+  - {fileID: 3014960880826651384, guid: 847321dc0fdcd5645b7265941a2741ed, type: 3}
+  - {fileID: 3801375842034525460, guid: f574d2de565d45b41921bede9ae9c923, type: 3}
+  - {fileID: 4602569899299321228, guid: 0b0931cfe80b4b54493beff8fee4b28a, type: 3}
+  - {fileID: 4058214134863219918, guid: d9bff66145aba8d48aa804d7ef329516, type: 3}
+  - {fileID: 5353702375755561296, guid: a481dd67a8e87834cb79037f941645ff, type: 3}
+  - {fileID: 1319668783326741825, guid: 6785edaf05549704fa7b9b1d572d11dc, type: 3}
+  - {fileID: 2160766602785947896, guid: 3e8c816f30347b746854db1320d26822, type: 3}
+  - {fileID: 3531803411516058410, guid: 312797fec14342f46b0043a49eca9836, type: 3}
+  - {fileID: 6759879839835106701, guid: 16e68af7731206f42a9180952aebbef3, type: 3}
+  - {fileID: 3260944635451558970, guid: 88d718616da21fe45872dfa9c784c66e, type: 3}
 --- !u!4 &1765644556
 Transform:
   m_ObjectHideFlags: 0

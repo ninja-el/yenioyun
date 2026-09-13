@@ -642,9 +642,10 @@ Aynı sahne dosyasına dokunan kartları (K-03, K-04, K-07, K-09, K-10) paralel 
       ayarlandıktan sonra tablo güncellenir.
     - Bant modeli 1/100 ölçekte çizilip 100x büyütülmüş; yol noktaları ConveyorRoot altında,
       ölçek 1'de durmalı.
-    - Yol waypoint'ler arasında centripetal Catmull-Rom ile yumuşatılır (`_smoothingSamples`).
-      Köşe yarıçapını kontrol etmek için köşe başına bir apeks noktası + kenar uçları konur.
-      Üst üste binen nokta konulmaz; kod onları elese de gereksizdir.
+    - Eksene hizalı kenarlardan (x'i veya z'si aynı iki waypoint) dümdüz geçilir; yalnızca köşe
+      parçaları centripetal Catmull-Rom ile yumuşatılır (`_smoothingSamples`). Köşe yarıçapını
+      kontrol etmek için köşe başına bir apeks noktası + kenar uçları konur. Üst üste binen nokta
+      konulmaz; kod onları elese de gereksizdir.
 
 **Prompt:**
 
