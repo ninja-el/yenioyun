@@ -17,6 +17,9 @@ namespace MatchPack.Core
         public event Action OnLevelCompleted;
         public event Action OnLevelFailed;
 
+        /// <summary>Kaybedilen level devam ettirildiğinde yayınlanır. Sayacı LevelManager yeniden başlatır.</summary>
+        public event Action OnLevelResumed;
+
         public GameState State { get; private set; } = GameState.Menu;
         public LevelData CurrentLevel { get; private set; }
 
@@ -69,6 +72,33 @@ namespace MatchPack.Core
 
             SetState(GameState.Lose);
             OnLevelFailed?.Invoke();
+        }
+
+        /// <summary>
+        /// Kaybedilmiş leveli yerinde devam ettirir. Bedelin ödendiğini çağıran taraf doğrular;
+        /// GameManager yalnızca durumu geri alır.
+        /// </summary>
+        public void ResumeLevel()
+        {
+            if (State != GameState.Lose) { return; }
+
+            SetState(GameState.Playing);
+            OnLevelResumed?.Invoke();
+        }
+
+        /// <summary>Aktif leveli baştan kurar. Sahne önce boşaltılır, sonra aynı LevelData ile yüklenir.</summary>
+        public void RetryLevel()
+        {
+            if (State == GameState.Loading || SceneLoader.Instance.IsBusy || CurrentLevel == null) { return; }
+
+            LevelData level = CurrentLevel;
+            SetState(GameState.Loading);
+            SceneLoader.Instance.UnloadLevel(() =>
+            {
+                CurrentLevel = null;
+                SetState(GameState.Menu);
+                StartLevel(level);
+            });
         }
 
         /// <summary>Aktif level sahnesini boşaltıp menüye döner.</summary>

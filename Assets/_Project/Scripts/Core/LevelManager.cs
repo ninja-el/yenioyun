@@ -12,6 +12,9 @@ namespace MatchPack.Core
     {
         public static LevelManager Instance { get; private set; }
 
+        [Tooltip("Devam etme süresinin okunduğu config.")]
+        [SerializeField] private GameConfig _config;
+
         [SerializeField] private Conveyor _conveyor;
         [SerializeField] private ItemStack _itemStack;
         [SerializeField] private LevelTimer _timer;
@@ -32,6 +35,7 @@ namespace MatchPack.Core
         {
             SceneLoader.Instance.OnLevelSceneReady += HandleLevelSceneReady;
             SceneLoader.Instance.OnBeforeLevelUnload += HandleBeforeLevelUnload;
+            GameManager.Instance.OnLevelResumed += HandleLevelResumed;
         }
 
         private void OnDestroy()
@@ -40,6 +44,11 @@ namespace MatchPack.Core
             {
                 SceneLoader.Instance.OnLevelSceneReady -= HandleLevelSceneReady;
                 SceneLoader.Instance.OnBeforeLevelUnload -= HandleBeforeLevelUnload;
+            }
+
+            if (GameManager.Instance != null)
+            {
+                GameManager.Instance.OnLevelResumed -= HandleLevelResumed;
             }
 
             if (Instance == this) { Instance = null; }
@@ -60,6 +69,11 @@ namespace MatchPack.Core
 
             _conveyor.Build(level, context.ConveyorPath);
             _itemStack.Build(level, context.StackRoot);
+        }
+
+        private void HandleLevelResumed()
+        {
+            _timer.Resume(_config.ContinueExtraSeconds);
         }
 
         private void HandleStackSettled()

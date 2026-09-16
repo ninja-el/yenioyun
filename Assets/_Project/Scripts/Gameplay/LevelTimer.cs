@@ -33,6 +33,28 @@ namespace MatchPack.Gameplay
             IsRunning = false;
         }
 
+        /// <summary>
+        /// Kalan süreyi değiştirir. Pozitif değer süre ekler (devam etme), negatif değer ceza
+        /// olarak düşer. Süre sıfırın altına inmez; sayaç durmuşsa hiçbir şey yapmaz.
+        /// </summary>
+        public void AddSeconds(float seconds)
+        {
+            if (!IsRunning) { return; }
+
+            Remaining = Mathf.Max(0f, Remaining + seconds);
+            _lastTickedSecond = Mathf.CeilToInt(Remaining);
+            OnTimerTicked?.Invoke(Remaining);
+        }
+
+        /// <summary>Durmuş sayacı verilen süreyle yeniden başlatır. Kaybedilen levele devam etmek için.</summary>
+        public void Resume(float extraSeconds)
+        {
+            Remaining = Mathf.Max(Remaining, extraSeconds);
+            _lastTickedSecond = Mathf.CeilToInt(Remaining);
+            IsRunning = true;
+            OnTimerTicked?.Invoke(Remaining);
+        }
+
         private void Update()
         {
             if (!IsRunning) { return; }

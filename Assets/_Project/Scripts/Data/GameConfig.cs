@@ -49,6 +49,18 @@ namespace MatchPack.Data
         [Tooltip("Level tamamlandığında verilen gold.")]
         [SerializeField, Min(0)] private int _levelCompleteGold = 50;
 
+        [Tooltip("Kaybedilen levele gold ile devam etmenin maliyeti.")]
+        [SerializeField, Min(0)] private int _continueCostGold = 800;
+
+        [Tooltip("Canları gold ile doldurmanın maliyeti.")]
+        [SerializeField, Min(0)] private int _lifeRefillCostGold = 2000;
+
+        [Tooltip("Rewarded reklam izlenince ödülün kaçla çarpılacağı.")]
+        [SerializeField, Min(1)] private int _rewardedRewardMultiplier = 2;
+
+        [Tooltip("Kaybedilen levele devam edildiğinde sayaca eklenecek süre (saniye).")]
+        [SerializeField, Min(1f)] private float _continueExtraSeconds = 15f;
+
         public int BoxCapacity => _boxCapacity;
         public float ItemFlyDuration => _itemFlyDuration;
         public float BeltSpeed => _beltSpeed;
@@ -61,5 +73,9 @@ namespace MatchPack.Data
         public int MaxLives => _maxLives;
         public float LifeRegenSeconds => _lifeRegenSeconds;
         public int LevelCompleteGold => _levelCompleteGold;
+        public int ContinueCostGold => _continueCostGold;
+        public int LifeRefillCostGold => _lifeRefillCostGold;
+        public int RewardedRewardMultiplier => _rewardedRewardMultiplier;
+        public float ContinueExtraSeconds => _continueExtraSeconds;
     }
 }

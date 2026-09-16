@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6eb6632dbda5057449e49c0347f744d5, type: 3}
+  m_Name: Product_Coins_5000
+  m_EditorClassIdentifier: Assembly-CSharp::MatchPack.Meta.ShopProduct
+  _productId: coins_5000
+  _productType: 0
+  _fallbackPriceText: 399,99 TL
+  _goldReward: 5000
+  _livesReward: 0
+  _infiniteLivesHours: 0
+  _boosterRewards: 
+  _removesAds: 0

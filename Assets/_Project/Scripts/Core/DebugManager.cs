@@ -1,12 +1,14 @@
 using System.Collections.Generic;
 using MatchPack.Gameplay;
+using MatchPack.Meta;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 namespace MatchPack.Core
 {
     /// <summary>
-    /// Dokunuşları ve level durumunu Scene view'da gizmo olarak çizer. Oyun mantığına hiç
-    /// dokunmaz, yalnızca event dinler; gizmo kapalıyken hiçbir kayıt tutmaz.
+    /// Dokunuşları ve level durumunu Scene view'da gizmo olarak çizer, ayrıca test kısayollarını
+    /// işletir. Oyun mantığına hiç dokunmaz; yalnızca event dinler ve var olan public API'yi çağırır.
     /// </summary>
     public class DebugManager : MonoBehaviour
     {
@@ -58,6 +60,31 @@ namespace MatchPack.Core
 
         [Tooltip("Banttaki kutu işaretlerinin rengi.")]
         [SerializeField] private Color _boxMarkerColor = Color.cyan;
+
+        [Header("Test kısayolları")]
+        [Tooltip("Klavye kısayollarını açar. Yayın sürümünde kapatılır.")]
+        [SerializeField] private bool _areDebugKeysEnabled = true;
+
+        [Tooltip("Leveli anında kazandıran tuş.")]
+        [SerializeField] private Key _winKey = Key.F1;
+
+        [Tooltip("Leveli anında kaybettiren tuş.")]
+        [SerializeField] private Key _loseKey = Key.F2;
+
+        [Tooltip("Sınırsız canı açıp kapatan tuş.")]
+        [SerializeField] private Key _infiniteLivesKey = Key.F3;
+
+        [Tooltip("Gold ekleyen tuş.")]
+        [SerializeField] private Key _addGoldKey = Key.F4;
+
+        [Tooltip("Bir can ekleyen tuş.")]
+        [SerializeField] private Key _addLifeKey = Key.F5;
+
+        [Tooltip("Gold tuşuna basıldığında eklenecek miktar.")]
+        [SerializeField, Min(1)] private int _debugGoldAmount = 1000;
+
+        [Tooltip("Sınırsız can tuşuna basıldığında verilecek süre (saat).")]
+        [SerializeField, Min(0.1f)] private float _debugInfiniteLivesHours = 24f;
 
         private readonly List<TapRecord> _taps = new List<TapRecord>();
         private readonly List<Box> _boxes = new List<Box>();
@@ -130,11 +157,70 @@ namespace MatchPack.Core
 
         private void Update()
         {
+            ProcessDebugKeys();
+
             // Time.timeScale sıfırlansa bile çizimler yaşlanmalı.
             while (_taps.Count > 0 && Time.unscaledTime >= _taps[0].ExpireTime)
             {
                 _taps.RemoveAt(0);
             }
+        }
+
+        /// <summary>Oynanan leveli anında kazandırır. Level sonu panelini test etmek içindir.</summary>
+        public void TriggerWin()
+        {
+            if (GameManager.Instance == null) { return; }
+
+            GameManager.Instance.CompleteLevel();
+        }
+
+        /// <summary>Oynanan leveli anında kaybettirir. Level sonu panelini test etmek içindir.</summary>
+        public void TriggerLose()
+        {
+            if (GameManager.Instance == null) { return; }
+
+            GameManager.Instance.FailLevel();
+        }
+
+        /// <summary>Sınırsız canı açar, açıksa kapatır. Market panelini test etmek içindir.</summary>
+        public void ToggleInfiniteLives()
+        {
+            if (EconomyManager.Instance == null) { return; }
+
+            if (EconomyManager.Instance.HasInfiniteLives)
+            {
+                EconomyManager.Instance.ClearInfiniteLives();
+                return;
+            }
+
+            EconomyManager.Instance.GrantInfiniteLives(_debugInfiniteLivesHours);
+        }
+
+        /// <summary>Test için gold ekler.</summary>
+        public void AddDebugGold()
+        {
+            if (EconomyManager.Instance == null) { return; }
+
+            EconomyManager.Instance.AddGold(_debugGoldAmount);
+        }
+
+        /// <summary>Test için bir can ekler.</summary>
+        public void AddDebugLife()
+        {
+            if (EconomyManager.Instance == null) { return; }
+
+            EconomyManager.Instance.AddLives(1);
+        }
+
+        private void ProcessDebugKeys()
+        {
+            if (!_areDebugKeysEnabled || Keyboard.current == null) { return; }
+
+            if (Keyboard.current[_winKey].wasPressedThisFrame) { TriggerWin(); }
+            if (Keyboard.current[_loseKey].wasPressedThisFrame) { TriggerLose(); }
+            if (Keyboard.current[_infiniteLivesKey].wasPressedThisFrame) { ToggleInfiniteLives(); }
+            if (Keyboard.current[_addGoldKey].wasPressedThisFrame) { AddDebugGold(); }
+            if (Keyboard.current[_addLifeKey].wasPressedThisFrame) { AddDebugLife(); }
         }
 
         private void HandleTapProbed(Ray ray, RaycastHit hit)

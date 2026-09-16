@@ -1,18 +1,19 @@
 using MatchPack.Core;
 using MatchPack.Data;
+using MatchPack.Meta;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace MatchPack.UI
 {
-    /// <summary>Ana menü paneli. Start butonunu GameManager'a bağlar, panel görünürlüğünü state'e göre ayarlar.</summary>
+    /// <summary>
+    /// Ana menünün Start butonu. Can varsa 1 can tüketip leveli başlatır, yoksa can popup'ını
+    /// açar. Panel görünürlüğü UIManager'a aittir.
+    /// </summary>
     public class MainMenuScreen : MonoBehaviour
     {
         [Tooltip("Leveli başlatan Start butonu.")]
         [SerializeField] private Button _startButton;
-
-        [Tooltip("Level açıldığında kapatılacak menü paneli.")]
-        [SerializeField] private GameObject _menuPanel;
 
         [Tooltip("Başlatılacak bölüm. İlerleme sistemi gelene kadar elle bağlanır.")]
         [SerializeField] private LevelData _level;
@@ -25,6 +26,8 @@ namespace MatchPack.UI
         private void Start()
         {
             GameManager.Instance.OnGameStateChanged += HandleGameStateChanged;
+
+            HandleGameStateChanged(GameManager.Instance.State);
         }
 
         private void OnDestroy()
@@ -37,17 +40,30 @@ namespace MatchPack.UI
             }
         }
 
-        private void StartLevel()
+        /// <summary>Can varsa 1 can tüketip leveli başlatır; can yoksa can popup'ını açar.</summary>
+        public void StartLevel()
         {
+            if (GameManager.Instance.State != GameState.Menu || SceneLoader.Instance.IsBusy) { return; }
+
+            // Can, level gerçekten başlatılabiliyorsa harcanır; aksi halde tüketilip boşa gidiyordu.
+            if (_level == null)
+            {
+                Debug.LogError("MainMenuScreen has no level assigned.", this);
+                return;
+            }
+
+            if (!EconomyManager.Instance.TrySpendLife())
+            {
+                UIManager.Instance.ShowHeartPopup();
+                return;
+            }
+
             GameManager.Instance.StartLevel(_level);
         }
 
         private void HandleGameStateChanged(GameState state)
         {
-            bool isInMenu = state == GameState.Menu;
-
-            _menuPanel.SetActive(isInMenu);
-            _startButton.interactable = isInMenu;
+            _startButton.interactable = state == GameState.Menu;
         }
     }
 }

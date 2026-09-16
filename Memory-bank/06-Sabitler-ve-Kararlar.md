@@ -26,7 +26,7 @@ Değer değişirse önce bu dosya güncellenir.
 | Doğma anında en az obje aralığı | 0.9 birim (obje çapı büyükse o kullanılır) | `ItemStack` |
 | İlk katın doğma yüksekliği | 1.2 birim | `ItemStack` |
 | Doğma noktası rastgele sapması | 0.05 birim | `ItemStack` |
-| Yığının oturması için zaman aşımı | 5 sn | `ItemStack` |
+| Yığının oturması için zaman aşımı | 1 sn | `ItemStack` |
 | Yığın alanı iç ölçüsü | 3.0 x 3.0, iç yükseklik 3.0 (zemin + 4 duvar + tavan) | `StackBounds.prefab` |
 | Objenin uçuş kavisi yüksekliği | 1.5 birim | `MatchResolver` |
 | Hatalı hamlede kamera sarsıntısı | 0.2 sn / 0.15 şiddet | `MatchResolver` |
@@ -44,6 +44,36 @@ varsayılanlardır; ilk oynanabilir sürümde Inspector'dan ayarlanıp bu tablo 
 | Level girişi maliyeti | 1 can |
 | Level tamamlama ödülü | 50 gold (rewarded reklamla x2) |
 | Interstitial aralığı | Her 2 level geçişinde 1 |
+| Kaybedilen levele gold ile devam | 800 gold (`GameConfig.ContinueCostGold`) |
+| Devam edince eklenen süre | 15 sn (`GameConfig.ContinueExtraSeconds`) |
+| Canları gold ile doldurma | 2000 gold (`GameConfig.LifeRefillCostGold`) |
+| Rewarded ödül çarpanı | x2 (`GameConfig.RewardedRewardMultiplier`) |
+
+Gold değerleri sahnedeki market ve level sonu görsellerinden okundu; değişirse `GameConfig`
+güncellenir, ekrandaki yazı koddan beslendiği için elle düzeltme gerekmez.
+
+## Ayarlar ve geri bildirim
+
+| Değer | Varsayılan | Kaynak |
+|---|---|---|
+| Ses efektleri | Açık | `PlayerData.IsSoundEnabled` |
+| Müzik | Açık | `PlayerData.IsMusicEnabled` |
+| Titreşim (taptic) | Açık | `PlayerData.IsHapticsEnabled` |
+| SFX ses düzeyi | 1.0 | `AudioManager` |
+| Müzik ses düzeyi | 0.4 | `AudioManager` |
+| Hatalı hamlede titreşim süresi | 60 ms | `HapticManager` |
+| Hatalı hamlede titreşim şiddeti | 160 / 255 (Android 8+) | `HapticManager` |
+| Titreşim tekrar bekleme süresi | 0.08 sn | `HapticManager` |
+| Ekran kenarı parlamasının tepe yoğunluğu | 0.85 | `ScreenEdgeFlash` |
+| Parlamanın açılma / kapanma süresi | 0.06 sn / 0.35 sn | `ScreenEdgeFlash` |
+| Kenar bandının kalınlığı | Ekran genişliğinin 0.14'ü (dikeyde en-boy oranıyla eşitlenir) | `M_UI_ScreenEdgeFlash` materyali |
+| Kenar bandının sertliği | 3 | `M_UI_ScreenEdgeFlash` materyali |
+| Kenar bandının rengi | RGB 0.58 / 0.02 / 0.02 | `M_UI_ScreenEdgeFlash` materyali |
+
+## IAP ürünleri
+
+Ürün kimlikleri, içerikleri ve fiyatları `08-IAP-Entegrasyon-Rehberi.md` içindedir.
+Asset'ler: `Assets/_Project/Data/Shop/`, katalog `Data/Config/ShopCatalog.asset`.
 
 ## Boosterlar
 
@@ -85,6 +115,14 @@ Boosterlar envanterden tüketilir, cooldown yoktur, level içinde kullanım limi
 | 15 | Kutunun duruşu ve yüksekliği prefab'ın kendi transform'undan gelir, config alanından değil | Tek kaynak prefab; farklı kutu prefab'ları (Joker Box) kendi duruşunu ve yüksekliğini getirebiliyor. Oyun içinde ikisi de değişmiyor, `Box` bunları `Awake`'te bir kez okuyor |
 | 15a | Eksene hizalı kenarlar (x'i veya z'si aynı iki waypoint) eğriye sokulmaz, aralarından dümdüz geçilir | Kenarların hafifçe yaylanması bandın düz kısımlarını eğri gösteriyordu; yalnızca köşe parçaları yumuşatılınca düz kenarlarda sapma sıfır oluyor ve yol raydan hiç taşmıyor |
 | 16 | Kutular tur boyunca dönmez, sabit yöne bakar | Dikdörtgen turda kutu 360° dönüyor ve üzerindeki ikon turun yarısında kameraya arkasını dönüyordu. Sabit duruş bunu tek yüzlü ikonla çözüyor, dört yüze ikon koymaya veya billboard'a gerek kalmıyor |
+| 17 | Ekran kenarı kırmızı geri bildirimi URP Fullscreen Pass yerine tam ekran UI Image + kendi shader'ı ile yapıldı | Renderer asset'ine dokunmayı, dolayısıyla Mobile_Renderer üzerinde merge riski almayı gerektirmiyor; Image zaten var olan Canvas'ta çiziliyor ve ek render pass açmıyor |
+| 18 | Titreşim için NiceVibrations yerine doğrudan Android `Vibrator` / iOS `Handheld.Vibrate` | Paket listesinde "planlı" olan NiceVibrations henüz alınmadı; hatalı hamle için tek bir kısa titreşim yetiyor ve bu ek bağımlılık gerektirmiyor |
+| 19 | Ses, müzik ve titreşim tercihleri `PlayerPrefs`'e ayrı anahtar olarak değil `PlayerData` içine yazıldı | Kayıt tek noktadan (SaveManager) yürüsün; Cloud Save'e geçince ayarlar da kendiliğinden taşınır |
+| 20 | Sınırsız can `PlayerData.InfiniteLivesUntilTime` (UTC tick) ile tutulur | Market paketleri saat bazlı sınırsız can veriyor; kalan süre yerine bitiş anı tutulunca oyun kapalıyken geçen süre ayrıca hesaplanmıyor |
+| 21 | Can bittiğinde Start butonu pasifleşmez, HeartPopUp açılır | Sahnede zaten bir "OUT OF HEART" popup'ı var; pasif buton oyuncuya ne yapacağını söylemiyor |
+| 22 | Ayarlar paneli ve butonu `MainMenu`'nün altından `UI_Canvas` köküne taşındı | Menüde de oyun içinde de açılabilmesi gerekiyordu; `MainMenu` level oynanırken kapandığı için panel altında kalınca erişilemiyordu. Can ve gold popup'ları zaten kökte duruyor |
+| 23 | Ayar anahtarında tıklamayı `Opn`/`Cls` değil, ikisini de kaplayan `BtnHolder` alır; `Opn`, `Cls` ve yazıların `raycastTarget`'i kapatılır | Görünen tarafa basmayı zorunlu kılmak yerine anahtarın herhangi bir yerine basmak yetiyor. Ayrıca yazılar butonlardan sonra çizilip buton alanını tamamen kapladığı için tıklamayı yutuyordu |
+| 24 | Yığın oturma zaman aşımı 5 sn'den 1 sn'ye indirildi | Bu süre boyunca dokunuşlar hamle üretmiyor; 5 sn oyuncuya oyun kilitlendi hissi veriyordu |
 
 ## Açık sorular
 
