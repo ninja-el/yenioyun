@@ -5,8 +5,8 @@ using UnityEngine;
 namespace MatchPack.Core
 {
     /// <summary>
-    /// Level sahnesi hazır olduğunda bandı, yığını ve sayacı aktif LevelData ile kurar; sahne
-    /// boşaltılmadan önce abonelikleri bırakıp havuzu boşaltır.
+    /// Level hazır olduğunda bandı, yığını ve sayacı aktif LevelData ile kurar; level sökülmeden
+    /// önce abonelikleri bırakıp havuzu boşaltır. Hedef kutu sayısına ulaşıldığında leveli kazandırır.
     /// </summary>
     public class LevelManager : MonoBehaviour
     {
@@ -18,6 +18,13 @@ namespace MatchPack.Core
         [SerializeField] private Conveyor _conveyor;
         [SerializeField] private ItemStack _itemStack;
         [SerializeField] private LevelTimer _timer;
+
+        private int _filledBoxCount;
+        private bool _isStackSettled;
+        private bool _isLevelStarted;
+
+        /// <summary>Bu levelde şimdiye kadar dolan kutu sayısı.</summary>
+        public int FilledBoxCount => _filledBoxCount;
 
         private void Awake()
         {
@@ -34,8 +41,9 @@ namespace MatchPack.Core
         private void Start()
         {
             SceneLoader.Instance.OnLevelSceneReady += HandleLevelSceneReady;
-            SceneLoader.Instance.OnBeforeLevelUnload += HandleBeforeLevelUnload;
+            SceneLoader.Instance.OnBeforeLevelTeardown += HandleBeforeLevelTeardown;
             GameManager.Instance.OnLevelResumed += HandleLevelResumed;
+            GameManager.Instance.OnLevelStarted += HandleLevelStarted;
         }
 
         private void OnDestroy()
@@ -43,12 +51,13 @@ namespace MatchPack.Core
             if (SceneLoader.Instance != null)
             {
                 SceneLoader.Instance.OnLevelSceneReady -= HandleLevelSceneReady;
-                SceneLoader.Instance.OnBeforeLevelUnload -= HandleBeforeLevelUnload;
+                SceneLoader.Instance.OnBeforeLevelTeardown -= HandleBeforeLevelTeardown;
             }
 
             if (GameManager.Instance != null)
             {
                 GameManager.Instance.OnLevelResumed -= HandleLevelResumed;
+                GameManager.Instance.OnLevelStarted -= HandleLevelStarted;
             }
 
             if (Instance == this) { Instance = null; }
@@ -64,11 +73,16 @@ namespace MatchPack.Core
                 return;
             }
 
+            _filledBoxCount = 0;
+            _isStackSettled = false;
+            _isLevelStarted = false;
+
+            _conveyor.OnBoxFilled += HandleBoxFilled;
             _conveyor.OnAllBoxesCompleted += HandleAllBoxesCompleted;
             _itemStack.OnStackSettled += HandleStackSettled;
 
             _conveyor.Build(level, context.ConveyorPath);
-            _itemStack.Build(level, context.StackRoot);
+            _itemStack.Build(level, context.StackArea);
         }
 
         private void HandleLevelResumed()
@@ -78,19 +92,53 @@ namespace MatchPack.Core
 
         private void HandleStackSettled()
         {
+            _isStackSettled = true;
+            TryStartTimer();
+        }
+
+        private void HandleLevelStarted(LevelData level)
+        {
+            _isLevelStarted = true;
+            TryStartTimer();
+        }
+
+        // Yığın yükleme ekranının arkasında oturabiliyor; sayacın orada işlemeye başlamaması için
+        // hem oturmanın hem de levelin gerçekten başlamış olması beklenir.
+        private void TryStartTimer()
+        {
+            if (!_isStackSettled || !_isLevelStarted || _timer.IsRunning) { return; }
+
             _timer.StartTimer(GameManager.Instance.CurrentLevel.Duration);
         }
 
+        private void HandleBoxFilled(Box box)
+        {
+            _filledBoxCount++;
+
+            LevelData level = GameManager.Instance.CurrentLevel;
+            if (level == null || _filledBoxCount < level.TargetBoxCount) { return; }
+
+            CompleteLevel();
+        }
+
+        // Hedefe ulaşılmadan bandın kutuları biterse level yine de kapanır; aksi halde oyuncu
+        // yapacak hamlesi kalmadan sayacın bitmesini beklerdi.
         private void HandleAllBoxesCompleted()
+        {
+            CompleteLevel();
+        }
+
+        private void CompleteLevel()
         {
             _timer.Stop();
             GameManager.Instance.CompleteLevel();
         }
 
-        private void HandleBeforeLevelUnload()
+        private void HandleBeforeLevelTeardown()
         {
             _timer.Stop();
 
+            _conveyor.OnBoxFilled -= HandleBoxFilled;
             _conveyor.OnAllBoxesCompleted -= HandleAllBoxesCompleted;
             _itemStack.OnStackSettled -= HandleStackSettled;
 

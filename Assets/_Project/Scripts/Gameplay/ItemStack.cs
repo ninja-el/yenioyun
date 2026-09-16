@@ -7,50 +7,68 @@ using UnityEngine;
 namespace MatchPack.Gameplay
 {
     /// <summary>
-    /// Level'in objelerini karıştırıp yığın alanının üstünden döker ve fiziğe bırakır. Objeler
-    /// havuzdan geldiği için sahnedeki yığın köküne parent edilmez; kök yalnızca dökülme noktasıdır.
+    /// Level'in objelerini karıştırıp <see cref="StackArea"/> içinde birbirine değmeyecek noktalara
+    /// doğurur ve fiziğe bırakır. Alana sığmayan objeler bekler; yığından obje eksildikçe açılan
+    /// boşluklara doğarlar. Objeler havuzdan geldiği için sahnedeki alana parent edilmez.
     /// </summary>
     public class ItemStack : MonoBehaviour
     {
-        /// <summary>Dökülen objelerin tamamı durulduğunda bir kez yayınlanır.</summary>
+        /// <summary>İlk dolumda doğan objelerin tamamı durulduğunda bir kez yayınlanır.</summary>
         public event Action OnStackSettled;
-
-        [Tooltip("Objelerin doğduğu ızgaranın sütun sayısı (yığın kökünün sağ ekseni).")]
-        [SerializeField, Min(1)] private int _spawnColumns = 3;
-
-        [Tooltip("Objelerin doğduğu ızgaranın sıra sayısı (yığın kökünün ileri ekseni).")]
-        [SerializeField, Min(1)] private int _spawnRows = 3;
-
-        [Tooltip("Doğma anında objeler arası en az mesafe. Obje çapı bundan büyükse obje çapı kullanılır.")]
-        [SerializeField, Min(0f)] private float _spawnSpacing = 0.9f;
-
-        [Tooltip("İlk katın yığın kökünden yüksekliği.")]
-        [SerializeField, Min(0f)] private float _spawnHeight = 1.2f;
-
-        [Tooltip("Doğma noktasına eklenen rastgele sapma. Yığının fazla düzenli oturmasını engeller.")]
-        [SerializeField, Min(0f)] private float _spawnJitter = 0.05f;
 
         [Tooltip("Objeler bu süre içinde durulmazsa yığın oturmuş sayılır.")]
         [SerializeField, Min(0f)] private float _settleTimeout = 5f;
 
+        [Tooltip("Alana sığmayan objeler için boş yer taramasının tekrar aralığı (saniye).")]
+        [SerializeField, Min(0.05f)] private float _refillInterval = 0.5f;
+
         private readonly List<StackItem> _items = new List<StackItem>();
+        private readonly List<StackItem> _spawnBuffer = new List<StackItem>();
         private readonly List<ItemType> _typeBuffer = new List<ItemType>();
+        private readonly Queue<ItemType> _pendingTypes = new Queue<ItemType>();
 
+        private StackArea _area;
         private float _settleTimer;
+        private float _refillTimer;
 
-        /// <summary>Yığında duran objeler.</summary>
+        /// <summary>Alanda duran objeler.</summary>
         public IReadOnlyList<StackItem> Items => _items;
 
-        /// <summary>Dökülen objeler durulduysa true. Süre sayacı bundan sonra başlar.</summary>
+        /// <summary>Alana sığmadığı için doğmayı bekleyen obje sayısı.</summary>
+        public int PendingItemCount => _pendingTypes.Count;
+
+        /// <summary>İlk dolum durulduysa true. Süre sayacı bundan sonra başlar.</summary>
         public bool IsSettled { get; private set; }
 
-        /// <summary>LevelData'daki objeleri karıştırıp yığın kökünün üstünden döker.</summary>
-        public void Build(LevelData level, Transform stackRoot)
+        /// <summary>LevelData'daki objeleri karıştırıp alanın içine doğurur.</summary>
+        public void Build(LevelData level, StackArea area)
         {
             Clear();
+
+            if (area == null)
+            {
+                Debug.LogError("ItemStack.Build received no StackArea; no item will spawn.", this);
+                return;
+            }
+
+            _area = area;
+
             CollectTypes(level);
             Shuffle(_typeBuffer);
-            Pour(stackRoot);
+
+            for (int i = 0; i < _typeBuffer.Count; i++)
+            {
+                _pendingTypes.Enqueue(_typeBuffer[i]);
+            }
+
+            Fill();
+
+            if (_items.Count == 0)
+            {
+                Debug.LogError(
+                    "StackArea has no room for a single item; widen the area or shrink the item scale.",
+                    this);
+            }
         }
 
         /// <summary>Objeyi yığından çıkarır. Kutuya uçan obje artık yığının parçası değildir.</summary>
@@ -59,7 +77,7 @@ namespace MatchPack.Gameplay
             _items.Remove(item);
         }
 
-        /// <summary>Yığındaki objeleri havuza iade eder.</summary>
+        /// <summary>Alandaki objeleri havuza iade eder ve bekleyenleri düşürür.</summary>
         public void Clear()
         {
             for (int i = 0; i < _items.Count; i++)
@@ -68,12 +86,24 @@ namespace MatchPack.Gameplay
             }
 
             _items.Clear();
+            _spawnBuffer.Clear();
+            _typeBuffer.Clear();
+            _pendingTypes.Clear();
+
+            _area = null;
             _settleTimer = 0f;
+            _refillTimer = 0f;
             IsSettled = false;
         }
 
         private void Update()
         {
+            if (_pendingTypes.Count > 0)
+            {
+                _refillTimer -= Time.deltaTime;
+                if (_refillTimer <= 0f) { Fill(); }
+            }
+
             if (IsSettled || _items.Count == 0) { return; }
 
             _settleTimer += Time.deltaTime;
@@ -110,55 +140,56 @@ namespace MatchPack.Gameplay
             }
         }
 
-        private void Pour(Transform stackRoot)
+        private void Fill()
         {
-            float spacing = _spawnSpacing;
+            _refillTimer = _refillInterval;
 
-            for (int i = 0; i < _typeBuffer.Count; i++)
+            if (_area == null || _pendingTypes.Count == 0) { return; }
+
+            _spawnBuffer.Clear();
+            _area.BeginPlacement();
+
+            while (_pendingTypes.Count > 0)
             {
-                ItemType type = _typeBuffer[i];
+                ItemType type = _pendingTypes.Peek();
                 GameObject instance = PoolManager.Instance.Get(type.Prefab);
-                if (instance == null) { continue; }
+
+                if (instance == null)
+                {
+                    _pendingTypes.Dequeue();
+                    continue;
+                }
 
                 StackItem item = instance.GetComponent<StackItem>();
+
+                if (!_area.TryReserveSpot(item.BoundingRadius, out Vector3 position))
+                {
+                    // Alanda yer kalmadı; obje havuza geri döner ve boşluk açılınca yeniden denenir.
+                    PoolManager.Instance.Release(instance);
+                    break;
+                }
+
+                _pendingTypes.Dequeue();
                 item.SetSimulated(false);
                 item.Setup(type);
+                item.Teleport(position, UnityEngine.Random.rotation);
+
                 _items.Add(item);
-
-                spacing = Mathf.Max(spacing, item.BoundingRadius * 2f);
+                _spawnBuffer.Add(item);
             }
 
-            for (int i = 0; i < _items.Count; i++)
-            {
-                _items[i].Teleport(GetSpawnPosition(stackRoot, i, spacing), UnityEngine.Random.rotation);
-            }
+            if (_spawnBuffer.Count == 0) { return; }
 
             // Physics.autoSyncTransforms kapalı; yeni pozlar fizik motoruna ancak bu çağrıyla geçer.
             Physics.SyncTransforms();
 
             // Fizik ancak tüm objeler yerleştikten sonra açılır; aksi halde solver onları üst üste bulur.
-            for (int i = 0; i < _items.Count; i++)
+            for (int i = 0; i < _spawnBuffer.Count; i++)
             {
-                _items[i].SetSimulated(true);
+                _spawnBuffer[i].SetSimulated(true);
             }
-        }
 
-        private Vector3 GetSpawnPosition(Transform stackRoot, int index, float spacing)
-        {
-            int itemsPerLayer = _spawnColumns * _spawnRows;
-            int indexInLayer = index % itemsPerLayer;
-            int layer = index / itemsPerLayer;
-
-            float offsetRight = (indexInLayer % _spawnColumns - (_spawnColumns - 1) * 0.5f) * spacing;
-            float offsetForward = (indexInLayer / _spawnColumns - (_spawnRows - 1) * 0.5f) * spacing;
-            float offsetUp = _spawnHeight + layer * spacing;
-
-            Vector3 position = stackRoot.position
-                + stackRoot.right * offsetRight
-                + stackRoot.forward * offsetForward
-                + stackRoot.up * offsetUp;
-
-            return position + UnityEngine.Random.insideUnitSphere * _spawnJitter;
+            _spawnBuffer.Clear();
         }
 
         private static void Shuffle(List<ItemType> types)

@@ -8,38 +8,36 @@ Bu yapı sabittir. Değiştirmek isteyen önce sorar.
 |---|---|
 | `BootScene` | Yalnızca açılışta çalışır. SDK/Save yüklenir, ardından `MainScene` yüklenip kendini boşaltır. |
 | `MainScene` | Kalıcı sahne. Tüm Core Manager'lar ve UI Canvas'ları buradadır, **asla unload edilmez**. |
-| `GameScene` | `MainScene` açıkken **additive** yüklenir. Sadece 3D içerik: bant modeli ve yolu, yığın kökü, ışık, kamera hedefleri. |
+| `GameScene` | Açılışta bir kez **additive** yüklenir ve **hiç unload edilmez**. 3D içerik (bant modeli ve yolu, yığın alanı, ışık) ve oyunun **tek kamerası** buradadır. |
 
-Oyun oynanırken ekranda **en az iki sahne birden aktiftir**: `MainScene` (UI + manager'lar) ve
-aktif `GameScene`. Menü sahnesi hiçbir zaman kapatılmaz; menüye dönmek demek, game sahnesini
-unload edip menü panellerini açmak demektir.
+Oyun açıldığı andan itibaren ekranda **iki sahne birden yüklüdür**: `MainScene` (UI + manager'lar)
+ve `GameScene`. İkisi de hiç kapatılmaz. Menüye dönmek demek, level içeriğini söküp menü
+panellerini açmak demektir; sahne yerinde durur.
 
 ### Sahne yaşam döngüsü
 
 | Geçiş | Akış |
 |---|---|
-| Açılış | `BootScene` → `MainScene` (Single) → `BootScene` kendini boşaltır |
-| Level başlatma | `MainScene` durur, `GameScene` **additive** yüklenir → aktif sahne `GameScene` yapılır |
-| Sonraki level | Yeni `GameScene` **additive yüklenir**, hazır olunca eski `GameScene` unload edilir |
-| Menüye dönüş | Aktif `GameScene` unload edilir, aktif sahne `MainScene` olur |
+| Açılış | `BootScene` → `MainScene` (Single) → `BootScene` kendini boşaltır → `SceneLoader` `GameScene`'i additive yükler, level içeriğini gizler |
+| Level başlatma | Yükleme ekranı açılır → varsa eski level sökülür → aynı sahne yeni `LevelData` ile kurulur → sahte süre dolunca ekran kapanır |
+| Sonraki level / restart | **Sahne değişmez.** Aynı akış işler; yalnızca `LevelData` değişir |
+| Menüye dönüş | Level içeriği sökülür ve gizlenir, `GameScene` yüklü kalır |
 
-Level geçişinde sıra **her zaman "önce yükle, sonra sil"**dir; eski sahne asla önce silinmez.
-Bu yüzden geçiş anında kısa süreliğine üç sahne birden yüklü olabilir
-(`MainScene` + eski `GameScene` + yeni `GameScene`). Bunun görsel/işitsel yan etkisi olmaması için:
+Level geçişi bir **sahne geçişi değildir**. `SceneLoader.BuildLevelRoutine` sırasıyla: eski leveli
+sök → sahnenin yüklü olduğunu doğrula → 3B içeriği aç → `OnLevelSceneReady`. Bu sırada:
 
-- Yeni level'in `LevelContext` kök objesi **pasif (inactive)** olarak yüklenir; eski sahne
-  unload edildikten sonra aktif edilir. Sıra: yükle → eskiyi boşalt → yeniyi aktifleştir →
-  aktif sahneyi ayarla → `OnLevelStarted`.
-- Sahne unload edilmeden önce eski level'in tüm havuz objeleri `PoolManager`'a iade edilir,
-  DOTween tween'leri `DOKill()` ile durdurulur, event abonelikleri bırakılır.
+- Level sökülmeden önce tüm havuz objeleri `PoolManager`'a iade edilir, DOTween tween'leri
+  `DOKill()` ile durdurulur, event abonelikleri bırakılır (`OnBeforeLevelTeardown`).
 - Geçiş boyunca input kapalıdır (`InputManager` devre dışı).
+- Tüm hazırlık yükleme ekranının arkasında yaşanır; oyuncu obje dökülmesini görmez.
 
 ### Kurallar
 
-- **Kamera ve `AudioListener` tektir ve `MainScene`'dedir.** Game sahnesinde kamera,
-  `AudioListener` ve `EventSystem` bulunmaz; sahne yalnızca kameranın hedefleyeceği anchor
-  transform'ları verir. (İki level sahnesi aynı anda yüklüyken çift kamera/çift listener
-  uyarısı oluşmasın diye.)
+- **Kamera ve `AudioListener` tektir ve `GameScene`'dedir.** Menüyü de o kamera render eder;
+  `MainScene`'de kamera bulunmaz. Kamera `LevelContext._camera` alanına bağlanır ve
+  `LevelContext.SetContentActive` onu bilerek dışarıda bırakır — level içeriği gizlenirken kamera
+  kapanmaz. Sahneler arası referans tutulamadığı için `InputManager` ve `MatchResolver` kamerayı
+  Inspector'dan değil `LevelContext` üzerinden okur.
 - **Havuz objeleri level sahnesine parent edilmez.** `PoolManager` kökü `DontDestroyOnLoad`
   altındadır; aksi halde sahne unload edilince havuz objeleri de yok olur.
 - Game sahnesinde manager yok; sahne referanslarını taşıyan tek bileşen `LevelContext`'tir.
@@ -62,8 +60,8 @@ Bu yüzden geçiş anında kısa süreliğine üç sahne birden yüklü olabilir
 |---|---|
 | `Scripts/Core/SceneIndices.cs` | Build Settings index sabitleri |
 | `Scripts/Core/AppBootstrap.cs` | `BootScene`; ayarları uygular, `MainScene`'i Single yükler |
-| `Scripts/Core/SceneLoader.cs` | Additive yükleme/boşaltma, handle takibi, geçiş sırası |
-| `Scripts/Core/LevelContext.cs` | Game sahnesinin referans noktası (`ConveyorRoot`, `StackRoot`, `CameraAnchor`) |
+| `Scripts/Core/SceneLoader.cs` | `GameScene`'i bir kez yükler, level kurma/sökme sırası |
+| `Scripts/Core/LevelContext.cs` | Game sahnesinin referans noktası (`ConveyorRoot`, `StackArea`, `Camera`, `CameraAnchor`) |
 | `Scripts/UI/MainMenuScreen.cs` | Start butonunu `SceneLoader.LoadLevel` çağrısına bağlar |
 | `Scripts/Gameplay/ConveyorPath.cs` | Bandın kapalı turu; waypoint'lerden mesafe→poz çözümü |
 | `Scripts/Gameplay/Conveyor.cs` | Slot karuseli, kutu gönderme kuralı, giriş/çıkış |
@@ -71,12 +69,14 @@ Bu yüzden geçiş anında kısa süreliğine üç sahne birden yüklü olabilir
 Kullanım:
 
 ```csharp
-SceneLoader.Instance.LoadLevel(context => { /* level hazır, LevelData uygula */ });
-SceneLoader.Instance.UnloadLevel();
+GameManager.Instance.StartLevel(level);   // yükleme ekranı + kurulum
+GameManager.Instance.StartNextLevel();    // katalogdaki sıradaki bölüm
+GameManager.Instance.RetryLevel();        // aynı bölümü baştan kur
+GameManager.Instance.ReturnToMenu();      // leveli sök, sahne yüklü kalsın
 ```
 
-Abone olunacak event'ler: `OnSceneTransitionChanged` (input kapatma), `OnBeforeLevelUnload`
-(havuz iadesi, `DOKill`), `OnLevelSceneReady`, `OnLevelSceneUnloaded`, `OnLoadProgressChanged`.
+Abone olunacak event'ler: `OnSceneTransitionChanged` (input kapatma), `OnBeforeLevelTeardown`
+(havuz iadesi, `DOKill`), `OnLevelSceneReady`, `OnLevelTornDown`.
 
 Sahneler **build index** ile yüklenir; index sabitleri `SceneIndices` içindedir. Build Settings
 sırası sabittir: `0 BootScene`, `1 MainScene`, `2 GameScene`. Sıra değişirse `SceneIndices` de
@@ -87,9 +87,9 @@ değişir; sahne dosyasını yeniden adlandırmak kodu etkilemez.
 | Manager | Sorumluluk |
 |---|---|
 | `GameManager` | Oyun state'i (Menu/Playing/Win/Lose), level başlatma-bitirme |
-| `LevelManager` | Aktif `LevelData`'yı işler, kutu havuzunu ve hedef sayacını yönetir |
-| `SceneLoader` | Additive yükleme/boşaltma, aktif level handle'ı, geçiş sırası |
-| `InputManager` | Raycast ile dokunuş algılar, `StackItem` bildirir |
+| `LevelManager` | Aktif `LevelData`'yı işler, dolan kutuyu sayar, hedefe ulaşınca leveli kazandırır |
+| `SceneLoader` | `GameScene`'i bir kez yükler, level içeriğini kurar/söker, geçiş sırası |
+| `InputManager` | Kutu prob (BoxCast) ile dokunuş algılar, `StackItem` bildirir |
 | `PoolManager` | Tüm runtime instance'ları |
 | `SaveManager` | `PlayerData` yükle/kaydet |
 | `EconomyManager` | Gold, can, booster envanteri |
@@ -155,6 +155,56 @@ kutu bulunduğu yerden doğrudan oraya gider.
 - Kutu uçuş hedefi hareketlidir; `MatchResolver` sabit bir noktaya değil, kutunun o anki yuvasına
   uçurur.
 
+## Dokunuş probu
+
+`InputManager` ekran noktasını kameradan çıkan bir prob ile objeye çevirir. Varsayılan prob ince
+ışın değil, ışına dik duran bir **kutudur** (`Physics.BoxCast`): parmak objenin kenarından biraz
+kaçtığında da seçim oluşur. Kutunun kenar uzunluğu Inspector'dan ayarlanır; `_isBoxCastEnabled`
+kapatılınca eski ince ışın (`Physics.Raycast`) davranışına dönülür. Prob kutusu ve isabet
+noktası `DebugManager` gizmo'larında çizilir.
+
+## Yığın alanı (StackArea)
+
+Objelerin doğduğu ve içinde kaldığı kutu alan **tek kaynaktır**: sahnede `LevelContext` altındaki
+`StackArea` objesinin merkez + ölçü alanları hem doğma noktalarını hem de objeleri içeride tutan
+görünmez duvarları belirler. Duvarlar (zemin + 4 duvar + tavan) `Awake`'te alanın ölçüsünden
+`BoxCollider` olarak üretilir; alanın kendi görseli yoktur, Scene view'da yalnızca gizmo olarak
+çizilir. Alanın transform ölçeği 1 kalmalıdır; boyut `_size` ile verilir.
+
+`ItemStack` objeleri karıştırıp alanın içinde **birbirine değmeyen** noktalara doğurur; nokta
+araması objenin kendi yarıçapını kullandığı için obje ölçeği değişince yerleşim kendiliğinden
+uyar. Objelerin tamamı bir anda sığmazsa kalanlar kuyrukta bekler ve yerleşim taraması belirli
+aralıklarla tekrarlanır; yığından obje eksildikçe açılan boşluklara doğarlar. `OnStackSettled`
+yalnızca **ilk dolum** durulunca bir kez yayınlanır, sonraki doğumlar süreyi ve input'u etkilemez.
+
+## Yükleme ekranı
+
+Level kurulurken `LoadingScreen` açılır. Ekran **ayarlanabilir bir sahte bekleme süresi** işletir
+ve yazının sonundaki noktaları (`Yükleniyor` → `Yükleniyor...`) döngüyle artırıp sıfırlar.
+
+Kapanma koşulu **iki şartın birden** sağlanmasıdır: hazırlık bitmiş **ve** sahte süre dolmuş
+olmalı. Hazırlık erken biterse ekran süre dolana kadar açık kalır; hazırlık uzun sürerse süre
+dolsa da ekran kapanmaz. Sıra `GameManager.BuildLevelRoutine` içinde yürür:
+
+```
+Loading durumuna geç → ekranı aç → SceneLoader.BuildLevelRoutine → sahte sürenin kalanını bekle
+→ ekranı kapat → Playing durumuna geç → OnLevelStarted
+```
+
+Sayacın yükleme ekranının arkasında işlemeye başlamaması için `LevelManager` sayacı yalnızca
+yığın oturduğu**nda ve** level gerçekten başladığında başlatır.
+
+## Level sonu ve ilerleme
+
+- Kazanma şartı: dolan kutu sayısı `LevelData.TargetBoxCount` değerine ulaşır
+  (`LevelManager.HandleBoxFilled`). Bandın kutuları hedefe ulaşılmadan biterse level yine kapanır.
+- Kaybetme şartı: `LevelTimer` sıfıra iner.
+- Panelleri `UIManager` açar; butonları `LevelResultScreen` işletir.
+- Bölüm sırası `LevelCatalog` asset'indedir; `PlayerData.CurrentLevel` bu listedeki 1'den başlayan
+  sıra numarasıdır ve kazanılınca bir arttırılıp kaydedilir.
+- Restart ve sonraki level butonları basılır basılmaz iş yapmaz: `LevelResultScreen` üzerinde
+  ayarlanan gecikme kadar beklenir (efektler bu aralıkta oynatılır), sonra level kurulur.
+
 ## Veri
 
 - `PlayerData` — düz `[Serializable]` C# sınıfı, JSON'a serialize edilir.
@@ -193,7 +243,7 @@ Assets/_Project/
   Scenes/    BootScene, MainScene, GameScene
   Scripts/
     Core/      GameManager, SceneLoader, PoolManager, SaveManager
-    Gameplay/  Conveyor, ConveyorPath, Box, StackItem, InputManager, Timer, Boosters
+    Gameplay/  Conveyor, ConveyorPath, Box, StackItem, StackArea, InputManager, Timer, Boosters
     Meta/      Economy, Lives, IAP, Ads, Notifications
     UI/        Paneller ve HUD
     Data/      PlayerData, LevelData, ItemType

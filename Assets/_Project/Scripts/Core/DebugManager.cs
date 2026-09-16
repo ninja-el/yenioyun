@@ -24,6 +24,10 @@ namespace MatchPack.Core
         {
             public Ray Ray;
             public Vector3 Point;
+            public Vector3 ProbeEnd;
+            public bool IsBoxCast;
+            public Vector3 HalfExtents;
+            public Quaternion Orientation;
             public string TypeId;
             public TapOutcome Outcome;
             public float ExpireTime;
@@ -43,7 +47,7 @@ namespace MatchPack.Core
         [Tooltip("Isabet noktasına çizilen kürenin yarıçapı.")]
         [SerializeField, Min(0.01f)] private float _hitMarkerRadius = 0.12f;
 
-        [Tooltip("Isabet olmayan ışının çizileceği uzunluk.")]
+        [Tooltip("Isabet olmayan probun çizileceği uzunluk.")]
         [SerializeField, Min(1f)] private float _missedRayLength = 40f;
 
         [Tooltip("Görseli olmayan kutuların yerine çizilecek tel kutunun ölçüsü.")]
@@ -122,7 +126,7 @@ namespace MatchPack.Core
         private void Start()
         {
             InputManager.Instance.OnTapProbed += HandleTapProbed;
-            SceneLoader.Instance.OnBeforeLevelUnload += HandleBeforeLevelUnload;
+            SceneLoader.Instance.OnBeforeLevelTeardown += HandleBeforeLevelTeardown;
 
             if (!_hasLevelComponents) { return; }
 
@@ -141,7 +145,7 @@ namespace MatchPack.Core
 
             if (SceneLoader.Instance != null)
             {
-                SceneLoader.Instance.OnBeforeLevelUnload -= HandleBeforeLevelUnload;
+                SceneLoader.Instance.OnBeforeLevelTeardown -= HandleBeforeLevelTeardown;
             }
 
             if (_hasLevelComponents)
@@ -223,19 +227,26 @@ namespace MatchPack.Core
             if (Keyboard.current[_addLifeKey].wasPressedThisFrame) { AddDebugLife(); }
         }
 
-        private void HandleTapProbed(Ray ray, RaycastHit hit)
+        private void HandleTapProbed(InputManager.TapProbe probe)
         {
             if (!_isGizmosEnabled) { return; }
 
-            bool hasHit = hit.collider != null;
-            StackItem item = hasHit ? hit.collider.GetComponentInParent<StackItem>() : null;
+            StackItem item = probe.HasHit ? probe.Hit.collider.GetComponentInParent<StackItem>() : null;
+            Ray ray = probe.Ray;
+            Vector3 missedEnd = ray.origin + ray.direction * _missedRayLength;
 
             TapRecord record = new TapRecord
             {
                 Ray = ray,
-                Point = hasHit ? hit.point : ray.origin + ray.direction * _missedRayLength,
+                Point = probe.HasHit ? probe.Hit.point : missedEnd,
+                // Kutu prob çarptığı yerde durur; kutunun o andaki merkezi isabet noktasının değil,
+                // ışın ekseninin üzerindedir. Kutu bu yüzden hit.point'e değil buraya çizilir.
+                ProbeEnd = probe.HasHit ? ray.origin + ray.direction * probe.Hit.distance : missedEnd,
+                IsBoxCast = probe.IsBoxCast,
+                HalfExtents = probe.HalfExtents,
+                Orientation = probe.Orientation,
                 TypeId = item != null && item.Type != null ? item.Type.Id : null,
-                Outcome = hasHit ? TapOutcome.Unresolved : TapOutcome.NoHit,
+                Outcome = probe.HasHit ? TapOutcome.Unresolved : TapOutcome.NoHit,
                 ExpireTime = Time.unscaledTime + _tapLifetimeSeconds
             };
 
@@ -275,7 +286,7 @@ namespace MatchPack.Core
             _boxes.Remove(box);
         }
 
-        private void HandleBeforeLevelUnload()
+        private void HandleBeforeLevelTeardown()
         {
             _taps.Clear();
             _boxes.Clear();
@@ -303,6 +314,13 @@ namespace MatchPack.Core
             _statusBuilder.Append("\ninput: ")
                 .Append(InputManager.Instance == null ? "no InputManager"
                     : InputManager.Instance.IsEnabled ? "enabled" : "DISABLED");
+
+            if (InputManager.Instance != null)
+            {
+                _statusBuilder.Append(InputManager.Instance.IsBoxCastEnabled
+                    ? $"  probe: boxcast {InputManager.Instance.BoxCastWidth:0.00}"
+                    : "  probe: raycast");
+            }
 
             if (!_hasLevelComponents)
             {
@@ -350,11 +368,22 @@ namespace MatchPack.Core
                 TapRecord tap = _taps[i];
 
                 Gizmos.color = GetOutcomeColor(tap.Outcome);
-                Gizmos.DrawLine(tap.Ray.origin, tap.Point);
+                Gizmos.DrawLine(tap.Ray.origin, tap.ProbeEnd);
                 Gizmos.DrawSphere(tap.Point, _hitMarkerRadius);
+
+                if (tap.IsBoxCast) { DrawProbeBox(tap); }
 
                 UnityEditor.Handles.Label(tap.Point, GetOutcomeLabel(tap));
             }
+        }
+
+        private static void DrawProbeBox(TapRecord tap)
+        {
+            Matrix4x4 previousMatrix = Gizmos.matrix;
+
+            Gizmos.matrix = Matrix4x4.TRS(tap.ProbeEnd, tap.Orientation, Vector3.one);
+            Gizmos.DrawWireCube(Vector3.zero, tap.HalfExtents * 2f);
+            Gizmos.matrix = previousMatrix;
         }
 
         private Color GetOutcomeColor(TapOutcome outcome)
@@ -371,7 +400,7 @@ namespace MatchPack.Core
         {
             switch (tap.Outcome)
             {
-                case TapOutcome.NoHit: return "NO HIT (raycast hit nothing on the item layers)";
+                case TapOutcome.NoHit: return "NO HIT (probe hit nothing on the item layers)";
                 case TapOutcome.Unresolved: return $"{tap.TypeId} - NOT RESOLVED (MatchResolver guard blocked it)";
                 case TapOutcome.Matched: return $"{tap.TypeId} - MATCHED";
                 default: return $"{tap.TypeId} - NO MATCHING BOX";

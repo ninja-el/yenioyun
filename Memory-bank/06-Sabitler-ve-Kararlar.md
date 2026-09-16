@@ -22,15 +22,30 @@ Değer değişirse önce bu dosya güncellenir.
 | Kutu giriş gecikmesi | 0.5 sn | `GameConfig` |
 | Kutu giriş animasyonu süresi | 0.4 sn | `GameConfig` |
 | Kutu çıkış animasyonu süresi | 0.35 sn | `GameConfig` |
-| Yığın doğma ızgarası | 3 sütun x 3 sıra | `ItemStack` |
-| Doğma anında en az obje aralığı | 0.9 birim (obje çapı büyükse o kullanılır) | `ItemStack` |
-| İlk katın doğma yüksekliği | 1.2 birim | `ItemStack` |
-| Doğma noktası rastgele sapması | 0.05 birim | `ItemStack` |
+| Yığın alanı iç ölçüsü | 6 x 6 x 6, merkez (0, 3, 0) | `StackArea` |
+| Alan duvar kalınlığı | 1.0 birim (zemin + 4 duvar + tavan) | `StackArea` |
+| Doğma noktaları arası ek boşluk | 0.05 birim (objenin kendi yarıçapına eklenir) | `StackArea` |
+| Boş nokta aramasında aday sayısı | 24 | `StackArea` |
+| Bekleyen objeler için tarama aralığı | 0.5 sn | `ItemStack` |
 | Yığının oturması için zaman aşımı | 1 sn | `ItemStack` |
-| Yığın alanı iç ölçüsü | 3.0 x 3.0, iç yükseklik 3.0 (zemin + 4 duvar + tavan) | `StackBounds.prefab` |
+| Dokunuş probu | Kutu (BoxCast), 0.3 birim kenar | `InputManager` |
 | Objenin uçuş kavisi yüksekliği | 1.5 birim | `MatchResolver` |
 | Hatalı hamlede kamera sarsıntısı | 0.2 sn / 0.15 şiddet | `MatchResolver` |
 | Hedef FPS | 60 | Proje ayarı |
+
+## Yükleme ve level sonu
+
+| Değer | Varsayılan | Kaynak |
+|---|---|---|
+| Sahte yükleme süresi | 1.5 sn | `LoadingScreen` |
+| Yükleme yazısı | "Yükleniyor" | `LoadingScreen` |
+| Yazıdaki en fazla nokta | 3 | `LoadingScreen` |
+| Nokta ekleme aralığı | 0.35 sn | `LoadingScreen` |
+| Restart butonu gecikmesi | 3 sn | `LevelResultScreen` |
+| Sonraki level butonu gecikmesi | 3 sn | `LevelResultScreen` |
+| Kazanma şartı | Dolan kutu = `LevelData.targetBoxCount` | `LevelManager` |
+| Kaybetme şartı | Süre sıfıra iner | `LevelTimer` |
+| Restart / sonraki level maliyeti | 1 can | `LevelResultScreen` |
 
 Bant sayıları (slot sayısı hariç) sahnedeki modele bakılarak değil, oyun hissine göre konmuş
 varsayılanlardır; ilk oynanabilir sürümde Inspector'dan ayarlanıp bu tablo güncellenecek.
@@ -91,8 +106,8 @@ Boosterlar envanterden tüketilir, cooldown yoktur, level içinde kullanım limi
 | # | Karar | Gerekçe |
 |---|---|---|
 | 1 | Tek `GameScene.unity` + `LevelData` ile besleme | Bölüm başına sahne çoğaltmak merge ve boyut sorunu yaratır |
-| 1b | Level geçişi "önce yükle, sonra sil" (kısa süre 2 level sahnesi yüklü) | Yükleme beklemesi oyuncuya siyah ekran olarak yansımasın |
-| 1c | Kamera + `AudioListener` kalıcı olarak `MainScene`'de | Geçiş anında çift kamera/çift listener oluşmasın |
+| 1b | ~~Level geçişi "önce yükle, sonra sil"~~ — 27 numaralı kararla kaldırıldı; level geçişinde sahne hiç değişmiyor | — |
+| 1c | ~~Kamera + `AudioListener` `MainScene`'de~~ — 27a numaralı kararla `GameScene`'e taşındı | — |
 | 1d | Havuz kökü `DontDestroyOnLoad`, level sahnesine parent edilmez | Sahne unload olunca havuz objeleri yok olmasın |
 | 2 | `ItemType` enum değil ScriptableObject | Yeni obje eklemek kod değişikliği gerektirmesin |
 | 3 | Manager'lar basit singleton | 2-3 haftalık sürede DI/servis locator ek maliyet |
@@ -100,7 +115,7 @@ Boosterlar envanterden tüketilir, cooldown yoktur, level içinde kullanım limi
 | 5 | Reklam/IAP çağrıları arayüz arkasında (`IAdService`, `IPurchaseService`) | SDK seçimi (Unity Ads / AppLovin) sonra netleşecek |
 | 6 | Assembly Definition kullanılmıyor | Küçük projede derleme kazancı, kurulum maliyetini karşılamıyor |
 | 7 | Yığın fiziksel: objeler rigidbody taşır, alttaki çekilince üsttekiler çöker | Oyunun temel hissi; sabit ızgara yerleşimi bu mekaniği vermiyor |
-| 7a | Yığın sınırı görünmez duvar + zemin collider'ı (`StackBounds.prefab`) | Model gerektirmeden objelerin dağılmasını engeller |
+| 7a | Yığın sınırı görünmez duvar + zemin collider'ı; 25 numaralı kararla `StackBounds.prefab` yerine `StackArea` üretiyor | Model gerektirmeden objelerin dağılmasını engeller |
 | 7b | Level açılışında objeler yukarıdan dökülür; yığın oturunca (rigidbody sleep) süre başlar | Oyuncu sayaç işlerken yerleşmeyi beklemesin |
 | 8 | Bant kapalı devre bir turdur, kutular üzerinde sürekli döner | GDD "levelin kutu havuzundan yeni bir kutu banta gelir" diyor ama kutunun bantta ne yaptığını açmıyor; sahnedeki model kapalı devre konveyör olduğu için cümle bu yönde açıldı |
 | 9 | Kutu taşıma sistemi: waypoint yolu + sanal slot karuseli | Kutular arası mesafe kendiliğinden sabit kalır; hız, duraklatma ve Time Freeze tek değişkenle yönetilir. Elenen alternatifler: kutu başına serbest ilerleme (çakışma mantığı gerekir), DOTween `DOPath` (kutuyu tur ortasında çıkarmak kırılgan), animasyon klibi (hız/gecikme runtime'da ayarlanamaz) |
@@ -123,6 +138,20 @@ Boosterlar envanterden tüketilir, cooldown yoktur, level içinde kullanım limi
 | 22 | Ayarlar paneli ve butonu `MainMenu`'nün altından `UI_Canvas` köküne taşındı | Menüde de oyun içinde de açılabilmesi gerekiyordu; `MainMenu` level oynanırken kapandığı için panel altında kalınca erişilemiyordu. Can ve gold popup'ları zaten kökte duruyor |
 | 23 | Ayar anahtarında tıklamayı `Opn`/`Cls` değil, ikisini de kaplayan `BtnHolder` alır; `Opn`, `Cls` ve yazıların `raycastTarget`'i kapatılır | Görünen tarafa basmayı zorunlu kılmak yerine anahtarın herhangi bir yerine basmak yetiyor. Ayrıca yazılar butonlardan sonra çizilip buton alanını tamamen kapladığı için tıklamayı yutuyordu |
 | 24 | Yığın oturma zaman aşımı 5 sn'den 1 sn'ye indirildi | Bu süre boyunca dokunuşlar hamle üretmiyor; 5 sn oyuncuya oyun kilitlendi hissi veriyordu |
+| 25 | Yığın alanı tek kaynak: `StackArea` hem doğma hacmini hem de görünmez duvarları tanımlar, `StackBounds.prefab` sahneden çıkarıldı | Duvarlar ayrı bir prefabdayken doğma ızgarası ile duvarlar birbirinden habersizdi; obje ölçeği büyüyünce yığın alanın dışına taşıyordu. Tek kutu ikisini birden besleyince taşma imkânsız hale geliyor |
+| 25a | Objeler sabit ızgara yerine alan içinde çakışmasız rastgele noktalara doğar; nokta objenin kendi yarıçapıyla aranır | Izgara aralığı tek bir sayıydı ve obje ölçeği değişince elle güncellenmesi gerekiyordu |
+| 25b | Alana sığmayan objeler kuyrukta bekler, yığından obje eksildikçe doğar | Küçük bir alana büyük bir level'in tüm objelerini tıkmak yerine alanın kapasitesi kadarı tutuluyor; oyuncu açısından yığın sürekli dolu görünüyor |
+| 25c | `OnStackSettled` yalnızca ilk dolum durulunca yayınlanır | Her yeni doğum `IsSettled`'ı sıfırlasaydı input level boyunca aralıklı kilitlenirdi |
+| 26 | Dokunuş probu ince ışın yerine ışına dik duran bir kutu (`Physics.BoxCast`); kutu genişliği ve ışına geri dönüş Inspector'dan ayarlanır | Mobilde parmak objenin kenarından birkaç piksel kaçtığında dokunuş boşa gidiyordu. Ayar olarak bırakılması, payın oyun hissine göre ayarlanabilmesi ve gerekirse eski davranışa dönülebilmesi için |
+| 27 | Levellar arası geçişte sahne değiştirilmez; `GameScene` açılışta bir kez yüklenir ve hiç unload edilmez, aynı sahne yeni `LevelData` ile yeniden kurulur | Her level için sahne yükleyip boşaltmak hem bekleme hem de "önce yükle sonra sil" karmaşası getiriyordu. Tek sahne kalınca geçiş, havuzu boşaltıp içeriği yeniden üretmeye indi |
+| 27a | Oyunun tek kamerası ve `AudioListener`'ı `GameScene`'e taşındı; `MainScene`'deki Main Camera silindi | 27 ile sahne hiç kapanmadığı için kamera orada güvenle durabiliyor. Menüyü de aynı kamera render ediyor, çift kamera/çift listener riski kalmıyor |
+| 27b | `InputManager` ve `MatchResolver` kamerayı Inspector yerine `LevelContext` üzerinden okur | Kamera artık başka bir sahnede; Unity sahneler arası serialize edilmiş referans tutamıyor |
+| 27c | `LevelContext.SetContentActive` yalnızca bant ve yığın alanını gizler, kamerayı kapatmaz | Menüde 3B level içeriği görünmemeli ama ekranı render edecek bir kamera kalmalı |
+| 28 | Level kurulurken ayarlanabilir sahte süreli bir yükleme ekranı açılır; ekran, hazırlık **ve** sahte süre birlikte bitmeden kapanmaz | Anlık geçiş oyuncuya "bir şey olmadı" hissi veriyordu; sahte süre geçişe ritim veriyor. Hazırlık uzarsa beklemeye devam etmek, yarım kurulmuş bir level göstermekten iyi |
+| 28a | Sayaç, yığın oturduğunda değil, yığın oturduğunda **ve** level başladığında başlar | Yığın yükleme ekranının arkasında oturuyor; eski kural sayacı ekran kapanmadan başlatıp oyuncudan süre çalıyordu |
+| 29 | Kazanma şartı `LevelData.targetBoxCount` sayısı kadar kutu dolması | Eski şart "bandın bütün kutuları bitsin"di; hedef sayısı level verisinde yazdığı halde kullanılmıyordu |
+| 30 | Bölüm sırası `LevelCatalog` ScriptableObject'inde tutulur, `PlayerData.CurrentLevel` bu listedeki sıra numarasıdır | "Sonraki level" için bir sıra kaynağı gerekiyordu; katalog, yeni bölüm eklemeyi listeye satır eklemeye indiriyor ve ilerleme kaydı kendiliğinden çalışıyor |
+| 31 | Restart ve sonraki level butonları ayarlanabilir bir gecikmeden sonra iş yapar; gecikme boyunca panel açık kalır ve başka butonlar cevap vermez | Buton efektlerinin oynayacak zamanı olsun diye. Diğer butonların kilitlenmesi, bekleme sırasında ikinci bir geçiş başlatılmasını engelliyor |
 
 ## Açık sorular
 

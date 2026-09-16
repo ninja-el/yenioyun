@@ -1,3 +1,5 @@
+using System.Collections;
+using MatchPack.UI;
 using UnityEngine;
 
 namespace MatchPack.Core
@@ -25,6 +27,10 @@ namespace MatchPack.Core
 
         [Tooltip("Can satın alma popup'ı.")]
         [SerializeField] private GameObject _heartPopup;
+
+        [Header("Yükleme")]
+        [Tooltip("Level hazırlanırken açılan yükleme ekranı.")]
+        [SerializeField] private LoadingScreen _loadingScreen;
 
         [Header("Oyun içi")]
         [Tooltip("Oyun içi panellerin kökü.")]
@@ -76,6 +82,32 @@ namespace MatchPack.Core
             }
 
             if (Instance == this) { Instance = null; }
+        }
+
+        /// <summary>Yükleme ekranını açar ve sahte bekleme süresini başlatır.</summary>
+        public void ShowLoadingScreen()
+        {
+            if (_loadingScreen == null) { return; }
+
+            _loadingScreen.Show();
+        }
+
+        /// <summary>Yükleme ekranını kapatır.</summary>
+        public void HideLoadingScreen()
+        {
+            if (_loadingScreen == null) { return; }
+
+            _loadingScreen.Hide();
+        }
+
+        /// <summary>
+        /// Yükleme ekranının sahte süresi dolana kadar bekler. Ekran bağlanmamışsa hemen döner.
+        /// </summary>
+        public IEnumerator WaitForLoadingScreenRoutine()
+        {
+            if (_loadingScreen == null) { yield break; }
+
+            while (!_loadingScreen.IsFakeDelayComplete) { yield return null; }
         }
 
         /// <summary>Ayarlar panelini açar.</summary>

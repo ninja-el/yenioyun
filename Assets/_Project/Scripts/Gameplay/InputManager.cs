@@ -7,32 +7,71 @@ namespace MatchPack.Gameplay
 {
     /// <summary>
     /// Ekrana dokunuşu yığın objesine çevirir. Sahne geçişi boyunca kapalıdır; kutuya uçmakta olan
-    /// objenin collider'ı kapalı olduğu için raycast onu hedeflemez.
+    /// objenin collider'ı kapalı olduğu için prob onu hedeflemez.
     /// </summary>
     public class InputManager : MonoBehaviour
     {
+        /// <summary>
+        /// Bir dokunuşun ham sonucu. DebugManager'ın gizmo çizimi buna dayanır, oyun mantığı
+        /// bu veriyi kullanmaz. <see cref="HasHit"/> false ise isabet yoktur.
+        /// </summary>
+        public readonly struct TapProbe
+        {
+            public TapProbe(Ray ray, RaycastHit hit, bool isBoxCast, Vector3 halfExtents, Quaternion orientation)
+            {
+                Ray = ray;
+                Hit = hit;
+                IsBoxCast = isBoxCast;
+                HalfExtents = halfExtents;
+                Orientation = orientation;
+            }
+
+            public Ray Ray { get; }
+            public RaycastHit Hit { get; }
+
+            /// <summary>Prob kutu ile mi atıldı? False ise ince ışın kullanılmıştır.</summary>
+            public bool IsBoxCast { get; }
+
+            /// <summary>Kutu probun yarım ölçüsü. Işın modunda anlamsızdır.</summary>
+            public Vector3 HalfExtents { get; }
+
+            /// <summary>Kutu probun duruşu; kutu ışına dik durur. Işın modunda anlamsızdır.</summary>
+            public Quaternion Orientation { get; }
+
+            public bool HasHit => Hit.collider != null;
+        }
+
         public static InputManager Instance { get; private set; }
+
+        // Kutu probun ışın yönündeki kalınlığı. Sıfıra yakın tutulur ki prob yalnızca yanlara paylı
+        // olsun; sıfır verilince BoxCast dejenere kutuyla hiçbir şeye çarpmıyor.
+        private const float ProbeThickness = 0.01f;
 
         /// <summary>Yığındaki bir objeye dokunulduğunda yayınlanır.</summary>
         public event Action<StackItem> OnItemTapped;
 
-        /// <summary>
-        /// Her dokunuşun ham raycast sonucu; ışın hiçbir şeye çarpmasa da yayınlanır.
-        /// DebugManager'ın gizmo çizimi buna dayanır, oyun mantığı bu event'i kullanmaz.
-        /// hit.collider null ise isabet yoktur.
-        /// </summary>
-        public event Action<Ray, RaycastHit> OnTapProbed;
+        /// <summary>Her dokunuşun ham prob sonucu; prob hiçbir şeye çarpmasa da yayınlanır.</summary>
+        public event Action<TapProbe> OnTapProbed;
 
-        [Tooltip("Raycast'in atılacağı kalıcı kamera.")]
-        [SerializeField] private Camera _camera;
-
-        [Tooltip("Raycast'in çarpabileceği layer'lar.")]
+        [Tooltip("Probun çarpabileceği layer'lar.")]
         [SerializeField] private LayerMask _itemLayers = ~0;
+
+        [Tooltip("Dokunuş kutu prob (BoxCast) ile aransın mı? Kapalıysa ince ışın (Raycast) kullanılır.")]
+        [SerializeField] private bool _isBoxCastEnabled = true;
+
+        [Tooltip("Kutu probun dünya birimi cinsinden kenar uzunluğu. Büyüdükçe küçük kaymalar affedilir.")]
+        [SerializeField, Min(0.01f)] private float _boxCastWidth = 0.3f;
 
         private InputAction _tapAction;
 
         /// <summary>Dokunuş algılaması açık mı? Sahne geçişinde SceneLoader kapatır.</summary>
         public bool IsEnabled { get; private set; } = true;
+
+        /// <summary>Prob kutu modunda mı çalışıyor? Debug ekranı bunu yazar.</summary>
+        public bool IsBoxCastEnabled => _isBoxCastEnabled;
+
+        /// <summary>Kutu probun kenar uzunluğu. Debug ekranı bunu yazar.</summary>
+        public float BoxCastWidth => _boxCastWidth;
 
         private void Awake()
         {
@@ -81,18 +120,53 @@ namespace MatchPack.Gameplay
         {
             if (!IsEnabled || Pointer.current == null) { return; }
 
-            Ray ray = _camera.ScreenPointToRay(Pointer.current.position.ReadValue());
-            bool hasHit = Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity, _itemLayers);
+            Camera camera = GetLevelCamera();
+            if (camera == null) { return; }
 
-            OnTapProbed?.Invoke(ray, hit);
+            TapProbe probe = Probe(camera, Pointer.current.position.ReadValue());
+            OnTapProbed?.Invoke(probe);
 
-            if (!hasHit) { return; }
+            if (!probe.HasHit) { return; }
 
             // Collider obje prefabının alt objesinde olabilir; StackItem her zaman kökte durur.
-            StackItem item = hit.collider.GetComponentInParent<StackItem>();
+            StackItem item = probe.Hit.collider.GetComponentInParent<StackItem>();
             if (item == null) { return; }
 
             OnItemTapped?.Invoke(item);
+        }
+
+        // Kamera GameScene'de durduğu için Inspector'dan bağlanamaz (sahneler arası referans
+        // tutulamaz); her dokunuşta LevelContext üzerinden okunur.
+        private static Camera GetLevelCamera()
+        {
+            if (SceneLoader.Instance == null || SceneLoader.Instance.ActiveLevel == null) { return null; }
+
+            return SceneLoader.Instance.ActiveLevel.Camera;
+        }
+
+        private TapProbe Probe(Camera camera, Vector2 screenPosition)
+        {
+            Ray ray = camera.ScreenPointToRay(screenPosition);
+
+            if (!_isBoxCastEnabled)
+            {
+                Physics.Raycast(ray, out RaycastHit rayHit, Mathf.Infinity, _itemLayers);
+                return new TapProbe(ray, rayHit, false, Vector3.zero, Quaternion.identity);
+            }
+
+            Quaternion orientation = Quaternion.LookRotation(ray.direction, camera.transform.up);
+            Vector3 halfExtents = new Vector3(_boxCastWidth * 0.5f, _boxCastWidth * 0.5f, ProbeThickness);
+
+            Physics.BoxCast(
+                ray.origin,
+                halfExtents,
+                ray.direction,
+                out RaycastHit boxHit,
+                orientation,
+                Mathf.Infinity,
+                _itemLayers);
+
+            return new TapProbe(ray, boxHit, true, halfExtents, orientation);
         }
     }
 }

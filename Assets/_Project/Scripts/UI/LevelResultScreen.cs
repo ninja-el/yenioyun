@@ -1,3 +1,5 @@
+using System;
+using System.Collections;
 using MatchPack.Core;
 using MatchPack.Data;
 using MatchPack.Meta;
@@ -46,6 +48,18 @@ namespace MatchPack.UI
         [Tooltip("Reklam SDK'sı eklenene kadar reklam ödülleri doğrudan verilir. SDK gelince kapatılır.")]
         [SerializeField] private bool _grantAdRewardsWithoutAds = true;
 
+        [Header("Buton gecikmeleri")]
+        [Tooltip("Restart butonuna basıldıktan sonra level yeniden kurulmadan önce beklenecek süre (saniye). Efektler bu sırada oynar.")]
+        [SerializeField, Min(0f)] private float _retryDelaySeconds = 3f;
+
+        [Tooltip("Sonraki level butonuna basıldıktan sonra beklenecek süre (saniye). Efektler bu sırada oynar.")]
+        [SerializeField, Min(0f)] private float _nextLevelDelaySeconds = 3f;
+
+        private Coroutine _delayRoutine;
+
+        /// <summary>Bir buton gecikmesi işliyor mu? İşlerken diğer butonlar cevap vermez.</summary>
+        public bool IsBusy => _delayRoutine != null;
+
         private void Awake()
         {
             _winClaimButton.onClick.AddListener(ClaimAndReturnToMenu);
@@ -86,6 +100,8 @@ namespace MatchPack.UI
         /// <summary>Kazanma panelini kapatıp menüye döner. Level ödülü kazanma anında zaten verilmiştir.</summary>
         public void ClaimAndReturnToMenu()
         {
+            if (IsBusy) { return; }
+
             UIManager.Instance.HideLevelResultPanels();
             GameManager.Instance.ReturnToMenu();
         }
@@ -93,7 +109,7 @@ namespace MatchPack.UI
         /// <summary>Reklam izleyerek level ödülünü katlar ve menüye döner.</summary>
         public void DoubleRewardWithAd()
         {
-            if (!_grantAdRewardsWithoutAds) { return; }
+            if (IsBusy || !_grantAdRewardsWithoutAds) { return; }
 
             int bonus = _config.LevelCompleteGold * (_config.RewardedRewardMultiplier - 1);
             EconomyManager.Instance.AddGold(bonus);
@@ -106,6 +122,8 @@ namespace MatchPack.UI
         /// <summary>Gold ödeyerek kaybedilen levele devam eder. Gold yetmezse gold popup'ı açılır.</summary>
         public void ContinueWithGold()
         {
+            if (IsBusy) { return; }
+
             if (!EconomyManager.Instance.TrySpendGold(_config.ContinueCostGold))
             {
                 UIManager.Instance.ShowGoldPopup();
@@ -118,7 +136,7 @@ namespace MatchPack.UI
         /// <summary>Reklam izleyerek kaybedilen levele devam eder.</summary>
         public void ContinueWithAd()
         {
-            if (!_grantAdRewardsWithoutAds) { return; }
+            if (IsBusy || !_grantAdRewardsWithoutAds) { return; }
 
             ResumeLevel();
         }
@@ -126,21 +144,67 @@ namespace MatchPack.UI
         /// <summary>Paneli kapatıp menüye döner.</summary>
         public void ReturnToMenu()
         {
+            if (IsBusy) { return; }
+
             UIManager.Instance.HideLevelResultPanels();
             GameManager.Instance.ReturnToMenu();
         }
 
-        /// <summary>Bir can tüketip aynı leveli baştan başlatır. Can yoksa can popup'ı açılır.</summary>
+        /// <summary>
+        /// Kaybetme panelindeki restart butonuna bağlanır. Bir can tüketir, ayarlanan gecikme
+        /// kadar bekler (efektler bu sırada oynar) ve aynı leveli baştan kurar. Can yoksa can
+        /// popup'ı açılır ve beklenmez.
+        /// </summary>
         public void Retry()
         {
+            if (IsBusy) { return; }
+
             if (!EconomyManager.Instance.TrySpendLife())
             {
                 UIManager.Instance.ShowHeartPopup();
                 return;
             }
 
+            _delayRoutine = StartCoroutine(DelayedActionRoutine(_retryDelaySeconds, RestartLevel));
+        }
+
+        /// <summary>
+        /// Kazanma panelindeki sonraki level butonuna bağlanır. Bir can tüketir, ayarlanan gecikme
+        /// kadar bekler (efektler bu sırada oynar) ve sıradaki leveli kurar. Katalogda sıradaki
+        /// level yoksa menüye dönülür.
+        /// </summary>
+        public void NextLevel()
+        {
+            if (IsBusy) { return; }
+
+            if (!EconomyManager.Instance.TrySpendLife())
+            {
+                UIManager.Instance.ShowHeartPopup();
+                return;
+            }
+
+            _delayRoutine = StartCoroutine(DelayedActionRoutine(_nextLevelDelaySeconds, GoToNextLevel));
+        }
+
+        private IEnumerator DelayedActionRoutine(float delaySeconds, Action action)
+        {
+            // Bekleme boyunca panel açık kalır ve hiçbir şey yapılmaz; efektler bu aralıkta oynatılır.
+            if (delaySeconds > 0f) { yield return new WaitForSecondsRealtime(delaySeconds); }
+
+            _delayRoutine = null;
+
             UIManager.Instance.HideLevelResultPanels();
+            action();
+        }
+
+        private static void RestartLevel()
+        {
             GameManager.Instance.RetryLevel();
+        }
+
+        private static void GoToNextLevel()
+        {
+            GameManager.Instance.StartNextLevel();
         }
 
         private void ResumeLevel()

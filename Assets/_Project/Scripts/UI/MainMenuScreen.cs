@@ -15,9 +15,6 @@ namespace MatchPack.UI
         [Tooltip("Leveli başlatan Start butonu.")]
         [SerializeField] private Button _startButton;
 
-        [Tooltip("Başlatılacak bölüm. İlerleme sistemi gelene kadar elle bağlanır.")]
-        [SerializeField] private LevelData _level;
-
         private void Awake()
         {
             _startButton.onClick.AddListener(StartLevel);
@@ -45,10 +42,12 @@ namespace MatchPack.UI
         {
             if (GameManager.Instance.State != GameState.Menu || SceneLoader.Instance.IsBusy) { return; }
 
+            LevelData level = GameManager.Instance.ProgressLevel;
+
             // Can, level gerçekten başlatılabiliyorsa harcanır; aksi halde tüketilip boşa gidiyordu.
-            if (_level == null)
+            if (level == null)
             {
-                Debug.LogError("MainMenuScreen has no level assigned.", this);
+                Debug.LogError("LevelCatalog has no level for the saved progress number.", this);
                 return;
             }
 
@@ -58,7 +57,7 @@ namespace MatchPack.UI
                 return;
             }
 
-            GameManager.Instance.StartLevel(_level);
+            GameManager.Instance.StartLevel(level);
         }
 
         private void HandleGameStateChanged(GameState state)

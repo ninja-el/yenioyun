@@ -24,9 +24,6 @@ namespace MatchPack.Gameplay
         [SerializeField] private Conveyor _conveyor;
         [SerializeField] private ItemStack _itemStack;
 
-        [Tooltip("Hatalı hamlede sarsılacak kalıcı kamera.")]
-        [SerializeField] private Transform _cameraTransform;
-
         [Tooltip("Objenin kutuya uçarken çizdiği kavisin yüksekliği.")]
         [SerializeField, Min(0f)] private float _flightArcHeight = 1.5f;
 
@@ -39,7 +36,7 @@ namespace MatchPack.Gameplay
         private void Start()
         {
             InputManager.Instance.OnItemTapped += HandleItemTapped;
-            SceneLoader.Instance.OnBeforeLevelUnload += HandleBeforeLevelUnload;
+            SceneLoader.Instance.OnBeforeLevelTeardown += HandleBeforeLevelTeardown;
         }
 
         private void OnDestroy()
@@ -51,13 +48,23 @@ namespace MatchPack.Gameplay
 
             if (SceneLoader.Instance != null)
             {
-                SceneLoader.Instance.OnBeforeLevelUnload -= HandleBeforeLevelUnload;
+                SceneLoader.Instance.OnBeforeLevelTeardown -= HandleBeforeLevelTeardown;
             }
         }
 
-        private void HandleBeforeLevelUnload()
+        private void HandleBeforeLevelTeardown()
         {
-            _cameraTransform.DOKill(true);
+            Transform cameraTransform = GetCameraTransform();
+            if (cameraTransform != null) { cameraTransform.DOKill(true); }
+        }
+
+        // Kamera GameScene'de durduğu için Inspector'dan bağlanamaz; LevelContext üzerinden okunur.
+        private static Transform GetCameraTransform()
+        {
+            if (SceneLoader.Instance == null || SceneLoader.Instance.ActiveLevel == null) { return null; }
+
+            Camera camera = SceneLoader.Instance.ActiveLevel.Camera;
+            return camera != null ? camera.transform : null;
         }
 
         private void HandleItemTapped(StackItem item)
@@ -94,8 +101,13 @@ namespace MatchPack.Gameplay
 
         private void Miss(StackItem item)
         {
-            _cameraTransform.DOKill(true);
-            _cameraTransform.DOShakePosition(_shakeDuration, _shakeStrength);
+            Transform cameraTransform = GetCameraTransform();
+
+            if (cameraTransform != null)
+            {
+                cameraTransform.DOKill(true);
+                cameraTransform.DOShakePosition(_shakeDuration, _shakeStrength);
+            }
 
             OnItemMissed?.Invoke(item);
         }
