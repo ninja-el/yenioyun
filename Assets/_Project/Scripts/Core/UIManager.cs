@@ -36,6 +36,9 @@ namespace MatchPack.Core
         [Tooltip("Oyun içi panellerin kökü.")]
         [SerializeField] private GameObject _inGameRoot;
 
+        [Tooltip("Oyun içi HUD paneli (süre, bölüm, gold, booster butonları). Yalnızca oyun oynanırken görünür.")]
+        [SerializeField] private GameObject _gamePanel;
+
         [Tooltip("Level kazanma paneli.")]
         [SerializeField] private GameObject _winPanel;
 
@@ -181,6 +184,7 @@ namespace MatchPack.Core
 
             SetOpen(_mainMenuRoot, isInMenu);
             SetOpen(_inGameRoot, !isInMenu);
+            SetOpen(_gamePanel, state == GameState.Playing);
 
             if (state == GameState.Playing || isInMenu) { HideLevelResultPanels(); }
             if (isInMenu) { SetOpen(_boosterPanel, false); }

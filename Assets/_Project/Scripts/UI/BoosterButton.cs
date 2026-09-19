@@ -23,6 +23,12 @@ namespace MatchPack.UI
         [Tooltip("Eldeki adedin yazıldığı alan. Boş bırakılırsa adet gösterilmez.")]
         [SerializeField] private TMP_Text _countText;
 
+        [Tooltip("Adet rozetinin kökü. Stok bittiğinde kapatılır.")]
+        [SerializeField] private GameObject _countRoot;
+
+        [Tooltip("Stok bittiğinde açılacak satın alma paneli.")]
+        [SerializeField] private BoosterPurchasePanel _purchasePanel;
+
         [Tooltip("Booster ikonunun gösterildiği Image. Boş bırakılırsa ikon güncellenmez.")]
         [SerializeField] private Image _iconImage;
 
@@ -72,16 +78,18 @@ namespace MatchPack.UI
             _button.onClick.RemoveListener(Use);
         }
 
-        /// <summary>Booster'ı kullanır; stok bittiyse booster satın alma panelini açar.</summary>
+        /// <summary>Booster'ı kullanır; stok bittiyse satın alma panelini o booster için açar.</summary>
         public void Use()
         {
             if (BoosterManager.Instance == null || !BoosterManager.Instance.IsUnlocked(_type)) { return; }
 
             if (BoosterManager.Instance.GetCount(_type) <= 0)
             {
+                if (_purchasePanel == null) { return; }
+
                 if (AudioManager.Instance != null) { AudioManager.Instance.PlayButtonClick(); }
 
-                UIManager.Instance.ShowBoosterPanel();
+                _purchasePanel.Open(_type);
                 return;
             }
 
@@ -99,7 +107,7 @@ namespace MatchPack.UI
 
             if (_iconImage != null && data != null && data.Icon != null) { _iconImage.sprite = data.Icon; }
             if (_countText != null) { _countText.text = count.ToString(); }
-            if (_countText != null) { _countText.gameObject.SetActive(isUnlocked && count > 0); }
+            if (_countRoot != null) { _countRoot.SetActive(isUnlocked && count > 0); }
             if (_lockedRoot != null) { _lockedRoot.SetActive(!isUnlocked); }
             if (_emptyRoot != null) { _emptyRoot.SetActive(isUnlocked && count <= 0); }
 

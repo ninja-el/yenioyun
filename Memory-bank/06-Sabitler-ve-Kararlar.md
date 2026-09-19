@@ -98,7 +98,7 @@ Booster değerleri `GameConfig`'te değil, booster başına bir `BoosterData` as
 | Değer | Varsayılan | Kaynak |
 |---|---|---|
 | Time Freeze açılışı / donma süresi | Lvl 4 / 5 sn | `BoosterData` |
-| Time Freeze bandı da durdurur | Açık | `BoosterData.IsBeltFrozen` |
+| Time Freeze bandı da durdurur | Kapalı | `BoosterData.IsBeltFrozen` |
 | Shuffle açılışı | Lvl 6 | `BoosterData` |
 | Auto-Match açılışı | Lvl 8 | `BoosterData` |
 | Auto-Match modu | Items (obje bazlı) | `BoosterData.AutoMatchMode` |
@@ -107,6 +107,12 @@ Booster değerleri `GameConfig`'te değil, booster başına bir `BoosterData` as
 | Joker Box açılışı / adedi | Lvl 10 / 1 kutu | `BoosterData` |
 | Joker kutunun alacağı obje adedi | Prefab'taki yuva sayısı (3) | Joker kutu prefab'ı |
 | Booster efektinin ekranda kalma süresi | 1 sn (Time Freeze'de donma süresi) | `BoosterData.EffectDuration` |
+| Booster paketi fiyatı | 40 gold | `BoosterData.GoldPrice` |
+| Booster paketindeki adet | 3 | `BoosterData.PackAmount` |
+| Booster adı / açıklaması | `ui.booster.<ad>.title` / `.info` | `BoosterData` localization key'i |
+
+Oyun içi buton sırası (ikonlara göre): `Booster_1` Auto-Match, `Booster_2` Time Freeze,
+`Booster_3` Shuffle, `Booster_4` Joker Box.
 
 Boosterlar envanterden tüketilir, cooldown yoktur, level içinde kullanım limiti stok kadardır.
 Envanter index'i `BoosterType` enum sırasıdır: 0 Freeze, 1 Shuffle, 2 AutoMatch, 3 JokerBox.
@@ -169,6 +175,18 @@ Envanter index'i `BoosterType` enum sırasıdır: 0 Freeze, 1 Shuffle, 2 AutoMat
 | 35 | Time Freeze sayacı `Stop`/`Resume` ile değil yeni `LevelTimer.SetPaused` ile durdurur | `Resume(extraSeconds)` kalan süreyi devam bedelinin süresine çekiyor; donma kalan süreyi olduğu gibi korumalı |
 | 36 | Her booster kendi `BoosterBehaviour` bileşenidir; `BoosterManager` yalnızca kilit/stok kontrolü yapıp etkiyi devreder | Dört etkinin tek sınıfta toplanması 200 satır kuralını aşıyordu ve bant/yığın/sayaç referanslarının hepsini tek sınıfa bağlıyordu |
 | 37 | Etki uygulanamazsa (uygun hedef yok, booster zaten çalışıyor) booster envanterden düşülmez | Oyuncu hiçbir şey olmadan booster kaybetmesin |
+| 38 | Oyun içi HUD (`InGame/GamePanel`) `UIManager` tarafından yalnızca `GameState.Playing` iken açılır | Panel sahnede kapalı duruyordu ve kimse açmıyordu; booster butonları hiç aktif olmuyordu. Görünürlük kuralı 07-MVP K-07 kartındaki HUD şartıyla aynı |
+| 39 | Stoğu biten booster'a basılınca `BoosterPurchasePanel` o booster'ın verisiyle (ad, açıklama, ikon, adet, fiyat) açılır | Panel sahnede tek bir booster için sabit metinle duruyordu; dört booster için tek panel kullanılıyor |
+| 40 | Satın alma paneli açıkken oyun yerinde durur: sayaç, bant ve dokunuş kapanır (`BoosterManager.SetGameplayPaused`) | Oyuncu satın alma yaparken süre işlemeye devam etmemeli. `Time.timeScale` yerine mevcut duraklatma yolları kullanıldı; timeScale tween'leri ve yükleme ekranını da dondururdu |
+| 40a | Donma (Time Freeze) sürerken panel açılıp kapanırsa sayaç ve bant donmuş kalır | İki duraklatma sebebi üst üste geldiğinde panelin kapanması donmayı erken bitiriyordu |
+| 41 | Satın alma bitince panel kapanır ve booster kendiliğinden kullanılır | Oyuncu zaten kullanmak için satın aldı; ikinci bir tıklama istemiyor |
+| 42 | Gold yetmezse satın alma butonu gold popup'ını açar, panel açık kalır | Market paneli `MainMenu` altında olduğu için oyun içinde açılamıyor (karar #22'deki ayarlar paneliyle aynı sorun). `LevelResultScreen.ContinueWithGold` de aynı durumda gold popup'ı açıyor |
+| 43 | Kazanma panelinde `Gold_Btn` sonraki bölümü başlatır (`_winNextLevelButton`), `Close_Btn` ödülü alıp menüye döner | Buton hem sahnedeki OnClick'ten `NextLevel`'ı hem koddan `ClaimAndReturnToMenu`'yu çağırıyordu; iki iş tek butona bağlıydı. Artık tek kaynak koddaki listener, sahnedeki kopya çağrı kaldırıldı |
+| 47 | Time Freeze yalnızca sayacı durdurur; bant ve kutular dönmeye devam eder (`IsBeltFrozen` kapalı) | GDD'den türetilen ilk kural bandı da durduruyordu, oynanışta bandın da donması booster'ı "her şeyi dondur"a çevirip hamle yapılacak zamanı da öldürüyordu. Alan yerinde bırakıldı, istenirse asset'ten tekrar açılabilir |
+| 47a | Sayacın ve bandın durma kararı tek noktada hesaplanır (`BoosterManager.ApplyHolds`) | İki kaynak var: satın alma paneli ve Time Freeze. Her biri kendi başına sayaca/banda yazınca, biri bittiğinde diğerinin kısıtını da kaldırıyordu (panel kapanınca bant donmadığı halde duruyordu). Freeze artık yalnızca kendi durumunu tutuyor |
+| 46 | Bandın doku offseti hem açılışta hem çıkışta sıfırlanır (`trail.Awake` / `trail.OnDestroy`) | Offset paylaşılan materyal asset'ine yazıldığı için editörde kalıcı oluyordu: her oturum bir öncekinin bıraktığı yerden başlıyor, `.mat` dosyası da her oynayışta değişiyordu. Çıkışta da sıfırlanınca asset daima 0'da duruyor. Kalıcı çözüm materyali runtime'da kopyalamak veya `MaterialPropertyBlock` kullanmaktır; o, materyali kullanan renderer'ların da değiştirilmesini gerektirdiği için yapılmadı |
+| 45 | HUD'daki kalan süre `GameplayHUD` bileşeniyle `LevelTimer.OnTimerTicked`'ten beslenir; biçim `mm:ss` | Yazı sahnede elle girilmiş sabit bir metindi ("02:00") ve sayacı kimse dinlemiyordu. Bileşen `GamePanel` üzerinde durur, panel kapanınca aboneliğini bırakır |
+| 44 | Joker kutu prefab'ı `BoxJoker.prefab`, `Assets/Atakan/Testing/Box (1) Variant.prefab`'ın varyantıdır | Bant o klasördeki kutu varyantlarını kullanıyor ve yükseklik/ölçü değerleri onlarda; temel `Box.prefab`'tan türetilen kutu bandın 0.4 birim altında kalıyordu. O klasör temizlenirse varyantın temeli yeniden bağlanmalı |
 | 38 | Can sayacı sınırsız can aktifken "FULL" yerine sınırsız canın bitişine kalan süreyi gösterir; süre 1 saati aşınca `s:dd:ss`, altında `dd:ss` biçimi kullanılır | Sınırsız can paketleri saat bazlı (1h/3h/6h/48h); `dd:ss` ile 48 saat "2880:00" görünüyordu. Değeri `EconomyManager.LifeTimerSeconds` üretir, UI yalnızca biçimlendirir |
 | 39 | Localization script'leri `MatchPack.Localization` namespace'ine alındı; `LanguageCode` enum'u `MatchPack.Data` altında | Script'ler `_Game.Scripts.*` namespace'iyle geldi ve projede olmayan iki tipe (`LanguageCode`, `PrefKeys`) bağlıydı; derlenmiyordu. 02-Mimari'nin "namespace klasörü izler" kuralına çekildi |
 | 40 | Dil seçimi tek ayar olarak `PlayerPrefs`'te tutulur, `PlayerData`'da değil | `Loc` static ve ilk `Get` çağrısında kendini kurar; o an `SaveManager` henüz ayakta olmayabilir. Diğer ayarlar (ses/müzik/titreşim) `PlayerData`'da kalır |

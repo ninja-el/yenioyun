@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 84fcc99cdb193f84fb27fd362e185a21, type: 3}
+  m_Name: Booster_Shuffle
+  m_EditorClassIdentifier: Assembly-CSharp::MatchPack.Data.BoosterData
+  _type: 1
+  _titleKey: ui.booster.shuffle.title
+  _infoKey: ui.booster.shuffle.info
+  _icon: {fileID: 21300000, guid: 645e06faa50f43943be20e06621eca7b, type: 3}
+  _unlockLevel: 1
+  _goldPrice: 40
+  _packAmount: 3
+  _effectPrefab: {fileID: 0}
+  _effectDuration: 1
+  _freezeDuration: 5
+  _isBeltFrozen: 1
+  _autoMatchMode: 0
+  _autoMatchCount: 1
+  _autoMatchInterval: 0.12
+  _jokerBoxPrefab: {fileID: 0}
+  _jokerBoxCount: 1

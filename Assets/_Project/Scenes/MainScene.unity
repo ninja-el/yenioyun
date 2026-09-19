@@ -254,6 +254,7 @@ GameObject:
   - component: {fileID: 29462650}
   - component: {fileID: 29462649}
   - component: {fileID: 29462648}
+  - component: {fileID: 29462651}
   m_Layer: 0
   m_Name: Booster_3
   m_TagString: Untagged
@@ -279,7 +280,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 599.43335, y: -150}
+  m_AnchoredPosition: {x: 650, y: -150}
   m_SizeDelta: {x: 250, y: 250}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &29462648
@@ -364,6 +365,138 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 29462646}
   m_CullTransparentMesh: 1
+--- !u!114 &29462651
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 29462646}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c31b334e045a81440aed303dda9a153b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MatchPack.UI.BoosterButton
+  _type: 1
+  _button: {fileID: 29462648}
+  _countText: {fileID: 1492261696}
+  _countRoot: {fileID: 1342657215}
+  _purchasePanel: {fileID: 882640946}
+  _iconImage: {fileID: 1660571761}
+  _lockedRoot: {fileID: 0}
+  _emptyRoot: {fileID: 0}
+--- !u!1 &31022165
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 31022171}
+  - component: {fileID: 31022170}
+  - component: {fileID: 31022169}
+  - component: {fileID: 31022168}
+  - component: {fileID: 31022167}
+  - component: {fileID: 31022166}
+  m_Layer: 0
+  m_Name: Boosters
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &31022166
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 31022165}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7f28a79e452e3d14f9fdb4e539daacad, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MatchPack.Gameplay.JokerBoxBooster
+  _conveyor: {fileID: 1765644555}
+--- !u!114 &31022167
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 31022165}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 79948217c7ad5c147bc1090fd214dd75, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MatchPack.Gameplay.AutoMatchBooster
+  _conveyor: {fileID: 1765644555}
+  _itemStack: {fileID: 1765644554}
+  _matchResolver: {fileID: 1765644557}
+--- !u!114 &31022168
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 31022165}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a3123032916ea1b42b8815278ebb4e3d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MatchPack.Gameplay.ShuffleBooster
+  _itemStack: {fileID: 1765644554}
+--- !u!114 &31022169
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 31022165}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e54f0d32aff9aa94dae4828ba5650d24, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MatchPack.Gameplay.FreezeBooster
+  _timer: {fileID: 1765644558}
+  _conveyor: {fileID: 1765644555}
+--- !u!114 &31022170
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 31022165}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6a92dcf43cd3eb54abbfcbb731deb092, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MatchPack.Gameplay.BoosterManager
+  _catalog: {fileID: 11400000, guid: 29a248ba38d039e4b9715bcd8a81c8bb, type: 2}
+  _boosters:
+  - {fileID: 31022169}
+  - {fileID: 31022168}
+  - {fileID: 31022167}
+  - {fileID: 31022166}
+  _effectAnchor: {fileID: 0}
+  _timer: {fileID: 1765644558}
+  _conveyor: {fileID: 1765644555}
+--- !u!4 &31022171
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 31022165}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &31206496
 GameObject:
   m_ObjectHideFlags: 0
@@ -1005,6 +1138,20 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 81039956}
   m_CullTransparentMesh: 1
+--- !u!114 &108148737
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1285763836}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e29a4c78b3d5416f82c9d0e514a7b63d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MatchPack.Localization.LocalizedText
+  key: ui.shop.box.mega
+  target: {fileID: 1285763838}
 --- !u!1 &110894321
 GameObject:
   m_ObjectHideFlags: 0
@@ -1869,7 +2016,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MatchPack.UI.LevelResultScreen
   _config: {fileID: 11400000, guid: 8de2ebc82b4c4471a195fc3b3b9a154c, type: 2}
-  _winClaimButton: {fileID: 764704172}
+  _winNextLevelButton: {fileID: 764704172}
   _winDoubleRewardButton: {fileID: 1054566309}
   _winCloseButton: {fileID: 1799151633}
   _winRewardText: {fileID: 0}
@@ -2055,6 +2202,62 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 144992814}
   m_CullTransparentMesh: 1
+--- !u!114 &148262181
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1312920627}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e29a4c78b3d5416f82c9d0e514a7b63d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MatchPack.Localization.LocalizedText
+  key: ui.gold.title
+  target: {fileID: 1312920629}
+--- !u!114 &150426423
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2037023265}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e29a4c78b3d5416f82c9d0e514a7b63d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MatchPack.Localization.LocalizedText
+  key: ui.shop.box.starter
+  target: {fileID: 2037023267}
+--- !u!114 &150587480
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1949513850}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e29a4c78b3d5416f82c9d0e514a7b63d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MatchPack.Localization.LocalizedText
+  key: ui.booster.shuffle.title
+  target: {fileID: 1949513852}
+--- !u!114 &177960039
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1642015612}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e29a4c78b3d5416f82c9d0e514a7b63d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MatchPack.Localization.LocalizedText
+  key: ui.shop.box.golden
+  target: {fileID: 1642015614}
 --- !u!1 &190665562
 GameObject:
   m_ObjectHideFlags: 0
@@ -2561,6 +2764,20 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 209203111}
   m_CullTransparentMesh: 1
+--- !u!114 &219059565
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1550582673}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e29a4c78b3d5416f82c9d0e514a7b63d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MatchPack.Localization.LocalizedText
+  key: ui.tab.shop
+  target: {fileID: 1550582675}
 --- !u!1 &219153766
 GameObject:
   m_ObjectHideFlags: 0
@@ -3003,6 +3220,20 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 231732350}
   m_CullTransparentMesh: 1
+--- !u!114 &234376824
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 126923281}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e29a4c78b3d5416f82c9d0e514a7b63d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MatchPack.Localization.LocalizedText
+  key: ui.heart.title
+  target: {fileID: 126923283}
 --- !u!1 &234831345
 GameObject:
   m_ObjectHideFlags: 0
@@ -3798,6 +4029,20 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 299159370}
   m_CullTransparentMesh: 1
+--- !u!114 &299629466
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1156952376}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e29a4c78b3d5416f82c9d0e514a7b63d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MatchPack.Localization.LocalizedText
+  key: ui.heart.ad_button
+  target: {fileID: 1156952378}
 --- !u!1 &302691850
 GameObject:
   m_ObjectHideFlags: 0
@@ -4073,6 +4318,20 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 309472496}
   m_CullTransparentMesh: 1
+--- !u!114 &311221629
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1426825303}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e29a4c78b3d5416f82c9d0e514a7b63d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MatchPack.Localization.LocalizedText
+  key: ui.settings.sound
+  target: {fileID: 1426825305}
 --- !u!1 &313327055
 GameObject:
   m_ObjectHideFlags: 0
@@ -5241,6 +5500,20 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 393466039}
   m_CullTransparentMesh: 1
+--- !u!114 &399387587
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1403344642}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e29a4c78b3d5416f82c9d0e514a7b63d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MatchPack.Localization.LocalizedText
+  key: ui.common.on
+  target: {fileID: 1403344644}
 --- !u!1 &399392310
 GameObject:
   m_ObjectHideFlags: 0
@@ -6903,6 +7176,7 @@ GameObject:
   - component: {fileID: 517751990}
   - component: {fileID: 517751989}
   - component: {fileID: 517751988}
+  - component: {fileID: 517751991}
   m_Layer: 0
   m_Name: Booster_2
   m_TagString: Untagged
@@ -6928,7 +7202,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 379.43335, y: -150}
+  m_AnchoredPosition: {x: 430, y: -150}
   m_SizeDelta: {x: 250, y: 250}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &517751988
@@ -7013,6 +7287,26 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 517751986}
   m_CullTransparentMesh: 1
+--- !u!114 &517751991
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 517751986}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c31b334e045a81440aed303dda9a153b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MatchPack.UI.BoosterButton
+  _type: 0
+  _button: {fileID: 517751988}
+  _countText: {fileID: 1226985629}
+  _countRoot: {fileID: 601518506}
+  _purchasePanel: {fileID: 882640946}
+  _iconImage: {fileID: 328414360}
+  _lockedRoot: {fileID: 0}
+  _emptyRoot: {fileID: 0}
 --- !u!1 &519223544
 GameObject:
   m_ObjectHideFlags: 0
@@ -8047,6 +8341,20 @@ MonoBehaviour:
   _productId: coins_50000
   _button: {fileID: 592092364}
   _priceText: {fileID: 743319908}
+--- !u!114 &596029371
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1654855927}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e29a4c78b3d5416f82c9d0e514a7b63d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MatchPack.Localization.LocalizedText
+  key: ui.win.claim
+  target: {fileID: 1654855929}
 --- !u!1 &596259639
 GameObject:
   m_ObjectHideFlags: 0
@@ -8975,6 +9283,20 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 659349216}
   m_CullTransparentMesh: 1
+--- !u!114 &674437385
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 632660074}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e29a4c78b3d5416f82c9d0e514a7b63d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MatchPack.Localization.LocalizedText
+  key: ui.booster.shuffle.info
+  target: {fileID: 632660076}
 --- !u!1 &677577859
 GameObject:
   m_ObjectHideFlags: 0
@@ -9614,6 +9936,20 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 700777009}
   m_CullTransparentMesh: 1
+--- !u!114 &701752747
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 458978530}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e29a4c78b3d5416f82c9d0e514a7b63d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MatchPack.Localization.LocalizedText
+  key: ui.tab.home
+  target: {fileID: 458978532}
 --- !u!1 &707728678
 GameObject:
   m_ObjectHideFlags: 0
@@ -10607,19 +10943,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 764704173}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 135012332}
-        m_TargetAssemblyTypeName: MatchPack.UI.LevelResultScreen, Assembly-CSharp
-        m_MethodName: NextLevel
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!114 &764704173
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10854,6 +11178,20 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 778286252}
   m_CullTransparentMesh: 1
+--- !u!114 &782956803
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 371920875}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e29a4c78b3d5416f82c9d0e514a7b63d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MatchPack.Localization.LocalizedText
+  key: ui.shop.special_offers
+  target: {fileID: 371920877}
 --- !u!1 &807693562
 GameObject:
   m_ObjectHideFlags: 0
@@ -11284,9 +11622,24 @@ MonoBehaviour:
   _heartPopup: {fileID: 1711650173}
   _loadingScreen: {fileID: 1165780165}
   _inGameRoot: {fileID: 1989244013}
+  _gamePanel: {fileID: 1845607025}
   _winPanel: {fileID: 484103283}
   _losePanel: {fileID: 882347034}
   _boosterPanel: {fileID: 882640942}
+--- !u!114 &827065758
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 913141983}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e29a4c78b3d5416f82c9d0e514a7b63d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MatchPack.Localization.LocalizedText
+  key: ui.settings.continue
+  target: {fileID: 913141985}
 --- !u!1 &833121036
 GameObject:
   m_ObjectHideFlags: 0
@@ -11576,6 +11929,20 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 841941107}
   m_CullTransparentMesh: 1
+--- !u!114 &853666043
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1543074852}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e29a4c78b3d5416f82c9d0e514a7b63d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MatchPack.Localization.LocalizedText
+  key: ui.settings.haptic
+  target: {fileID: 1543074854}
 --- !u!1 &858897356
 GameObject:
   m_ObjectHideFlags: 0
@@ -11801,6 +12168,7 @@ GameObject:
   - component: {fileID: 863638598}
   - component: {fileID: 863638597}
   - component: {fileID: 863638596}
+  - component: {fileID: 863638599}
   m_Layer: 0
   m_Name: Booster_4
   m_TagString: Untagged
@@ -11826,7 +12194,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 819.43335, y: -150}
+  m_AnchoredPosition: {x: 870, y: -150}
   m_SizeDelta: {x: 250, y: 250}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &863638596
@@ -11911,6 +12279,26 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 863638594}
   m_CullTransparentMesh: 1
+--- !u!114 &863638599
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 863638594}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c31b334e045a81440aed303dda9a153b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MatchPack.UI.BoosterButton
+  _type: 3
+  _button: {fileID: 863638596}
+  _countText: {fileID: 1257513723}
+  _countRoot: {fileID: 755285792}
+  _purchasePanel: {fileID: 882640946}
+  _iconImage: {fileID: 766771097}
+  _lockedRoot: {fileID: 0}
+  _emptyRoot: {fileID: 0}
 --- !u!1 &863710544
 GameObject:
   m_ObjectHideFlags: 0
@@ -12269,6 +12657,7 @@ GameObject:
   - component: {fileID: 882640943}
   - component: {fileID: 882640945}
   - component: {fileID: 882640944}
+  - component: {fileID: 882640946}
   m_Layer: 0
   m_Name: BoosterPanel
   m_TagString: Untagged
@@ -12334,6 +12723,25 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 882640942}
   m_CullTransparentMesh: 1
+--- !u!114 &882640946
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 882640942}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 97674b25a07954f4ebcd5d63a47c872b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MatchPack.UI.BoosterPurchasePanel
+  _titleText: {fileID: 150587480}
+  _infoText: {fileID: 674437385}
+  _iconImage: {fileID: 1964433136}
+  _amountText: {fileID: 1761582834}
+  _priceText: {fileID: 1925052730}
+  _buyButton: {fileID: 2064532384}
+  _amountFormat: x{0}
 --- !u!1 &884553306
 GameObject:
   m_ObjectHideFlags: 0
@@ -13414,6 +13822,20 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 915762991}
   m_CullTransparentMesh: 1
+--- !u!114 &923249495
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 497167461}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e29a4c78b3d5416f82c9d0e514a7b63d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MatchPack.Localization.LocalizedText
+  key: ui.shop.box.beginner
+  target: {fileID: 497167463}
 --- !u!1 &935818040
 GameObject:
   m_ObjectHideFlags: 0
@@ -13551,6 +13973,20 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 935818040}
   m_CullTransparentMesh: 1
+--- !u!114 &963774941
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1129564487}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e29a4c78b3d5416f82c9d0e514a7b63d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MatchPack.Localization.LocalizedText
+  key: ui.settings.exit
+  target: {fileID: 1129564489}
 --- !u!1 &965251874
 GameObject:
   m_ObjectHideFlags: 0
@@ -14097,6 +14533,20 @@ MonoBehaviour:
   _productId: coins_1000
   _button: {fileID: 1017980953}
   _priceText: {fileID: 31206498}
+--- !u!114 &1019164305
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1341145652}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e29a4c78b3d5416f82c9d0e514a7b63d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MatchPack.Localization.LocalizedText
+  key: ui.heart.info
+  target: {fileID: 1341145654}
 --- !u!1 &1019914149
 GameObject:
   m_ObjectHideFlags: 0
@@ -15326,6 +15776,7 @@ GameObject:
   - component: {fileID: 1128175738}
   - component: {fileID: 1128175737}
   - component: {fileID: 1128175736}
+  - component: {fileID: 1128175739}
   m_Layer: 0
   m_Name: Booster_1
   m_TagString: Untagged
@@ -15351,7 +15802,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 159.43335, y: -150}
+  m_AnchoredPosition: {x: 210, y: -150}
   m_SizeDelta: {x: 250, y: 250}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1128175736
@@ -15436,6 +15887,26 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1128175734}
   m_CullTransparentMesh: 1
+--- !u!114 &1128175739
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1128175734}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c31b334e045a81440aed303dda9a153b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MatchPack.UI.BoosterButton
+  _type: 2
+  _button: {fileID: 1128175736}
+  _countText: {fileID: 1168210300}
+  _countRoot: {fileID: 897976133}
+  _purchasePanel: {fileID: 882640946}
+  _iconImage: {fileID: 1069265641}
+  _lockedRoot: {fileID: 0}
+  _emptyRoot: {fileID: 0}
 --- !u!1 &1129564487
 GameObject:
   m_ObjectHideFlags: 0
@@ -16705,6 +17176,20 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1168210298}
   m_CullTransparentMesh: 1
+--- !u!114 &1173588463
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1669813463}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e29a4c78b3d5416f82c9d0e514a7b63d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MatchPack.Localization.LocalizedText
+  key: ui.shop.box.duration_6h
+  target: {fileID: 1669813465}
 --- !u!1 &1173910090
 GameObject:
   m_ObjectHideFlags: 0
@@ -18020,6 +18505,20 @@ MonoBehaviour:
   _productId: coins_5000
   _button: {fileID: 1245759891}
   _priceText: {fileID: 299159372}
+--- !u!114 &1248215575
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1960235599}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e29a4c78b3d5416f82c9d0e514a7b63d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MatchPack.Localization.LocalizedText
+  key: ui.lose.title
+  target: {fileID: 1960235601}
 --- !u!1 &1252191487
 GameObject:
   m_ObjectHideFlags: 0
@@ -18216,6 +18715,20 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1253877904}
   m_CullTransparentMesh: 1
+--- !u!114 &1255206969
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1856542442}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e29a4c78b3d5416f82c9d0e514a7b63d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MatchPack.Localization.LocalizedText
+  key: ui.heart.fill
+  target: {fileID: 1856542444}
 --- !u!1 &1257045533
 GameObject:
   m_ObjectHideFlags: 0
@@ -19359,6 +19872,20 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1297025114}
   m_CullTransparentMesh: 1
+--- !u!114 &1303423099
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1921048021}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e29a4c78b3d5416f82c9d0e514a7b63d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MatchPack.Localization.LocalizedText
+  key: ui.menu.play
+  target: {fileID: 1921048023}
 --- !u!1 &1305482507
 GameObject:
   m_ObjectHideFlags: 0
@@ -20575,6 +21102,20 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1356106086}
   m_CullTransparentMesh: 1
+--- !u!114 &1364765037
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1544409637}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e29a4c78b3d5416f82c9d0e514a7b63d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MatchPack.Localization.LocalizedText
+  key: ui.shop.special_offers
+  target: {fileID: 1544409639}
 --- !u!1 &1365294774
 GameObject:
   m_ObjectHideFlags: 0
@@ -21346,6 +21887,20 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1423068626}
   m_CullTransparentMesh: 1
+--- !u!114 &1425425136
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 287450748}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e29a4c78b3d5416f82c9d0e514a7b63d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MatchPack.Localization.LocalizedText
+  key: ui.win.title
+  target: {fileID: 287450750}
 --- !u!1 &1426825303
 GameObject:
   m_ObjectHideFlags: 0
@@ -21816,6 +22371,20 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1458559419}
   m_CullTransparentMesh: 1
+--- !u!114 &1460408754
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 500226658}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e29a4c78b3d5416f82c9d0e514a7b63d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MatchPack.Localization.LocalizedText
+  key: ui.settings.title
+  target: {fileID: 500226660}
 --- !u!1 &1470465632
 GameObject:
   m_ObjectHideFlags: 0
@@ -22643,6 +23212,34 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1497160987}
   m_CullTransparentMesh: 1
+--- !u!114 &1506320234
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1833303046}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e29a4c78b3d5416f82c9d0e514a7b63d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MatchPack.Localization.LocalizedText
+  key: ui.common.on
+  target: {fileID: 1833303048}
+--- !u!114 &1514167175
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1212735448}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e29a4c78b3d5416f82c9d0e514a7b63d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MatchPack.Localization.LocalizedText
+  key: ui.shop.box.duration_3h
+  target: {fileID: 1212735450}
 --- !u!1 &1514605369
 GameObject:
   m_ObjectHideFlags: 0
@@ -23261,6 +23858,20 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1544409637}
   m_CullTransparentMesh: 1
+--- !u!114 &1547710490
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1356106086}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e29a4c78b3d5416f82c9d0e514a7b63d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MatchPack.Localization.LocalizedText
+  key: ui.shop.box.duration_1h
+  target: {fileID: 1356106088}
 --- !u!1 &1547740545
 GameObject:
   m_ObjectHideFlags: 0
@@ -23689,6 +24300,20 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1571133718}
   m_CullTransparentMesh: 1
+--- !u!114 &1574056415
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 756879952}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e29a4c78b3d5416f82c9d0e514a7b63d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MatchPack.Localization.LocalizedText
+  key: ui.shop.coins
+  target: {fileID: 756879954}
 --- !u!1 &1586600269
 GameObject:
   m_ObjectHideFlags: 0
@@ -25010,6 +25635,20 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1645342229}
   m_CullTransparentMesh: 1
+--- !u!114 &1646655755
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 839751189}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e29a4c78b3d5416f82c9d0e514a7b63d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MatchPack.Localization.LocalizedText
+  key: ui.menu.level
+  target: {fileID: 839751191}
 --- !u!1 &1654855927
 GameObject:
   m_ObjectHideFlags: 0
@@ -25780,6 +26419,20 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1703670247}
   m_CullTransparentMesh: 1
+--- !u!114 &1707321653
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2106458055}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e29a4c78b3d5416f82c9d0e514a7b63d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MatchPack.Localization.LocalizedText
+  key: ui.common.off
+  target: {fileID: 2106458057}
 --- !u!1 &1711147145
 GameObject:
   m_ObjectHideFlags: 0
@@ -26344,6 +26997,20 @@ MonoBehaviour:
   _productId: coins_25000
   _button: {fileID: 1741005932}
   _priceText: {fileID: 1289342190}
+--- !u!114 &1745646949
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 309472496}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e29a4c78b3d5416f82c9d0e514a7b63d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MatchPack.Localization.LocalizedText
+  key: ui.common.off
+  target: {fileID: 309472498}
 --- !u!1 &1761582832
 GameObject:
   m_ObjectHideFlags: 0
@@ -26906,6 +27573,20 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1779717848}
   m_CullTransparentMesh: 1
+--- !u!114 &1792877161
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1933782284}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e29a4c78b3d5416f82c9d0e514a7b63d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MatchPack.Localization.LocalizedText
+  key: ui.common.off
+  target: {fileID: 1933782286}
 --- !u!1 &1799151631
 GameObject:
   m_ObjectHideFlags: 0
@@ -27786,6 +28467,20 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1830955809}
   m_CullTransparentMesh: 1
+--- !u!114 &1831695923
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 81039956}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e29a4c78b3d5416f82c9d0e514a7b63d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MatchPack.Localization.LocalizedText
+  key: ui.settings.music
+  target: {fileID: 81039958}
 --- !u!1 &1833303046
 GameObject:
   m_ObjectHideFlags: 0
@@ -28129,13 +28824,14 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1845607026}
+  - component: {fileID: 1845607027}
   m_Layer: 0
   m_Name: GamePanel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1845607026
 RectTransform:
   m_ObjectHideFlags: 0
@@ -28159,6 +28855,34 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1845607027
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1845607025}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 55441f9e6523d2e4ba8c9fab38334a51, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MatchPack.UI.GameplayHUD
+  _timer: {fileID: 1765644558}
+  _timeText: {fileID: 1905568907}
+--- !u!114 &1850783263
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1329880553}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e29a4c78b3d5416f82c9d0e514a7b63d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MatchPack.Localization.LocalizedText
+  key: ui.common.on
+  target: {fileID: 1329880555}
 --- !u!1 &1856542442
 GameObject:
   m_ObjectHideFlags: 0
@@ -29265,6 +29989,20 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1933782284}
   m_CullTransparentMesh: 1
+--- !u!114 &1935334278
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1281031756}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e29a4c78b3d5416f82c9d0e514a7b63d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MatchPack.Localization.LocalizedText
+  key: ui.shop.box.duration_48h
+  target: {fileID: 1281031758}
 --- !u!1 &1941775326
 GameObject:
   m_ObjectHideFlags: 0
@@ -30234,6 +30972,20 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1976731270}
   m_CullTransparentMesh: 1
+--- !u!114 &1980029132
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1297025114}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e29a4c78b3d5416f82c9d0e514a7b63d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MatchPack.Localization.LocalizedText
+  key: ui.tab.locked
+  target: {fileID: 1297025116}
 --- !u!1 &1987238267
 GameObject:
   m_ObjectHideFlags: 0
@@ -30463,7 +31215,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1989244014
 RectTransform:
   m_ObjectHideFlags: 0
@@ -32349,538 +33101,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2130660787}
   m_CullTransparentMesh: 1
---- !u!114 &1460408754
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 500226658}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e29a4c78b3d5416f82c9d0e514a7b63d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::MatchPack.Localization.LocalizedText
-  key: ui.settings.title
-  target: {fileID: 500226660}
---- !u!114 &311221629
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1426825303}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e29a4c78b3d5416f82c9d0e514a7b63d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::MatchPack.Localization.LocalizedText
-  key: ui.settings.sound
-  target: {fileID: 1426825305}
---- !u!114 &1831695923
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 81039956}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e29a4c78b3d5416f82c9d0e514a7b63d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::MatchPack.Localization.LocalizedText
-  key: ui.settings.music
-  target: {fileID: 81039958}
---- !u!114 &853666043
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1543074852}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e29a4c78b3d5416f82c9d0e514a7b63d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::MatchPack.Localization.LocalizedText
-  key: ui.settings.haptic
-  target: {fileID: 1543074854}
---- !u!114 &399387587
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1403344642}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e29a4c78b3d5416f82c9d0e514a7b63d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::MatchPack.Localization.LocalizedText
-  key: ui.common.on
-  target: {fileID: 1403344644}
---- !u!114 &1792877161
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1933782284}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e29a4c78b3d5416f82c9d0e514a7b63d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::MatchPack.Localization.LocalizedText
-  key: ui.common.off
-  target: {fileID: 1933782286}
---- !u!114 &1506320234
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1833303046}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e29a4c78b3d5416f82c9d0e514a7b63d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::MatchPack.Localization.LocalizedText
-  key: ui.common.on
-  target: {fileID: 1833303048}
---- !u!114 &1707321653
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2106458055}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e29a4c78b3d5416f82c9d0e514a7b63d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::MatchPack.Localization.LocalizedText
-  key: ui.common.off
-  target: {fileID: 2106458057}
---- !u!114 &1850783263
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1329880553}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e29a4c78b3d5416f82c9d0e514a7b63d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::MatchPack.Localization.LocalizedText
-  key: ui.common.on
-  target: {fileID: 1329880555}
---- !u!114 &1745646949
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 309472496}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e29a4c78b3d5416f82c9d0e514a7b63d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::MatchPack.Localization.LocalizedText
-  key: ui.common.off
-  target: {fileID: 309472498}
---- !u!114 &827065758
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 913141983}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e29a4c78b3d5416f82c9d0e514a7b63d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::MatchPack.Localization.LocalizedText
-  key: ui.settings.continue
-  target: {fileID: 913141985}
---- !u!114 &963774941
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1129564487}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e29a4c78b3d5416f82c9d0e514a7b63d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::MatchPack.Localization.LocalizedText
-  key: ui.settings.exit
-  target: {fileID: 1129564489}
---- !u!114 &1646655755
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 839751189}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e29a4c78b3d5416f82c9d0e514a7b63d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::MatchPack.Localization.LocalizedText
-  key: ui.menu.level
-  target: {fileID: 839751191}
---- !u!114 &1303423099
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1921048021}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e29a4c78b3d5416f82c9d0e514a7b63d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::MatchPack.Localization.LocalizedText
-  key: ui.menu.play
-  target: {fileID: 1921048023}
---- !u!114 &701752747
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 458978530}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e29a4c78b3d5416f82c9d0e514a7b63d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::MatchPack.Localization.LocalizedText
-  key: ui.tab.home
-  target: {fileID: 458978532}
---- !u!114 &219059565
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1550582673}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e29a4c78b3d5416f82c9d0e514a7b63d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::MatchPack.Localization.LocalizedText
-  key: ui.tab.shop
-  target: {fileID: 1550582675}
---- !u!114 &1980029132
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1297025114}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e29a4c78b3d5416f82c9d0e514a7b63d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::MatchPack.Localization.LocalizedText
-  key: ui.tab.locked
-  target: {fileID: 1297025116}
---- !u!114 &234376824
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 126923281}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e29a4c78b3d5416f82c9d0e514a7b63d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::MatchPack.Localization.LocalizedText
-  key: ui.heart.title
-  target: {fileID: 126923283}
---- !u!114 &1019164305
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1341145652}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e29a4c78b3d5416f82c9d0e514a7b63d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::MatchPack.Localization.LocalizedText
-  key: ui.heart.info
-  target: {fileID: 1341145654}
---- !u!114 &299629466
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1156952376}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e29a4c78b3d5416f82c9d0e514a7b63d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::MatchPack.Localization.LocalizedText
-  key: ui.heart.ad_button
-  target: {fileID: 1156952378}
---- !u!114 &1255206969
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1856542442}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e29a4c78b3d5416f82c9d0e514a7b63d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::MatchPack.Localization.LocalizedText
-  key: ui.heart.fill
-  target: {fileID: 1856542444}
---- !u!114 &148262181
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1312920627}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e29a4c78b3d5416f82c9d0e514a7b63d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::MatchPack.Localization.LocalizedText
-  key: ui.gold.title
-  target: {fileID: 1312920629}
---- !u!114 &782956803
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 371920875}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e29a4c78b3d5416f82c9d0e514a7b63d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::MatchPack.Localization.LocalizedText
-  key: ui.shop.special_offers
-  target: {fileID: 371920877}
---- !u!114 &1364765037
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1544409637}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e29a4c78b3d5416f82c9d0e514a7b63d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::MatchPack.Localization.LocalizedText
-  key: ui.shop.special_offers
-  target: {fileID: 1544409639}
---- !u!114 &1574056415
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 756879952}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e29a4c78b3d5416f82c9d0e514a7b63d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::MatchPack.Localization.LocalizedText
-  key: ui.shop.coins
-  target: {fileID: 756879954}
---- !u!114 &150426423
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2037023265}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e29a4c78b3d5416f82c9d0e514a7b63d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::MatchPack.Localization.LocalizedText
-  key: ui.shop.box.starter
-  target: {fileID: 2037023267}
---- !u!114 &923249495
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 497167461}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e29a4c78b3d5416f82c9d0e514a7b63d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::MatchPack.Localization.LocalizedText
-  key: ui.shop.box.beginner
-  target: {fileID: 497167463}
---- !u!114 &108148737
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1285763836}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e29a4c78b3d5416f82c9d0e514a7b63d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::MatchPack.Localization.LocalizedText
-  key: ui.shop.box.mega
-  target: {fileID: 1285763838}
---- !u!114 &177960039
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1642015612}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e29a4c78b3d5416f82c9d0e514a7b63d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::MatchPack.Localization.LocalizedText
-  key: ui.shop.box.golden
-  target: {fileID: 1642015614}
---- !u!114 &1547710490
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1356106086}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e29a4c78b3d5416f82c9d0e514a7b63d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::MatchPack.Localization.LocalizedText
-  key: ui.shop.box.duration_1h
-  target: {fileID: 1356106088}
---- !u!114 &1514167175
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1212735448}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e29a4c78b3d5416f82c9d0e514a7b63d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::MatchPack.Localization.LocalizedText
-  key: ui.shop.box.duration_3h
-  target: {fileID: 1212735450}
---- !u!114 &1173588463
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1669813463}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e29a4c78b3d5416f82c9d0e514a7b63d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::MatchPack.Localization.LocalizedText
-  key: ui.shop.box.duration_6h
-  target: {fileID: 1669813465}
---- !u!114 &1935334278
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1281031756}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e29a4c78b3d5416f82c9d0e514a7b63d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::MatchPack.Localization.LocalizedText
-  key: ui.shop.box.duration_48h
-  target: {fileID: 1281031758}
---- !u!114 &1425425136
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 287450748}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e29a4c78b3d5416f82c9d0e514a7b63d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::MatchPack.Localization.LocalizedText
-  key: ui.win.title
-  target: {fileID: 287450750}
---- !u!114 &596029371
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1654855927}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e29a4c78b3d5416f82c9d0e514a7b63d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::MatchPack.Localization.LocalizedText
-  key: ui.win.claim
-  target: {fileID: 1654855929}
---- !u!114 &1248215575
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1960235599}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e29a4c78b3d5416f82c9d0e514a7b63d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::MatchPack.Localization.LocalizedText
-  key: ui.lose.title
-  target: {fileID: 1960235601}
---- !u!114 &150587480
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1949513850}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e29a4c78b3d5416f82c9d0e514a7b63d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::MatchPack.Localization.LocalizedText
-  key: ui.booster.shuffle.title
-  target: {fileID: 1949513852}
---- !u!114 &674437385
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 632660074}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e29a4c78b3d5416f82c9d0e514a7b63d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::MatchPack.Localization.LocalizedText
-  key: ui.booster.shuffle.info
-  target: {fileID: 632660076}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
@@ -32889,3 +33109,4 @@ SceneRoots:
   - {fileID: 135012329}
   - {fileID: 206099134}
   - {fileID: 1765644556}
+  - {fileID: 31022171}

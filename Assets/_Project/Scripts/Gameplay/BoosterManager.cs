@@ -28,6 +28,18 @@ namespace MatchPack.Gameplay
         [Tooltip("Booster efektlerinin oynatılacağı nokta. Boş bırakılırsa efekt oynatılmaz.")]
         [SerializeField] private Transform _effectAnchor;
 
+        [Tooltip("Satın alma paneli açıkken durdurulacak sayaç.")]
+        [SerializeField] private LevelTimer _timer;
+
+        [Tooltip("Satın alma paneli açıkken durdurulacak bant.")]
+        [SerializeField] private Conveyor _conveyor;
+
+        /// <summary>Booster satın alma paneli gibi bir sebeple oyun yerinde durduruldu mu?</summary>
+        public bool IsGameplayPaused { get; private set; }
+
+        /// <summary>Level sayacı işliyor mu? Süreye dokunan boosterlar bunu sorar.</summary>
+        public bool IsTimerRunning => _timer != null && _timer.IsRunning;
+
         private void Awake()
         {
             if (Instance != null && Instance != this)
@@ -105,6 +117,34 @@ namespace MatchPack.Gameplay
             return true;
         }
 
+        /// <summary>
+        /// Oyunu yerinde durdurur veya devam ettirir: sayaç, bant ve dokunuş kapanır. Booster
+        /// satın alma paneli açıkken oyunun arkada işlememesi için kullanılır.
+        /// </summary>
+        public void SetGameplayPaused(bool isPaused)
+        {
+            IsGameplayPaused = isPaused;
+
+            ApplyHolds();
+            if (InputManager.Instance != null) { InputManager.Instance.SetInputEnabled(!isPaused); }
+        }
+
+        /// <summary>
+        /// Sayacın ve bandın durup durmayacağını yeniden hesaplar. Kısıt iki kaynaktan gelebilir:
+        /// satın alma paneli oyunu durdurmuş olabilir veya Time Freeze sürüyor olabilir. Biri
+        /// kalktığında diğerinin kısıtı bozulmasın diye ikisi de tek noktadan uygulanır.
+        /// </summary>
+        public void ApplyHolds()
+        {
+            FreezeBooster freeze = FindBooster(BoosterType.Freeze) as FreezeBooster;
+
+            bool holdTimer = IsGameplayPaused || (freeze != null && freeze.IsFrozen);
+            bool holdBelt = IsGameplayPaused || (freeze != null && freeze.IsBeltFrozen);
+
+            if (_timer != null) { _timer.SetPaused(holdTimer); }
+            if (_conveyor != null) { _conveyor.SetSpeedScale(holdBelt ? 0f : 1f); }
+        }
+
         /// <summary>Time Freeze booster'ını kullanır. Butona bu method bağlanır.</summary>
         public void UseFreeze() { TryUse(BoosterType.Freeze); }
 
@@ -142,6 +182,7 @@ namespace MatchPack.Gameplay
         private void HandleBeforeLevelTeardown()
         {
             StopAllCoroutines();
+            IsGameplayPaused = false;
 
             for (int i = 0; i < _boosters.Length; i++)
             {

@@ -111,6 +111,15 @@ namespace MatchPack.Gameplay
             if (Instance == this) { Instance = null; }
         }
 
+        /// <summary>
+        /// Dokunuş algılamasını dışarıdan açar veya kapatır. Booster satın alma paneli gibi oyunun
+        /// durduğu anlarda kapatılır; sahne geçişini SceneLoader ayrıca yönetir.
+        /// </summary>
+        public void SetInputEnabled(bool isEnabled)
+        {
+            IsEnabled = isEnabled;
+        }
+
         private void HandleSceneTransitionChanged(bool isTransitioning)
         {
             IsEnabled = !isTransitioning;

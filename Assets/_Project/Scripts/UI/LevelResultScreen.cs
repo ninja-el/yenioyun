@@ -20,8 +20,8 @@ namespace MatchPack.UI
         [SerializeField] private GameConfig _config;
 
         [Header("Kazanma paneli")]
-        [Tooltip("Ödülü alıp menüye dönen buton.")]
-        [SerializeField] private Button _winClaimButton;
+        [Tooltip("Ödülü alıp sıradaki bölümü başlatan buton.")]
+        [SerializeField] private Button _winNextLevelButton;
 
         [Tooltip("Reklam izleyip ödülü katlayan buton.")]
         [SerializeField] private Button _winDoubleRewardButton;
@@ -62,7 +62,7 @@ namespace MatchPack.UI
 
         private void Awake()
         {
-            _winClaimButton.onClick.AddListener(ClaimAndReturnToMenu);
+            _winNextLevelButton.onClick.AddListener(NextLevel);
             _winDoubleRewardButton.onClick.AddListener(DoubleRewardWithAd);
             _winCloseButton.onClick.AddListener(ClaimAndReturnToMenu);
 
@@ -82,7 +82,7 @@ namespace MatchPack.UI
 
         private void OnDestroy()
         {
-            _winClaimButton.onClick.RemoveListener(ClaimAndReturnToMenu);
+            _winNextLevelButton.onClick.RemoveListener(NextLevel);
             _winDoubleRewardButton.onClick.RemoveListener(DoubleRewardWithAd);
             _winCloseButton.onClick.RemoveListener(ClaimAndReturnToMenu);
 
