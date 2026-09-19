@@ -1,4 +1,5 @@
 using System.Text;
+using MatchPack.Localization;
 using TMPro;
 using UnityEngine;
 
@@ -17,8 +18,8 @@ namespace MatchPack.UI
         [Tooltip("\"Yükleniyor\" yazısının alanı.")]
         [SerializeField] private TMP_Text _label;
 
-        [Tooltip("Noktalardan önce yazılacak metin.")]
-        [SerializeField] private string _message = "Yükleniyor";
+        [Tooltip("Noktalardan önce yazılacak metnin localization key'i.")]
+        [SerializeField] private string _messageKey = "ui.loading.message";
 
         [Tooltip("Sahte yükleme süresi (saniye). Hazırlık erken bitse de ekran bu kadar açık kalır.")]
         [SerializeField, Min(0f)] private float _fakeDurationSeconds = 1.5f;
@@ -86,7 +87,7 @@ namespace MatchPack.UI
             if (_label == null) { return; }
 
             _labelBuilder.Clear();
-            _labelBuilder.Append(_message);
+            _labelBuilder.Append(Loc.Get(_messageKey));
 
             for (int i = 0; i < _dotCount; i++) { _labelBuilder.Append('.'); }
 

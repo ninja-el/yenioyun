@@ -1,4 +1,5 @@
 using MatchPack.Core;
+using MatchPack.Localization;
 using MatchPack.Meta;
 using TMPro;
 using UnityEngine;
@@ -30,8 +31,8 @@ namespace MatchPack.UI
         [Tooltip("Sınırsız can aktifken can sayısı yerine yazılacak metin.")]
         [SerializeField] private string _infiniteLivesLabel = "∞";
 
-        [Tooltip("Canlar doluyken sayaç alanına yazılacak metin.")]
-        [SerializeField] private string _fullLivesLabel = "FULL";
+        [Tooltip("Canlar doluyken sayaç alanına yazılacak metnin localization key'i.")]
+        [SerializeField] private string _fullLivesKey = "ui.currency.full";
 
         private void Awake()
         {
@@ -44,6 +45,7 @@ namespace MatchPack.UI
             EconomyManager.Instance.OnGoldChanged += SetGold;
             EconomyManager.Instance.OnLivesChanged += SetLives;
             EconomyManager.Instance.OnLifeTimerTicked += SetLifeTimer;
+            Loc.OnLanguageChanged += HandleLanguageChanged;
 
             SetGold(EconomyManager.Instance.Gold);
             SetLives(EconomyManager.Instance.Lives);
@@ -54,6 +56,8 @@ namespace MatchPack.UI
         {
             _goldAddButton.onClick.RemoveListener(OpenMarket);
             _heartAddButton.onClick.RemoveListener(OpenMarket);
+
+            Loc.OnLanguageChanged -= HandleLanguageChanged;
 
             if (EconomyManager.Instance != null)
             {
@@ -93,11 +97,19 @@ namespace MatchPack.UI
 
             if (secondsRemaining <= 0f)
             {
-                _lifeTimerText.text = _fullLivesLabel;
+                _lifeTimerText.text = Loc.Get(_fullLivesKey);
                 return;
             }
 
             _lifeTimerText.text = FormatDuration(secondsRemaining);
+        }
+
+        // "FULL" ve sonsuz can işareti dışındaki metinler LocalizedText ile gelir; bu ikisini
+        // kod yazdığı için dil değişiminde elle yenilenmeleri gerekir.
+        private void HandleLanguageChanged()
+        {
+            SetLives(EconomyManager.Instance.Lives);
+            SetLifeTimer(EconomyManager.Instance.LifeTimerSeconds);
         }
 
         private static string FormatDuration(float seconds)

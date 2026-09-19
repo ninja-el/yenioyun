@@ -170,6 +170,9 @@ Envanter index'i `BoosterType` enum sırasıdır: 0 Freeze, 1 Shuffle, 2 AutoMat
 | 36 | Her booster kendi `BoosterBehaviour` bileşenidir; `BoosterManager` yalnızca kilit/stok kontrolü yapıp etkiyi devreder | Dört etkinin tek sınıfta toplanması 200 satır kuralını aşıyordu ve bant/yığın/sayaç referanslarının hepsini tek sınıfa bağlıyordu |
 | 37 | Etki uygulanamazsa (uygun hedef yok, booster zaten çalışıyor) booster envanterden düşülmez | Oyuncu hiçbir şey olmadan booster kaybetmesin |
 | 38 | Can sayacı sınırsız can aktifken "FULL" yerine sınırsız canın bitişine kalan süreyi gösterir; süre 1 saati aşınca `s:dd:ss`, altında `dd:ss` biçimi kullanılır | Sınırsız can paketleri saat bazlı (1h/3h/6h/48h); `dd:ss` ile 48 saat "2880:00" görünüyordu. Değeri `EconomyManager.LifeTimerSeconds` üretir, UI yalnızca biçimlendirir |
+| 39 | Localization script'leri `MatchPack.Localization` namespace'ine alındı; `LanguageCode` enum'u `MatchPack.Data` altında | Script'ler `_Game.Scripts.*` namespace'iyle geldi ve projede olmayan iki tipe (`LanguageCode`, `PrefKeys`) bağlıydı; derlenmiyordu. 02-Mimari'nin "namespace klasörü izler" kuralına çekildi |
+| 40 | Dil seçimi tek ayar olarak `PlayerPrefs`'te tutulur, `PlayerData`'da değil | `Loc` static ve ilk `Get` çağrısında kendini kurar; o an `SaveManager` henüz ayakta olmayabilir. Diğer ayarlar (ses/müzik/titreşim) `PlayerData`'da kalır |
+| 41 | Metinler tabloda key ile durur (`Resources/LocalizationTable.asset`); statik yazılar `LocalizedText` bileşeniyle, kodun yazdığı yazılar `Loc.Get` ile çözülür | Tek kaynak; eksik çeviri ekranda key olarak görünür, sessizce boş kalmaz. Fallback zinciri: seçili dil -> English -> key |
 
 ## Açık sorular
 

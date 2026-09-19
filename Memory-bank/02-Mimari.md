@@ -246,6 +246,7 @@ Assets/_Project/
     Gameplay/  Conveyor, ConveyorPath, Box, StackItem, StackArea, InputManager, Timer, Boosters
     Meta/      Economy, Lives, IAP, Ads, Notifications
     UI/        Paneller ve HUD
+    Localization/  Loc, LocalizationTableSo, LocalizedText (+ Editor/ araçları)
     Data/      PlayerData, LevelData, ItemType
     Editor/    LevelEditorWindow (Editor klasöründe kalır)
   Settings/

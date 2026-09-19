@@ -1,5 +1,6 @@
 using MatchPack.Core;
 using MatchPack.Data;
+using MatchPack.Localization;
 using MatchPack.Meta;
 using UnityEngine;
 using UnityEngine.UI;
@@ -14,6 +15,9 @@ namespace MatchPack.UI
     {
         [Tooltip("Leveli başlatan Start butonu.")]
         [SerializeField] private Button _startButton;
+
+        [Tooltip("Buton üzerindeki bölüm yazısı. Metin ui.menu.level key'inden, numara buradan gelir.")]
+        [SerializeField] private LocalizedText _levelLabel;
 
         private void Awake()
         {
@@ -63,6 +67,17 @@ namespace MatchPack.UI
         private void HandleGameStateChanged(GameState state)
         {
             _startButton.interactable = state == GameState.Menu;
+
+            if (state == GameState.Menu) { RefreshLevelLabel(); }
+        }
+
+        /// <summary>Bölüm yazısını kayıttaki bölüm numarasıyla günceller.</summary>
+        private void RefreshLevelLabel()
+        {
+            if (_levelLabel == null) { return; }
+
+            LevelData level = GameManager.Instance.ProgressLevel;
+            _levelLabel.SetFormatArgs(level != null ? level.LevelIndex : SaveManager.Instance.Data.CurrentLevel);
         }
     }
 }
