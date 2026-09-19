@@ -19,8 +19,14 @@ namespace MatchPack.Meta
         /// <summary>Can değiştiğinde yayınlanır. Değer yeni can sayısıdır.</summary>
         public event Action<int> OnLivesChanged;
 
-        /// <summary>Bir sonraki cana kalan süre her saniye yayınlanır. Canlar doluysa 0 gelir.</summary>
+        /// <summary>
+        /// Sayaç değeri her saniye yayınlanır: sınırsız can aktifken sınırsız canın bitişine,
+        /// değilse bir sonraki cana kalan saniye. Sayılacak bir şey yoksa 0 gelir.
+        /// </summary>
         public event Action<float> OnLifeTimerTicked;
+
+        /// <summary>Bir booster'ın adedi değiştiğinde yayınlanır. Değerler booster index'i ve yeni adet.</summary>
+        public event Action<int, int> OnBoosterCountChanged;
 
         [Tooltip("Can ve gold değerlerinin okunduğu config.")]
         [SerializeField] private GameConfig _config;
@@ -40,6 +46,13 @@ namespace MatchPack.Meta
 
         /// <summary>Level başlatmaya yetecek can var mı?</summary>
         public bool HasEnoughLives => HasInfiniteLives || SaveManager.Instance.Data.CurrentLives > 0;
+
+        /// <summary>
+        /// Can sayacında gösterilecek saniye: sınırsız can aktifken sınırsız canın bitişine,
+        /// değilse bir sonraki cana kalan süre. OnLifeTimerTicked bu değeri yayınlar.
+        /// </summary>
+        public float LifeTimerSeconds =>
+            HasInfiniteLives ? GetSecondsUntilInfiniteLivesEnd() : GetSecondsUntilNextLife();
 
         private void Awake()
         {
@@ -165,6 +178,28 @@ namespace MatchPack.Meta
 
             data.BoosterCounts[index] += amount;
             SaveManager.Instance.Save();
+            OnBoosterCountChanged?.Invoke(index, data.BoosterCounts[index]);
+        }
+
+        /// <summary>Envanterdeki booster adedi. Index envanterde yoksa 0 döner.</summary>
+        public int GetBoosterCount(int index)
+        {
+            int[] counts = SaveManager.Instance.Data.BoosterCounts;
+            if (index < 0 || index >= counts.Length) { return 0; }
+
+            return counts[index];
+        }
+
+        /// <summary>Stokta varsa bir booster düşer ve true döner. Booster'ın etkisini uygulamaz.</summary>
+        public bool TryUseBooster(int index)
+        {
+            if (GetBoosterCount(index) <= 0) { return false; }
+
+            PlayerData data = SaveManager.Instance.Data;
+            data.BoosterCounts[index]--;
+            SaveManager.Instance.Save();
+            OnBoosterCountChanged?.Invoke(index, data.BoosterCounts[index]);
+            return true;
         }
 
         /// <summary>Verilen saat kadar sınırsız can verir. Süre birikir, üzerine yazılmaz.</summary>
@@ -203,6 +238,15 @@ namespace MatchPack.Meta
             if (elapsed < 0d) { return _config.LifeRegenSeconds; }
 
             return Mathf.Max(0f, _config.LifeRegenSeconds - (float)(elapsed % _config.LifeRegenSeconds));
+        }
+
+        /// <summary>Sınırsız canın bitmesine kalan saniye. Sınırsız can yoksa 0 döner.</summary>
+        public float GetSecondsUntilInfiniteLivesEnd()
+        {
+            long remainingTicks = SaveManager.Instance.Data.InfiniteLivesUntilTime - DateTime.UtcNow.Ticks;
+            if (remainingTicks <= 0L) { return 0f; }
+
+            return (float)(remainingTicks / (double)TimeSpan.TicksPerSecond);
         }
 
         private void InitializeLives()
@@ -276,7 +320,7 @@ namespace MatchPack.Meta
 
         private void BroadcastLifeTimer()
         {
-            float remaining = Mathf.Ceil(GetSecondsUntilNextLife());
+            float remaining = Mathf.Ceil(LifeTimerSeconds);
             if (Mathf.Approximately(remaining, _lastBroadcastRemaining)) { return; }
 
             _lastBroadcastRemaining = remaining;

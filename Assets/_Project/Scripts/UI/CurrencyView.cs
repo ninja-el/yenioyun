@@ -8,7 +8,7 @@ namespace MatchPack.UI
 {
     /// <summary>
     /// Menüdeki gold ve can göstergesi. EconomyManager event'lerini dinler, değerleri yazar ve
-    /// "+" butonlarını ilgili popup'a bağlar. Hiçbir değeri Update içinde yoklamaz.
+    /// "+" butonlarını market paneline bağlar. Hiçbir değeri Update içinde yoklamaz.
     /// </summary>
     public class CurrencyView : MonoBehaviour
     {
@@ -18,13 +18,13 @@ namespace MatchPack.UI
         [Tooltip("Can sayısının yazıldığı alan.")]
         [SerializeField] private TMP_Text _livesText;
 
-        [Tooltip("Bir sonraki cana kalan sürenin yazıldığı alan.")]
+        [Tooltip("Can sayacının yazıldığı alan. Sınırsız can aktifken onun bitişine kalan süreyi gösterir.")]
         [SerializeField] private TMP_Text _lifeTimerText;
 
-        [Tooltip("Gold popup'ını açan + butonu.")]
+        [Tooltip("Market panelini açan gold + butonu.")]
         [SerializeField] private Button _goldAddButton;
 
-        [Tooltip("Can popup'ını açan + butonu.")]
+        [Tooltip("Market panelini açan can + butonu.")]
         [SerializeField] private Button _heartAddButton;
 
         [Tooltip("Sınırsız can aktifken can sayısı yerine yazılacak metin.")]
@@ -35,8 +35,8 @@ namespace MatchPack.UI
 
         private void Awake()
         {
-            _goldAddButton.onClick.AddListener(OpenGoldPopup);
-            _heartAddButton.onClick.AddListener(OpenHeartPopup);
+            _goldAddButton.onClick.AddListener(OpenMarket);
+            _heartAddButton.onClick.AddListener(OpenMarket);
         }
 
         private void Start()
@@ -47,13 +47,13 @@ namespace MatchPack.UI
 
             SetGold(EconomyManager.Instance.Gold);
             SetLives(EconomyManager.Instance.Lives);
-            SetLifeTimer(EconomyManager.Instance.GetSecondsUntilNextLife());
+            SetLifeTimer(EconomyManager.Instance.LifeTimerSeconds);
         }
 
         private void OnDestroy()
         {
-            _goldAddButton.onClick.RemoveListener(OpenGoldPopup);
-            _heartAddButton.onClick.RemoveListener(OpenHeartPopup);
+            _goldAddButton.onClick.RemoveListener(OpenMarket);
+            _heartAddButton.onClick.RemoveListener(OpenMarket);
 
             if (EconomyManager.Instance != null)
             {
@@ -63,16 +63,10 @@ namespace MatchPack.UI
             }
         }
 
-        /// <summary>Gold popup'ını açar.</summary>
-        public void OpenGoldPopup()
+        /// <summary>Market panelini açar.</summary>
+        public void OpenMarket()
         {
-            UIManager.Instance.ShowGoldPopup();
-        }
-
-        /// <summary>Can popup'ını açar.</summary>
-        public void OpenHeartPopup()
-        {
-            UIManager.Instance.ShowHeartPopup();
+            UIManager.Instance.ShowMarket();
         }
 
         private void SetGold(int gold)
@@ -103,8 +97,20 @@ namespace MatchPack.UI
                 return;
             }
 
-            int totalSeconds = Mathf.CeilToInt(secondsRemaining);
-            _lifeTimerText.text = $"{totalSeconds / 60:00}:{totalSeconds % 60:00}";
+            _lifeTimerText.text = FormatDuration(secondsRemaining);
+        }
+
+        private static string FormatDuration(float seconds)
+        {
+            int totalSeconds = Mathf.CeilToInt(Mathf.Max(0f, seconds));
+
+            // Sınırsız can paketleri saat bazlı; 48 saat mm:ss ile "2880:00" görünüyordu.
+            if (totalSeconds >= 3600)
+            {
+                return $"{totalSeconds / 3600}:{totalSeconds / 60 % 60:00}:{totalSeconds % 60:00}";
+            }
+
+            return $"{totalSeconds / 60:00}:{totalSeconds % 60:00}";
         }
     }
 }

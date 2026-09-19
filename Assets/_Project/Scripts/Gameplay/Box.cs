@@ -18,6 +18,12 @@ namespace MatchPack.Gameplay
         [Tooltip("Objelerin kutu içinde oturacağı noktalar. Adedi GameConfig'teki kutu kapasitesiyle aynı olmalı.")]
         [SerializeField] private Transform[] _itemSlots;
 
+        [Tooltip("Joker kutu mu? Joker kutu banta tipsiz girer, tipini aldığı ilk objeden alır.")]
+        [SerializeField] private bool _isJoker;
+
+        [Tooltip("Kutunun üzerindeki obje ikonu. Boş bırakılırsa ikon güncellenmez.")]
+        [SerializeField] private SpriteRenderer _iconRenderer;
+
         private readonly List<StackItem> _items = new List<StackItem>();
         private int _arrivedCount;
         private Quaternion _baseRotation;
@@ -44,10 +50,26 @@ namespace MatchPack.Gameplay
         /// <summary>Tüm yuvalar ayrıldıysa true. Uçuşu süren objeler de yuvayı işgal eder.</summary>
         public bool IsFilled => _items.Count >= _itemSlots.Length;
 
-        /// <summary>Kutuyu bir obje tipine hazırlar. Havuzdan alındıktan sonra çağrılır.</summary>
+        /// <summary>Hiçbir yuvası ayrılmamış kutu. Joker kutu karşılığında iptal edilecek kutu bununla aranır.</summary>
+        public bool IsEmpty => _items.Count == 0;
+
+        /// <summary>Tipsiz gelip ilk objeden tipini alan kutu mu?</summary>
+        public bool IsJoker => _isJoker;
+
+        /// <summary>Kutunun tipi belli mi? Joker kutu ilk objesini alana kadar false döner.</summary>
+        public bool IsTypeLocked => Type != null;
+
+        /// <summary>
+        /// Kutuyu bir obje tipine hazırlar. Havuzdan alındıktan sonra çağrılır; joker kutu için
+        /// Conveyor tipi belirlendiğinde ikinci kez çağırır. null verilince kutu tipsiz kalır.
+        /// </summary>
         public void Setup(ItemType type)
         {
             Type = type;
+
+            if (_iconRenderer == null) { return; }
+
+            _iconRenderer.sprite = type != null ? type.Icon : null;
         }
 
         /// <summary>Obje kabul edilebiliyorsa yuvayı ona ayırır. Obje henüz yerleşmez, uçuşa başlar.</summary>
@@ -89,7 +111,7 @@ namespace MatchPack.Gameplay
 
             _items.Clear();
             _arrivedCount = 0;
-            Type = null;
+            Setup(null);
         }
     }
 }

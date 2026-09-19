@@ -29,7 +29,7 @@ namespace MatchPack.UI
         [Tooltip("Mevcut can sayısının yazıldığı alan.")]
         [SerializeField] private TMP_Text _livesText;
 
-        [Tooltip("Bir sonraki cana kalan sürenin yazıldığı alan.")]
+        [Tooltip("Can sayacının yazıldığı alan. Sınırsız can aktifken onun bitişine kalan süreyi gösterir.")]
         [SerializeField] private TMP_Text _timerText;
 
         [Tooltip("Gold maliyetinin yazıldığı alan.")]
@@ -53,7 +53,7 @@ namespace MatchPack.UI
             if (_goldCostText != null) { _goldCostText.text = _config.LifeRefillCostGold.ToString(); }
 
             SetLives(EconomyManager.Instance.Lives);
-            SetTimer(EconomyManager.Instance.GetSecondsUntilNextLife());
+            SetTimer(EconomyManager.Instance.LifeTimerSeconds);
         }
 
         private void OnDestroy()
@@ -114,8 +114,20 @@ namespace MatchPack.UI
         {
             if (_timerText == null) { return; }
 
-            int totalSeconds = Mathf.CeilToInt(Mathf.Max(0f, secondsRemaining));
-            _timerText.text = $"{totalSeconds / 60:00}:{totalSeconds % 60:00}";
+            _timerText.text = FormatDuration(secondsRemaining);
+        }
+
+        private static string FormatDuration(float seconds)
+        {
+            int totalSeconds = Mathf.CeilToInt(Mathf.Max(0f, seconds));
+
+            // Sınırsız can paketleri saat bazlı; 48 saat mm:ss ile "2880:00" görünüyordu.
+            if (totalSeconds >= 3600)
+            {
+                return $"{totalSeconds / 3600}:{totalSeconds / 60 % 60:00}:{totalSeconds % 60:00}";
+            }
+
+            return $"{totalSeconds / 60:00}:{totalSeconds % 60:00}";
         }
     }
 }

@@ -71,6 +71,56 @@ namespace MatchPack.Gameplay
             }
         }
 
+        /// <summary>
+        /// Yığındaki objeleri alanın içinde yeniden dağıtır: hepsi fizik dışına alınır, yeni
+        /// çakışmasız noktalara ışınlanır ve tekrar fiziğe bırakılır. Kutuya uçmakta olan objeler
+        /// yığından çıkmış olduğu için etkilenmez. Shuffle booster'ı bunu çağırır.
+        /// </summary>
+        public bool Reshuffle()
+        {
+            if (_area == null || _items.Count == 0) { return false; }
+
+            for (int i = 0; i < _items.Count; i++)
+            {
+                _items[i].SetSimulated(false);
+            }
+
+            // Collider'lar kapandı; yeni noktalar aranmadan önce fizik motorunun bunu görmesi gerekir,
+            // yoksa objeler kendi eski yerlerini dolu sayar.
+            Physics.SyncTransforms();
+            _area.BeginPlacement();
+
+            for (int i = 0; i < _items.Count; i++)
+            {
+                StackItem item = _items[i];
+                if (!_area.TryReserveSpot(item.BoundingRadius, out Vector3 position)) { continue; }
+
+                item.Teleport(position, UnityEngine.Random.rotation);
+            }
+
+            Physics.SyncTransforms();
+
+            for (int i = 0; i < _items.Count; i++)
+            {
+                _items[i].SetSimulated(true);
+            }
+
+            return true;
+        }
+
+        /// <summary>Yığında verilen tipten bir obje varsa onu döner; yoksa null.</summary>
+        public StackItem FindItem(ItemType type)
+        {
+            if (type == null) { return null; }
+
+            for (int i = 0; i < _items.Count; i++)
+            {
+                if (_items[i].Type == type) { return _items[i]; }
+            }
+
+            return null;
+        }
+
         /// <summary>Objeyi yığından çıkarır. Kutuya uçan obje artık yığının parçası değildir.</summary>
         public void Remove(StackItem item)
         {

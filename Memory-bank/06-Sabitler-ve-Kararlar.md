@@ -92,14 +92,24 @@ Asset'ler: `Assets/_Project/Data/Shop/`, katalog `Data/Config/ShopCatalog.asset`
 
 ## Boosterlar
 
-| Booster | Açılış | Değer |
+Booster değerleri `GameConfig`'te değil, booster başına bir `BoosterData` asset'indedir
+(`Assets/_Project/Data/Boosters/`); liste `BoosterCatalog.asset` içindedir.
+
+| Değer | Varsayılan | Kaynak |
 |---|---|---|
-| Time Freeze | Lvl 4 | 5 sn donma |
-| Shuffle | Lvl 6 | — |
-| Auto-Match | Lvl 8 | 1 obje eşleştirir |
-| Joker Box | Lvl 10 | 1 kutu |
+| Time Freeze açılışı / donma süresi | Lvl 4 / 5 sn | `BoosterData` |
+| Time Freeze bandı da durdurur | Açık | `BoosterData.IsBeltFrozen` |
+| Shuffle açılışı | Lvl 6 | `BoosterData` |
+| Auto-Match açılışı | Lvl 8 | `BoosterData` |
+| Auto-Match modu | Items (obje bazlı) | `BoosterData.AutoMatchMode` |
+| Auto-Match adedi | 1 (moda göre obje veya kutu) | `BoosterData.AutoMatchCount` |
+| Auto-Match hamleleri arası bekleme | 0.12 sn | `BoosterData.AutoMatchInterval` |
+| Joker Box açılışı / adedi | Lvl 10 / 1 kutu | `BoosterData` |
+| Joker kutunun alacağı obje adedi | Prefab'taki yuva sayısı (3) | Joker kutu prefab'ı |
+| Booster efektinin ekranda kalma süresi | 1 sn (Time Freeze'de donma süresi) | `BoosterData.EffectDuration` |
 
 Boosterlar envanterden tüketilir, cooldown yoktur, level içinde kullanım limiti stok kadardır.
+Envanter index'i `BoosterType` enum sırasıdır: 0 Freeze, 1 Shuffle, 2 AutoMatch, 3 JokerBox.
 
 ## Alınmış kararlar
 
@@ -152,6 +162,14 @@ Boosterlar envanterden tüketilir, cooldown yoktur, level içinde kullanım limi
 | 29 | Kazanma şartı `LevelData.targetBoxCount` sayısı kadar kutu dolması | Eski şart "bandın bütün kutuları bitsin"di; hedef sayısı level verisinde yazdığı halde kullanılmıyordu |
 | 30 | Bölüm sırası `LevelCatalog` ScriptableObject'inde tutulur, `PlayerData.CurrentLevel` bu listedeki sıra numarasıdır | "Sonraki level" için bir sıra kaynağı gerekiyordu; katalog, yeni bölüm eklemeyi listeye satır eklemeye indiriyor ve ilerleme kaydı kendiliğinden çalışıyor |
 | 31 | Restart ve sonraki level butonları ayarlanabilir bir gecikmeden sonra iş yapar; gecikme boyunca panel açık kalır ve başka butonlar cevap vermez | Buton efektlerinin oynayacak zamanı olsun diye. Diğer butonların kilitlenmesi, bekleme sırasında ikinci bir geçiş başlatılmasını engelliyor |
+| 32 | Booster sayıları `GameConfig`'e değil, booster başına bir `BoosterData` asset'ine yazıldı; liste `BoosterCatalog`'ta | Dört booster'ın hiç ortak alanı yok; hepsini `GameConfig`'e koymak onu booster alanlarıyla şişiriyordu. Mağaza tarafında `ShopProduct` + `ShopCatalog` kalıbı zaten aynı |
+| 33 | `PlayerData.BoosterCounts` index eşlemesi `BoosterType` enum sırasıdır (0 Freeze, 1 Shuffle, 2 AutoMatch, 3 JokerBox) | Envanter dizisi zaten index bazlıydı ve `ShopProduct.BoosterRewards` de aynı sırayı kullanıyor. Araya yeni booster eklenirse eski kayıtlardaki adetler kayar; yeni booster daima listenin sonuna eklenir |
+| 34 | Joker kutu bir tipe kilitlenirken aynı tipten doldurulmamış bir kutu iptal edilir: önce kuyruktaki kutu, o yoksa banttaki boş kutu (banttan ayrılıp çıkışa gider) | Level'in obje sayısı kutu hedefinin tam katıdır. Joker kutu fazladan 3 yuva açtığı için karşılığında bir kutu iptal edilmezse level sonunda objesi kalmayan, asla dolmayacak bir kutu bantta dönerdi. İptal edilecek kutu yoksa joker o tipi kabul etmez |
+| 34a | Joker kutu, aynı tipten normal kutu varken seçilmez; yalnızca uygun normal kutu yokken aday olur | Oyuncunun elindeki joker, zaten yapılabilen bir hamlede harcanmasın |
+| 35 | Time Freeze sayacı `Stop`/`Resume` ile değil yeni `LevelTimer.SetPaused` ile durdurur | `Resume(extraSeconds)` kalan süreyi devam bedelinin süresine çekiyor; donma kalan süreyi olduğu gibi korumalı |
+| 36 | Her booster kendi `BoosterBehaviour` bileşenidir; `BoosterManager` yalnızca kilit/stok kontrolü yapıp etkiyi devreder | Dört etkinin tek sınıfta toplanması 200 satır kuralını aşıyordu ve bant/yığın/sayaç referanslarının hepsini tek sınıfa bağlıyordu |
+| 37 | Etki uygulanamazsa (uygun hedef yok, booster zaten çalışıyor) booster envanterden düşülmez | Oyuncu hiçbir şey olmadan booster kaybetmesin |
+| 38 | Can sayacı sınırsız can aktifken "FULL" yerine sınırsız canın bitişine kalan süreyi gösterir; süre 1 saati aşınca `s:dd:ss`, altında `dd:ss` biçimi kullanılır | Sınırsız can paketleri saat bazlı (1h/3h/6h/48h); `dd:ss` ile 48 saat "2880:00" görünüyordu. Değeri `EconomyManager.LifeTimerSeconds` üretir, UI yalnızca biçimlendirir |
 
 ## Açık sorular
 

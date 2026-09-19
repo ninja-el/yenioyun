@@ -38,6 +38,8 @@ namespace MatchPack.Gameplay
         [SerializeField] private GameObject[] _boxPrefabs;
 
         private readonly Queue<ItemType> _boxQueue = new Queue<ItemType>();
+        private readonly Queue<GameObject> _jokerQueue = new Queue<GameObject>();
+        private readonly List<ItemType> _queueBuffer = new List<ItemType>();
         private readonly List<LeavingBox> _leavingBoxes = new List<LeavingBox>();
 
         private ConveyorPath _path;
@@ -54,6 +56,9 @@ namespace MatchPack.Gameplay
 
         /// <summary>Henüz banta girmemiş kutu sayısı.</summary>
         public int QueuedBoxCount => _boxQueue.Count;
+
+        /// <summary>Bant çalışıyor mu? Level bitince veya bant boşaltılınca false olur.</summary>
+        public bool IsRunning => _isRunning;
 
         /// <summary>Level'in kutularını kurar ve bandı çalıştırır.</summary>
         public void Build(LevelData level, ConveyorPath path)
@@ -94,24 +99,85 @@ namespace MatchPack.Gameplay
             _speedScale = Mathf.Max(0f, scale);
         }
 
-        /// <summary>Bantta bu tipe uygun, girişini tamamlamış ve yuvası kalmış bir kutu varsa döner.</summary>
+        /// <summary>
+        /// Bantta bu tipe uygun, girişini tamamlamış ve yuvası kalmış bir kutu varsa döner. Tipi
+        /// belirlenmemiş joker kutu yalnızca aynı tipten normal kutu bulunamadığında aday olur;
+        /// bu çağrı hiçbir kutunun durumunu değiştirmez.
+        /// </summary>
         public bool TryGetBoxFor(ItemType type, out Box box)
         {
             box = null;
-            if (_slotBoxes == null) { return false; }
+            if (_slotBoxes == null || type == null) { return false; }
+
+            Box joker = null;
 
             for (int i = 0; i < _slotBoxes.Length; i++)
             {
                 if (_slotStates[i] != SlotState.Riding) { continue; }
 
                 Box candidate = _slotBoxes[i];
-                if (candidate == null || candidate.IsFilled || candidate.Type != type) { continue; }
+                if (candidate == null || candidate.IsFilled) { continue; }
 
-                box = candidate;
-                return true;
+                if (candidate.Type == type)
+                {
+                    box = candidate;
+                    return true;
+                }
+
+                if (joker == null && candidate.IsJoker && !candidate.IsTypeLocked && HasBoxCredit(type))
+                {
+                    joker = candidate;
+                }
             }
 
-            return false;
+            box = joker;
+            return box != null;
+        }
+
+        /// <summary>
+        /// Objeye uygun kutuyu bulup yuvasını ona ayırır. Joker kutu seçildiyse tipini burada alır.
+        /// Uygun kutu yoksa veya yuva ayrılamazsa false döner.
+        /// </summary>
+        public bool TryReserveBox(StackItem item, out Box box, out Transform slot)
+        {
+            slot = null;
+            box = null;
+
+            if (item == null || !TryGetBoxFor(item.Type, out Box candidate)) { return false; }
+            if (!candidate.IsTypeLocked && !LockJokerBox(candidate, item.Type)) { return false; }
+            if (!candidate.TryAddItem(item, out slot)) { return false; }
+
+            box = candidate;
+            return true;
+        }
+
+        /// <summary>Bantta duran, tipi belli ve hâlâ obje kabul eden kutuları verilen listeye yazar.</summary>
+        public void CollectFillableBoxes(List<Box> buffer)
+        {
+            buffer.Clear();
+            if (_slotBoxes == null) { return; }
+
+            for (int i = 0; i < _slotBoxes.Length; i++)
+            {
+                if (_slotStates[i] != SlotState.Riding) { continue; }
+
+                Box box = _slotBoxes[i];
+                if (box == null || box.IsFilled || !box.IsTypeLocked) { continue; }
+
+                buffer.Add(box);
+            }
+        }
+
+        /// <summary>
+        /// Joker kutuyu bant sırasına alır; bir sonraki boş slot giriş noktasını geçtiğinde banta
+        /// katılır. Level'in kutu kuyruğundan gelmediği için kapasite kuralı girişini engellemez.
+        /// </summary>
+        public bool TryQueueJokerBox(GameObject prefab)
+        {
+            if (!_isRunning || prefab == null) { return false; }
+
+            _jokerQueue.Enqueue(prefab);
+            return true;
         }
 
         /// <summary>Bandı boşaltır; bantta ve çıkışta olan kutuları havuza iade eder.</summary>
@@ -139,6 +205,8 @@ namespace MatchPack.Gameplay
 
             _leavingBoxes.Clear();
             _boxQueue.Clear();
+            _jokerQueue.Clear();
+            _queueBuffer.Clear();
             _path = null;
         }
 
@@ -164,8 +232,17 @@ namespace MatchPack.Gameplay
             for (int i = 0; i < _slotBoxes.Length; i++)
             {
                 if (_slotStates[i] != SlotState.Empty) { continue; }
-                if (!CanDispatch()) { return; }
+                if (_entryTimer > 0f) { return; }
+
+                bool hasJokerBox = _jokerQueue.Count > 0;
+                if (!hasJokerBox && !CanDispatch()) { return; }
                 if (!HasCrossed(i, previousOffset, travelled, _path.EntryDistance)) { continue; }
+
+                if (hasJokerBox)
+                {
+                    DispatchJokerBox(i);
+                    continue;
+                }
 
                 DispatchBox(i);
             }
@@ -177,7 +254,7 @@ namespace MatchPack.Gameplay
             // yeni kutu gelir" der. Toplam obje targetBoxCount * kapasite olduğu için kalan obje
             // daima kuyruktaki kutuların kapasitesi + banttaki boş yuvaya eşittir; kural bu yüzden
             // "kuyrukta kutu var mı" kontrolüne indirgenir.
-            if (_boxQueue.Count == 0 || _entryTimer > 0f) { return false; }
+            if (_boxQueue.Count == 0) { return false; }
 
             return GetFillableBoxCount() < _capacity;
         }
@@ -189,9 +266,28 @@ namespace MatchPack.Gameplay
             if (instance == null) { return; }
 
             _dispatchedBoxCount++;
+            PlaceBox(slotIndex, instance.GetComponent<Box>(), _boxQueue.Dequeue());
+        }
 
+        private void DispatchJokerBox(int slotIndex)
+        {
+            GameObject instance = PoolManager.Instance.Get(_jokerQueue.Peek());
+            if (instance == null) { return; }
+
+            _jokerQueue.Dequeue();
             Box box = instance.GetComponent<Box>();
-            box.Setup(_boxQueue.Dequeue());
+
+            if (!box.IsJoker)
+            {
+                Debug.LogError("Conveyor was given a joker box prefab whose Box is not marked as joker.", this);
+            }
+
+            PlaceBox(slotIndex, box, null);
+        }
+
+        private void PlaceBox(int slotIndex, Box box, ItemType type)
+        {
+            box.Setup(type);
             box.OnBoxFilled += HandleBoxCompleted;
             box.transform.SetPositionAndRotation(_path.EntryStart.position, box.BaseRotation);
 
@@ -201,6 +297,75 @@ namespace MatchPack.Gameplay
             _entryTimer = _config.BoxEntryDelay;
 
             OnBoxSpawned?.Invoke(box);
+        }
+
+        // Joker kutu banta fazladan bir kutu ekler. Level'in obje sayısı kutu hedefinin tam katı
+        // olduğu için, joker bir tipe kilitlenirken aynı tipten doldurulmamış bir kutu iptal
+        // edilmezse level sonunda objesi kalmayan bir kutu bantta dönmeye devam ederdi.
+        private bool LockJokerBox(Box joker, ItemType type)
+        {
+            if (!ConsumeBoxCredit(type)) { return false; }
+
+            joker.Setup(type);
+            return true;
+        }
+
+        private bool HasBoxCredit(ItemType type)
+        {
+            return _boxQueue.Contains(type) || FindEmptyBoxSlot(type) >= 0;
+        }
+
+        private bool ConsumeBoxCredit(ItemType type)
+        {
+            if (TryRemoveQueuedBox(type)) { return true; }
+
+            int slotIndex = FindEmptyBoxSlot(type);
+            if (slotIndex < 0) { return false; }
+
+            DetachBox(slotIndex);
+            return true;
+        }
+
+        private bool TryRemoveQueuedBox(ItemType type)
+        {
+            _queueBuffer.Clear();
+            bool isRemoved = false;
+
+            while (_boxQueue.Count > 0)
+            {
+                ItemType queued = _boxQueue.Dequeue();
+
+                if (!isRemoved && queued == type)
+                {
+                    isRemoved = true;
+                    continue;
+                }
+
+                _queueBuffer.Add(queued);
+            }
+
+            for (int i = 0; i < _queueBuffer.Count; i++)
+            {
+                _boxQueue.Enqueue(_queueBuffer[i]);
+            }
+
+            _queueBuffer.Clear();
+            return isRemoved;
+        }
+
+        private int FindEmptyBoxSlot(ItemType type)
+        {
+            for (int i = 0; i < _slotBoxes.Length; i++)
+            {
+                if (_slotStates[i] == SlotState.Empty) { continue; }
+
+                Box box = _slotBoxes[i];
+                if (box == null || box.IsJoker || !box.IsEmpty || box.Type != type) { continue; }
+
+                return i;
+            }
+
+            return -1;
         }
 
         private void UpdateSlotBoxes()
@@ -278,7 +443,7 @@ namespace MatchPack.Gameplay
 
         private void CheckCompletion()
         {
-            if (_boxQueue.Count > 0 || _leavingBoxes.Count > 0) { return; }
+            if (_boxQueue.Count > 0 || _jokerQueue.Count > 0 || _leavingBoxes.Count > 0) { return; }
 
             for (int i = 0; i < _slotBoxes.Length; i++)
             {

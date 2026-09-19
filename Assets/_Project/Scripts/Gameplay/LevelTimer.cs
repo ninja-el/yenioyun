@@ -18,12 +18,16 @@ namespace MatchPack.Gameplay
         public float Remaining { get; private set; }
         public bool IsRunning { get; private set; }
 
+        /// <summary>Sayaç dondurulmuş mu? Time Freeze booster'ı bunu açar.</summary>
+        public bool IsPaused { get; private set; }
+
         /// <summary>Sayacı verilen süreyle başlatır.</summary>
         public void StartTimer(float duration)
         {
             Remaining = duration;
             _lastTickedSecond = Mathf.CeilToInt(duration);
             IsRunning = true;
+            IsPaused = false;
             OnTimerTicked?.Invoke(Remaining);
         }
 
@@ -31,6 +35,16 @@ namespace MatchPack.Gameplay
         public void Stop()
         {
             IsRunning = false;
+            IsPaused = false;
+        }
+
+        /// <summary>
+        /// Sayacı kalan süreyi koruyarak dondurur veya çözer. Stop'tan farkı, çözüldüğünde
+        /// sayacın kaldığı yerden devam etmesidir; Time Freeze booster'ı bunu kullanır.
+        /// </summary>
+        public void SetPaused(bool isPaused)
+        {
+            IsPaused = isPaused;
         }
 
         /// <summary>
@@ -57,7 +71,7 @@ namespace MatchPack.Gameplay
 
         private void Update()
         {
-            if (!IsRunning) { return; }
+            if (!IsRunning || IsPaused) { return; }
 
             Remaining -= Time.deltaTime;
 
