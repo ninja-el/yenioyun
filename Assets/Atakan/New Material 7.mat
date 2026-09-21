@@ -42,8 +42,8 @@ Material:
     m_Floats:
     - _LightThreshold: 0.383
     m_Colors:
-    - _AlbedoColor: {r: 0.4901961, g: 0.38823533, b: 0.7568628, a: 1}
-    - _Color: {r: 0.49019605, g: 0.3882353, b: 0.7568628, a: 1}
+    - _AlbedoColor: {r: 0.42299998, g: 0.42299998, b: 0.42299998, a: 1}
+    - _Color: {r: 0.42299995, g: 0.42299995, b: 0.42299995, a: 1}
     - _GoochDarkColor: {r: 0.5188679, g: 0.38915092, b: 0.5078749, a: 1}
   m_BuildTextureStacks: []
   m_AllowLocking: 1
