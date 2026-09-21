@@ -17,7 +17,7 @@ MonoBehaviour:
   _infoKey: ui.booster.shuffle.info
   _icon: {fileID: 21300000, guid: 645e06faa50f43943be20e06621eca7b, type: 3}
   _unlockLevel: 1
-  _goldPrice: 40
+  _goldPrice: 200
   _packAmount: 3
   _effectPrefab: {fileID: 0}
   _effectDuration: 1
