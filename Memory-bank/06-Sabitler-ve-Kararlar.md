@@ -31,6 +31,8 @@ Değer değişirse önce bu dosya güncellenir.
 | Dokunuş probu | Kutu (BoxCast), 0.3 birim kenar | `InputManager` |
 | Probun toplayacağı en fazla obje | 2 | `InputManager` |
 | Objenin uçuş kavisi yüksekliği | 1.5 birim | `MatchResolver` |
+| Kutuya iniş ölçek animasyonu | 0.35 sn / 0.35 abartı | `MatchResolver` |
+| Objenin kutudaki ölçek çarpanı | 1 (tipe göre `ItemType.SelectedScale`) | `ItemType` |
 | Hatalı hamlede kamera sarsıntısı | 0.2 sn / 0.15 şiddet | `MatchResolver` |
 | Hedef FPS | 60 | Proje ayarı |
 
@@ -193,6 +195,7 @@ Envanter index'i `BoosterType` enum sırasıdır: 0 Freeze, 1 Shuffle, 2 AutoMat
 | 40 | Dil seçimi tek ayar olarak `PlayerPrefs`'te tutulur, `PlayerData`'da değil | `Loc` static ve ilk `Get` çağrısında kendini kurar; o an `SaveManager` henüz ayakta olmayabilir. Diğer ayarlar (ses/müzik/titreşim) `PlayerData`'da kalır |
 | 41 | Metinler tabloda key ile durur (`Resources/LocalizationTable.asset`); statik yazılar `LocalizedText` bileşeniyle, kodun yazdığı yazılar `Loc.Get` ile çözülür | Tek kaynak; eksik çeviri ekranda key olarak görünür, sessizce boş kalmaz. Fallback zinciri: seçili dil -> English -> key |
 | 48 | Dokunuş probu ilk objede durmaz: ışın boyunca en fazla `_maxProbeHits` (varsayılan 2) obje toplanır, `MatchResolver` yakından uzağa deneyip gidecek kutusu olan ilk objeyi oynar | Tombul parmak: oyuncu doğru objeye bassa bile kenarından geçen komşu obje probu kapatıp hamleyi yakıyordu. Adayları sıralı denemek, nokta atışı dokunuşu bozmadan (doğru obje zaten en yakın olduğu için önce denenir) yanlış seçimi engelliyor. Adet Inspector'dan ayarlanır ki pay oyun hissine göre değiştirilebilsin |
+| 49 | Obje ölçeği uçuş boyunca değişmez; yuvasına oturduğu an ezil-yaylan animasyonu (`StackItem.PlayBoxLandingScale`) oynar. Hedef boyut `ItemType.SelectedScale` çarpanıyla tipe göre ayarlanır, varsayılan 1 | Uçuş sırasında küçülen obje kutuya girmeden önce gözden kayboluyor gibi duruyordu. Animasyonu uçuşun son anlarına hizalayan bir deneme de yapıldı; oynanışta aceleci durduğu için temas anında başlatmaya geri dönüldü, abartı (0.35) ve süre (0.35 sn) yükseltilerek iniş okunur kılındı. Çarpan hedefi o anki yerel ölçek üzerinden hesaplar, yani 1'de bugünkü davranış aynen korunur ve yalnızca kutuya sığmayan tipler için düşürülür. `StackItem` havuza dönerken kendi ölçeğine geri getirilir |
 
 ## Açık sorular
 

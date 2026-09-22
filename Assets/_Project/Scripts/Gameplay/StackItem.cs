@@ -1,4 +1,4 @@
-using DG.Tweening;
+﻿using DG.Tweening;
 using MatchPack.Core;
 using MatchPack.Data;
 using UnityEngine;
@@ -18,6 +18,7 @@ namespace MatchPack.Gameplay
         [SerializeField] private Rigidbody _rigidbody;
 
         private float _boundingRadius;
+        private Vector3 _baseScale;
         private RigidbodyInterpolation _interpolation;
 
         public ItemType Type { get; private set; }
@@ -32,6 +33,7 @@ namespace MatchPack.Gameplay
         {
             // Collider prefab'ta açık ve obje dönmemişken ölçülür; sonradan rotasyon bounds'u bozar.
             _boundingRadius = _collider.bounds.extents.magnitude;
+            _baseScale = transform.localScale;
             _interpolation = _rigidbody.interpolation;
         }
 
@@ -72,16 +74,43 @@ namespace MatchPack.Gameplay
             _rigidbody.rotation = rotation;
         }
 
+        /// <summary>
+        /// Kutuya iniş ölçek animasyonu: çarpma anında ezilme, ardından yaylanarak hedefe oturma.
+        /// Hedef, objenin o anki ölçeğinin <see cref="ItemType.SelectedScale"/> katıdır; çarpan
+        /// 1 iken obje bugünkü boyutuna oturur.
+        /// </summary>
+        public void PlayBoxLandingScale(float duration, float squashAmount)
+        {
+            float multiplier = Type != null ? Type.SelectedScale : 1f;
+
+            // Uçuş sırasında obje yuvaya dünya ölçeği korunarak parent edildiği için hedef, prefab
+            // ölçeği değil o anki yerel ölçek üzerinden hesaplanır.
+            Vector3 target = transform.localScale * multiplier;
+            Vector3 squash = new Vector3(
+                target.x * (1f + squashAmount),
+                target.y * (1f - squashAmount),
+                target.z * (1f + squashAmount));
+
+            DOTween.Sequence()
+                .Append(transform.DOScale(squash, duration * 0.35f).SetEase(Ease.OutQuad))
+                .Append(transform.DOScale(target, duration * 0.65f).SetEase(Ease.OutBack));
+        }
+
         public void OnSpawned()
         {
             // Havuzdan çıkan obje havuz kökünün konumundadır; fizik ancak çağıran onu yerleştirdikten sonra açılır.
             SetSimulated(false);
+            transform.localScale = _baseScale;
         }
 
         public void OnDespawned()
         {
             transform.DOKill();
             SetSimulated(false);
+
+            // Kutuya oturan obje küçültülmüş olabilir; havuza kendi ölçeğiyle dönmezse bir sonraki
+            // kullanımda yığına o boyutla doğar.
+            transform.localScale = _baseScale;
             Type = null;
         }
     }

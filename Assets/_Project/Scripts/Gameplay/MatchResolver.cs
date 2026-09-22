@@ -29,6 +29,12 @@ namespace MatchPack.Gameplay
         [Tooltip("Objenin kutuya uçarken çizdiği kavisin yüksekliği.")]
         [SerializeField, Min(0f)] private float _flightArcHeight = 1.5f;
 
+        [Tooltip("Obje kutuya girdiği anda oynayan ölçek animasyonunun süresi.")]
+        [SerializeField, Min(0f)] private float _landScaleDuration = 0.35f;
+
+        [Tooltip("İniş animasyonunun abartı miktarı. 0.35 = çarpma anında yatayda %35 yayılıp dikeyde %35 basılır.")]
+        [SerializeField, Range(0f, 0.9f)] private float _landSquashAmount = 0.35f;
+
         [Tooltip("Hatalı hamlede kameranın sarsılma süresi.")]
         [SerializeField, Min(0f)] private float _shakeDuration = 0.2f;
 
@@ -118,14 +124,21 @@ namespace MatchPack.Gameplay
             // yerel uzayda uçurulur, böylece uçuş boyunca kutuyla birlikte hareket eder.
             item.transform.SetParent(slot, true);
 
+            // Ölçek uçuş boyunca değişmez; obje yuvaya oturduğu anda kutu boyutuna çekilir.
             item.transform
                 .DOLocalJump(Vector3.zero, _flightArcHeight, 1, _config.ItemFlyDuration)
                 .SetEase(Ease.InOutQuad)
-                .OnComplete(() => box.ConfirmItem(item));
+                .OnComplete(() => Land(item, box));
 
             item.transform.DOLocalRotateQuaternion(Quaternion.identity, _config.ItemFlyDuration);
 
             OnItemMatched?.Invoke(item);
+        }
+
+        private void Land(StackItem item, Box box)
+        {
+            box.ConfirmItem(item);
+            item.PlayBoxLandingScale(_landScaleDuration, _landSquashAmount);
         }
 
         private void Miss(StackItem item)
