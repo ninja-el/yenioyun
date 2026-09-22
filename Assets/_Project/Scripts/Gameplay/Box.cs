@@ -1,8 +1,9 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using MatchPack.Core;
 using MatchPack.Data;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace MatchPack.Gameplay
 {
@@ -18,14 +19,24 @@ namespace MatchPack.Gameplay
         [Tooltip("Objelerin kutu içinde oturacağı noktalar. Adedi GameConfig'teki kutu kapasitesiyle aynı olmalı.")]
         [SerializeField] private Transform[] _itemSlots;
 
-        [Tooltip("Joker kutu mu? Joker kutu banta tipsiz girer, tipini aldığı ilk objeden alır.")]
+        [Tooltip("Kutu havuzdan çıkarken joker olsun mu? Bant, joker booster'ı için bunu çalışma anında açar.")]
         [SerializeField] private bool _isJoker;
 
         [Tooltip("Kutunun üzerindeki obje ikonu. Boş bırakılırsa ikon güncellenmez.")]
         [SerializeField] private SpriteRenderer _iconRenderer;
 
+        [Tooltip("Tipi belli olmayan joker kutunun ikonu. Kutu ilk objesini alınca yerini o objenin ikonu alır.")]
+        [SerializeField] private Sprite _jokerIcon;
+
+        [Tooltip("Dolan yuva sayısını gösteren görseller. Sırayla açılır; adedi yuva sayısıyla aynı olmalı.")]
+        [SerializeField] private Image[] _fillIndicators;
+
+        [Tooltip("Boş yuvaları gösteren görseller. Her obje geldiğinde sırayla kapanır; adedi yuva sayısıyla aynı olmalı.")]
+        [SerializeField] private Image[] _emptyIndicators;
+
         private readonly List<StackItem> _items = new List<StackItem>();
         private int _arrivedCount;
+        private bool _isJokerByDefault;
         private Quaternion _baseRotation;
         private float _baseHeight;
 
@@ -45,6 +56,7 @@ namespace MatchPack.Gameplay
             // Havuz instance'ı prefab'ın yerel değerleriyle üretilir; sonrasında transform'u bant yazar.
             _baseRotation = transform.localRotation;
             _baseHeight = transform.localPosition.y;
+            _isJokerByDefault = _isJoker;
         }
 
         /// <summary>Tüm yuvalar ayrıldıysa true. Uçuşu süren objeler de yuvayı işgal eder.</summary>
@@ -52,6 +64,9 @@ namespace MatchPack.Gameplay
 
         /// <summary>Hiçbir yuvası ayrılmamış kutu. Joker kutu karşılığında iptal edilecek kutu bununla aranır.</summary>
         public bool IsEmpty => _items.Count == 0;
+
+        /// <summary>Yuvası ayrılmış obje sayısı. Aynı tipten kutular arasında en dolusu bununla seçilir.</summary>
+        public int ItemCount => _items.Count;
 
         /// <summary>Tipsiz gelip ilk objeden tipini alan kutu mu?</summary>
         public bool IsJoker => _isJoker;
@@ -66,10 +81,17 @@ namespace MatchPack.Gameplay
         public void Setup(ItemType type)
         {
             Type = type;
+            RefreshIcon();
+        }
 
-            if (_iconRenderer == null) { return; }
-
-            _iconRenderer.sprite = type != null ? type.Icon : null;
+        /// <summary>
+        /// Kutuyu joker yapar veya joker'likten çıkarır. Bant, normal kutu prefab'ını joker olarak
+        /// göndermek için havuzdan aldıktan hemen sonra çağırır.
+        /// </summary>
+        public void SetJoker(bool isJoker)
+        {
+            _isJoker = isJoker;
+            RefreshIcon();
         }
 
         /// <summary>Obje kabul edilebiliyorsa yuvayı ona ayırır. Obje henüz yerleşmez, uçuşa başlar.</summary>
@@ -93,6 +115,8 @@ namespace MatchPack.Gameplay
             item.transform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
 
             _arrivedCount++;
+            ShowFillIndicators(_arrivedCount);
+
             if (_arrivedCount >= _itemSlots.Length) { OnBoxFilled?.Invoke(this); }
         }
 
@@ -100,6 +124,8 @@ namespace MatchPack.Gameplay
         {
             _items.Clear();
             _arrivedCount = 0;
+            _isJoker = _isJokerByDefault;
+            ShowFillIndicators(0);
         }
 
         public void OnDespawned()
@@ -111,7 +137,41 @@ namespace MatchPack.Gameplay
 
             _items.Clear();
             _arrivedCount = 0;
+            _isJoker = _isJokerByDefault;
+            ShowFillIndicators(0);
             Setup(null);
+        }
+
+        private void RefreshIcon()
+        {
+            if (_iconRenderer == null) { return; }
+
+            if (Type != null)
+            {
+                _iconRenderer.sprite = Type.Icon;
+                return;
+            }
+
+            _iconRenderer.sprite = _isJoker ? _jokerIcon : null;
+        }
+
+        private void ShowFillIndicators(int filledCount)
+        {
+            SetIndicators(_fillIndicators, filledCount, true);
+            SetIndicators(_emptyIndicators, filledCount, false);
+        }
+
+        // isFilledState true ise görsel dolu yuvalarda, false ise boş yuvalarda açık kalır.
+        private static void SetIndicators(Image[] indicators, int filledCount, bool isFilledState)
+        {
+            if (indicators == null) { return; }
+
+            for (int i = 0; i < indicators.Length; i++)
+            {
+                if (indicators[i] == null) { continue; }
+
+                indicators[i].gameObject.SetActive(i < filledCount == isFilledState);
+            }
         }
     }
 }

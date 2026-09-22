@@ -1,4 +1,4 @@
-using MatchPack.Data;
+﻿using MatchPack.Data;
 using UnityEngine;
 
 namespace MatchPack.Gameplay
@@ -6,7 +6,7 @@ namespace MatchPack.Gameplay
     /// <summary>
     /// Joker Box. Banta tipsiz bir kutu gönderir: kutu ilk objesini her türden kabul eder, o
     /// objenin tipine kilitlenir ve kalan yuvalarını yalnızca aynı tipten objelerle doldurur.
-    /// Kutunun alacağı obje adedi prefab'taki yuva sayısıdır.
+    /// Kutu bandın normal kutu prefab'ından üretilir; joker'liği bant çalışma anında verir.
     /// </summary>
     public class JokerBoxBooster : BoosterBehaviour
     {
@@ -17,13 +17,13 @@ namespace MatchPack.Gameplay
 
         public override bool TryActivate(BoosterData data)
         {
-            if (data == null || data.JokerBoxPrefab == null) { return false; }
+            if (data == null) { return false; }
 
             bool isAnyQueued = false;
 
             for (int i = 0; i < data.JokerBoxCount; i++)
             {
-                if (!_conveyor.TryQueueJokerBox(data.JokerBoxPrefab)) { break; }
+                if (!_conveyor.TryQueueJokerBox()) { break; }
 
                 isAnyQueued = true;
             }

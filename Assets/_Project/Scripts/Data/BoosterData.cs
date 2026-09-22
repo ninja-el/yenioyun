@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace MatchPack.Data
 {
@@ -65,9 +65,6 @@ namespace MatchPack.Data
         [SerializeField, Min(0f)] private float _autoMatchInterval = 0.12f;
 
         [Header("Joker Box")]
-        [Tooltip("Banta gönderilecek joker kutu prefab'ı. Kutunun alacağı obje adedi prefab'taki yuva sayısıdır.")]
-        [SerializeField] private GameObject _jokerBoxPrefab;
-
         [Tooltip("Tek kullanımda banta gönderilecek joker kutu adedi.")]
         [SerializeField, Min(1)] private int _jokerBoxCount = 1;
 
@@ -85,7 +82,6 @@ namespace MatchPack.Data
         public AutoMatchMode AutoMatchMode => _autoMatchMode;
         public int AutoMatchCount => _autoMatchCount;
         public float AutoMatchInterval => _autoMatchInterval;
-        public GameObject JokerBoxPrefab => _jokerBoxPrefab;
         public int JokerBoxCount => _jokerBoxCount;
     }
 }

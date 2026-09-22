@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using MatchPack.Core;
 using MatchPack.Data;
@@ -38,7 +38,6 @@ namespace MatchPack.Gameplay
         [SerializeField] private GameObject[] _boxPrefabs;
 
         private readonly Queue<ItemType> _boxQueue = new Queue<ItemType>();
-        private readonly Queue<GameObject> _jokerQueue = new Queue<GameObject>();
         private readonly List<ItemType> _queueBuffer = new List<ItemType>();
         private readonly List<LeavingBox> _leavingBoxes = new List<LeavingBox>();
 
@@ -52,6 +51,7 @@ namespace MatchPack.Gameplay
         private float _entryTimer;
         private int _capacity;
         private int _dispatchedBoxCount;
+        private int _queuedJokerCount;
         private bool _isRunning;
 
         /// <summary>Henüz banta girmemiş kutu sayısı.</summary>
@@ -100,9 +100,10 @@ namespace MatchPack.Gameplay
         }
 
         /// <summary>
-        /// Bantta bu tipe uygun, girişini tamamlamış ve yuvası kalmış bir kutu varsa döner. Tipi
-        /// belirlenmemiş joker kutu yalnızca aynı tipten normal kutu bulunamadığında aday olur;
-        /// bu çağrı hiçbir kutunun durumunu değiştirmez.
+        /// Bantta bu tipe uygun, girişini tamamlamış ve yuvası kalmış bir kutu varsa döner. Aynı
+        /// tipten birden fazla kutu varsa en dolu olan seçilir. Tipi belirlenmemiş joker kutu
+        /// yalnızca aynı tipten kutu hiç bulunamadığında aday olur; bu çağrı hiçbir kutunun
+        /// durumunu değiştirmez.
         /// </summary>
         public bool TryGetBoxFor(ItemType type, out Box box)
         {
@@ -120,8 +121,9 @@ namespace MatchPack.Gameplay
 
                 if (candidate.Type == type)
                 {
-                    box = candidate;
-                    return true;
+                    // En dolu kutu önce tamamlansın ki bantta yarım kalmış kutu birikmesin.
+                    if (box == null || candidate.ItemCount > box.ItemCount) { box = candidate; }
+                    continue;
                 }
 
                 if (joker == null && candidate.IsJoker && !candidate.IsTypeLocked && HasBoxCredit(type))
@@ -130,7 +132,8 @@ namespace MatchPack.Gameplay
                 }
             }
 
-            box = joker;
+            if (box == null) { box = joker; }
+
             return box != null;
         }
 
@@ -170,13 +173,14 @@ namespace MatchPack.Gameplay
 
         /// <summary>
         /// Joker kutuyu bant sırasına alır; bir sonraki boş slot giriş noktasını geçtiğinde banta
-        /// katılır. Level'in kutu kuyruğundan gelmediği için kapasite kuralı girişini engellemez.
+        /// katılır. Kutu normal kutu prefab'ından üretilir, joker'liği çalışma anında verilir.
+        /// Level'in kutu kuyruğundan gelmediği için kapasite kuralı girişini engellemez.
         /// </summary>
-        public bool TryQueueJokerBox(GameObject prefab)
+        public bool TryQueueJokerBox()
         {
-            if (!_isRunning || prefab == null) { return false; }
+            if (!_isRunning) { return false; }
 
-            _jokerQueue.Enqueue(prefab);
+            _queuedJokerCount++;
             return true;
         }
 
@@ -205,8 +209,8 @@ namespace MatchPack.Gameplay
 
             _leavingBoxes.Clear();
             _boxQueue.Clear();
-            _jokerQueue.Clear();
             _queueBuffer.Clear();
+            _queuedJokerCount = 0;
             _path = null;
         }
 
@@ -234,7 +238,7 @@ namespace MatchPack.Gameplay
                 if (_slotStates[i] != SlotState.Empty) { continue; }
                 if (_entryTimer > 0f) { return; }
 
-                bool hasJokerBox = _jokerQueue.Count > 0;
+                bool hasJokerBox = _queuedJokerCount > 0;
                 if (!hasJokerBox && !CanDispatch()) { return; }
                 if (!HasCrossed(i, previousOffset, travelled, _path.EntryDistance)) { continue; }
 
@@ -261,28 +265,30 @@ namespace MatchPack.Gameplay
 
         private void DispatchBox(int slotIndex)
         {
-            GameObject prefab = _boxPrefabs[_dispatchedBoxCount % _boxPrefabs.Length];
-            GameObject instance = PoolManager.Instance.Get(prefab);
-            if (instance == null) { return; }
+            Box box = GetNextBox();
+            if (box == null) { return; }
 
-            _dispatchedBoxCount++;
-            PlaceBox(slotIndex, instance.GetComponent<Box>(), _boxQueue.Dequeue());
+            PlaceBox(slotIndex, box, _boxQueue.Dequeue());
         }
 
         private void DispatchJokerBox(int slotIndex)
         {
-            GameObject instance = PoolManager.Instance.Get(_jokerQueue.Peek());
-            if (instance == null) { return; }
+            Box box = GetNextBox();
+            if (box == null) { return; }
 
-            _jokerQueue.Dequeue();
-            Box box = instance.GetComponent<Box>();
-
-            if (!box.IsJoker)
-            {
-                Debug.LogError("Conveyor was given a joker box prefab whose Box is not marked as joker.", this);
-            }
-
+            _queuedJokerCount--;
+            box.SetJoker(true);
             PlaceBox(slotIndex, box, null);
+        }
+
+        private Box GetNextBox()
+        {
+            GameObject prefab = _boxPrefabs[_dispatchedBoxCount % _boxPrefabs.Length];
+            GameObject instance = PoolManager.Instance.Get(prefab);
+            if (instance == null) { return null; }
+
+            _dispatchedBoxCount++;
+            return instance.GetComponent<Box>();
         }
 
         private void PlaceBox(int slotIndex, Box box, ItemType type)
@@ -443,7 +449,7 @@ namespace MatchPack.Gameplay
 
         private void CheckCompletion()
         {
-            if (_boxQueue.Count > 0 || _jokerQueue.Count > 0 || _leavingBoxes.Count > 0) { return; }
+            if (_boxQueue.Count > 0 || _queuedJokerCount > 0 || _leavingBoxes.Count > 0) { return; }
 
             for (int i = 0; i < _slotBoxes.Length; i++)
             {

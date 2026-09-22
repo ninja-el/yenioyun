@@ -15,4 +15,4 @@ MonoBehaviour:
   _id: watermelon
   _displayName: Watermelon
   _prefab: {fileID: 3000010000000000, guid: 8ed5a6b8a9344664c9438d071621cba0, type: 3}
-  _icon: {fileID: 0}
+  _icon: {fileID: 21300000, guid: 96e787724da905d43a116350bdf6057b, type: 3}
