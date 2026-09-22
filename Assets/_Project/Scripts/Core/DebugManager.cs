@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using MatchPack.Gameplay;
 using MatchPack.Meta;
 using UnityEngine;
@@ -319,7 +319,8 @@ namespace MatchPack.Core
             {
                 _statusBuilder.Append(InputManager.Instance.IsBoxCastEnabled
                     ? $"  probe: boxcast {InputManager.Instance.BoxCastWidth:0.00}"
-                    : "  probe: raycast");
+                    : "  probe: raycast")
+                    .Append($" x{InputManager.Instance.MaxProbeHits}");
             }
 
             if (!_hasLevelComponents)

@@ -1,4 +1,5 @@
-using System;
+﻿using System;
+using System.Collections.Generic;
 using MatchPack.Core;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -6,8 +7,10 @@ using UnityEngine.InputSystem;
 namespace MatchPack.Gameplay
 {
     /// <summary>
-    /// Ekrana dokunuşu yığın objesine çevirir. Sahne geçişi boyunca kapalıdır; kutuya uçmakta olan
-    /// objenin collider'ı kapalı olduğu için prob onu hedeflemez.
+    /// Ekrana dokunuşu yığın objelerine çevirir. Prob ilk çarptığı objede durmaz; ışın boyunca
+    /// sıralanmış birkaç adayı birden toplar ve hangisinin oynanacağına karar vermeyi dinleyene
+    /// bırakır. Sahne geçişi boyunca kapalıdır; kutuya uçmakta olan objenin collider'ı kapalı
+    /// olduğu için prob onu hedeflemez.
     /// </summary>
     public class InputManager : MonoBehaviour
     {
@@ -47,8 +50,15 @@ namespace MatchPack.Gameplay
         // olsun; sıfır verilince BoxCast dejenere kutuyla hiçbir şeye çarpmıyor.
         private const float ProbeThickness = 0.01f;
 
-        /// <summary>Yığındaki bir objeye dokunulduğunda yayınlanır.</summary>
-        public event Action<StackItem> OnItemTapped;
+        // NonAlloc cast'ler isabetleri mesafeye göre sıralamaz ve tampon dolunca gerisini atar;
+        // en yakınları kaçırmamak için tampon istenen aday sayısından bilerek büyük tutulur.
+        private const int ProbeBufferSize = 16;
+
+        /// <summary>
+        /// Dokunuşun çarptığı yığın objeleri, yakından uzağa sıralı. Liste her dokunuşta yeniden
+        /// kullanılır; dinleyen taraf saklamamalı, çağrı içinde tüketmelidir.
+        /// </summary>
+        public event Action<IReadOnlyList<StackItem>> OnItemsTapped;
 
         /// <summary>Her dokunuşun ham prob sonucu; prob hiçbir şeye çarpmasa da yayınlanır.</summary>
         public event Action<TapProbe> OnTapProbed;
@@ -62,6 +72,12 @@ namespace MatchPack.Gameplay
         [Tooltip("Kutu probun dünya birimi cinsinden kenar uzunluğu. Büyüdükçe küçük kaymalar affedilir.")]
         [SerializeField, Min(0.01f)] private float _boxCastWidth = 0.3f;
 
+        [Tooltip("Probun tek dokunuşta toplayacağı en fazla obje adedi. 1 verilince yalnızca en yakın obje aday olur.")]
+        [SerializeField, Min(1)] private int _maxProbeHits = 2;
+
+        private readonly List<StackItem> _candidates = new List<StackItem>();
+        private readonly RaycastHit[] _hitBuffer = new RaycastHit[ProbeBufferSize];
+
         private InputAction _tapAction;
 
         /// <summary>Dokunuş algılaması açık mı? Sahne geçişinde SceneLoader kapatır.</summary>
@@ -72,6 +88,9 @@ namespace MatchPack.Gameplay
 
         /// <summary>Kutu probun kenar uzunluğu. Debug ekranı bunu yazar.</summary>
         public float BoxCastWidth => _boxCastWidth;
+
+        /// <summary>Tek dokunuşta toplanan en fazla aday sayısı. Debug ekranı bunu yazar.</summary>
+        public int MaxProbeHits => _maxProbeHits;
 
         private void Awake()
         {
@@ -135,13 +154,9 @@ namespace MatchPack.Gameplay
             TapProbe probe = Probe(camera, Pointer.current.position.ReadValue());
             OnTapProbed?.Invoke(probe);
 
-            if (!probe.HasHit) { return; }
+            if (_candidates.Count == 0) { return; }
 
-            // Collider obje prefabının alt objesinde olabilir; StackItem her zaman kökte durur.
-            StackItem item = probe.Hit.collider.GetComponentInParent<StackItem>();
-            if (item == null) { return; }
-
-            OnItemTapped?.Invoke(item);
+            OnItemsTapped?.Invoke(_candidates);
         }
 
         // Kamera GameScene'de durduğu için Inspector'dan bağlanamaz (sahneler arası referans
@@ -159,23 +174,64 @@ namespace MatchPack.Gameplay
 
             if (!_isBoxCastEnabled)
             {
-                Physics.Raycast(ray, out RaycastHit rayHit, Mathf.Infinity, _itemLayers);
-                return new TapProbe(ray, rayHit, false, Vector3.zero, Quaternion.identity);
+                int rayHitCount = Physics.RaycastNonAlloc(ray, _hitBuffer, Mathf.Infinity, _itemLayers);
+                CollectCandidates(rayHitCount);
+
+                return new TapProbe(ray, GetNearestHit(rayHitCount), false, Vector3.zero, Quaternion.identity);
             }
 
             Quaternion orientation = Quaternion.LookRotation(ray.direction, camera.transform.up);
             Vector3 halfExtents = new Vector3(_boxCastWidth * 0.5f, _boxCastWidth * 0.5f, ProbeThickness);
 
-            Physics.BoxCast(
+            int boxHitCount = Physics.BoxCastNonAlloc(
                 ray.origin,
                 halfExtents,
                 ray.direction,
-                out RaycastHit boxHit,
+                _hitBuffer,
                 orientation,
                 Mathf.Infinity,
                 _itemLayers);
 
-            return new TapProbe(ray, boxHit, true, halfExtents, orientation);
+            CollectCandidates(boxHitCount);
+
+            return new TapProbe(ray, GetNearestHit(boxHitCount), true, halfExtents, orientation);
+        }
+
+        /// <summary>
+        /// Tampondaki isabetleri mesafeye göre sıralar ve en fazla <see cref="_maxProbeHits"/> ayrı
+        /// objeyi aday listesine yazar. Aynı objenin birden fazla collider'ı bir kez sayılır.
+        /// </summary>
+        private void CollectCandidates(int hitCount)
+        {
+            _candidates.Clear();
+            if (hitCount <= 0) { return; }
+
+            Array.Sort(_hitBuffer, 0, hitCount, HitDistanceComparer.Instance);
+
+            for (int i = 0; i < hitCount && _candidates.Count < _maxProbeHits; i++)
+            {
+                // Collider obje prefabının alt objesinde olabilir; StackItem her zaman kökte durur.
+                StackItem item = _hitBuffer[i].collider.GetComponentInParent<StackItem>();
+                if (item == null || _candidates.Contains(item)) { continue; }
+
+                _candidates.Add(item);
+            }
+        }
+
+        // Sıralama CollectCandidates içinde yapıldığı için en yakın isabet tamponun başındadır.
+        private RaycastHit GetNearestHit(int hitCount)
+        {
+            return hitCount > 0 ? _hitBuffer[0] : default;
+        }
+
+        private class HitDistanceComparer : IComparer<RaycastHit>
+        {
+            public static readonly HitDistanceComparer Instance = new HitDistanceComparer();
+
+            public int Compare(RaycastHit x, RaycastHit y)
+            {
+                return x.distance.CompareTo(y.distance);
+            }
         }
     }
 }

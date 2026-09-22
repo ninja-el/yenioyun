@@ -29,6 +29,7 @@ Değer değişirse önce bu dosya güncellenir.
 | Bekleyen objeler için tarama aralığı | 0.5 sn | `ItemStack` |
 | Yığının oturması için zaman aşımı | 1 sn | `ItemStack` |
 | Dokunuş probu | Kutu (BoxCast), 0.3 birim kenar | `InputManager` |
+| Probun toplayacağı en fazla obje | 2 | `InputManager` |
 | Objenin uçuş kavisi yüksekliği | 1.5 birim | `MatchResolver` |
 | Hatalı hamlede kamera sarsıntısı | 0.2 sn / 0.15 şiddet | `MatchResolver` |
 | Hedef FPS | 60 | Proje ayarı |
@@ -191,6 +192,7 @@ Envanter index'i `BoosterType` enum sırasıdır: 0 Freeze, 1 Shuffle, 2 AutoMat
 | 39 | Localization script'leri `MatchPack.Localization` namespace'ine alındı; `LanguageCode` enum'u `MatchPack.Data` altında | Script'ler `_Game.Scripts.*` namespace'iyle geldi ve projede olmayan iki tipe (`LanguageCode`, `PrefKeys`) bağlıydı; derlenmiyordu. 02-Mimari'nin "namespace klasörü izler" kuralına çekildi |
 | 40 | Dil seçimi tek ayar olarak `PlayerPrefs`'te tutulur, `PlayerData`'da değil | `Loc` static ve ilk `Get` çağrısında kendini kurar; o an `SaveManager` henüz ayakta olmayabilir. Diğer ayarlar (ses/müzik/titreşim) `PlayerData`'da kalır |
 | 41 | Metinler tabloda key ile durur (`Resources/LocalizationTable.asset`); statik yazılar `LocalizedText` bileşeniyle, kodun yazdığı yazılar `Loc.Get` ile çözülür | Tek kaynak; eksik çeviri ekranda key olarak görünür, sessizce boş kalmaz. Fallback zinciri: seçili dil -> English -> key |
+| 48 | Dokunuş probu ilk objede durmaz: ışın boyunca en fazla `_maxProbeHits` (varsayılan 2) obje toplanır, `MatchResolver` yakından uzağa deneyip gidecek kutusu olan ilk objeyi oynar | Tombul parmak: oyuncu doğru objeye bassa bile kenarından geçen komşu obje probu kapatıp hamleyi yakıyordu. Adayları sıralı denemek, nokta atışı dokunuşu bozmadan (doğru obje zaten en yakın olduğu için önce denenir) yanlış seçimi engelliyor. Adet Inspector'dan ayarlanır ki pay oyun hissine göre değiştirilebilsin |
 
 ## Açık sorular
 

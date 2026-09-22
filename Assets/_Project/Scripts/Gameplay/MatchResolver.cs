@@ -1,4 +1,5 @@
-using System;
+﻿using System;
+using System.Collections.Generic;
 using DG.Tweening;
 using MatchPack.Core;
 using MatchPack.Data;
@@ -7,8 +8,9 @@ using UnityEngine;
 namespace MatchPack.Gameplay
 {
     /// <summary>
-    /// Dokunulan objeye bantta uygun kutu arar. Bulursa objeyi fizik dışına alıp kavisli bir uçuşla
-    /// kutuya gönderir, bulamazsa hatalı hamle geri bildirimini tetikler.
+    /// Dokunuşun adaylarını sırayla deneyip bantta uygun kutu arar. Bulursa objeyi fizik dışına
+    /// alıp kavisli bir uçuşla kutuya gönderir, hiçbir aday gidemiyorsa hatalı hamle geri
+    /// bildirimini tetikler.
     /// </summary>
     public class MatchResolver : MonoBehaviour
     {
@@ -35,7 +37,7 @@ namespace MatchPack.Gameplay
 
         private void Start()
         {
-            InputManager.Instance.OnItemTapped += HandleItemTapped;
+            InputManager.Instance.OnItemsTapped += HandleItemsTapped;
             SceneLoader.Instance.OnBeforeLevelTeardown += HandleBeforeLevelTeardown;
         }
 
@@ -43,7 +45,7 @@ namespace MatchPack.Gameplay
         {
             if (InputManager.Instance != null)
             {
-                InputManager.Instance.OnItemTapped -= HandleItemTapped;
+                InputManager.Instance.OnItemsTapped -= HandleItemsTapped;
             }
 
             if (SceneLoader.Instance != null)
@@ -91,11 +93,20 @@ namespace MatchPack.Gameplay
             return true;
         }
 
-        private void HandleItemTapped(StackItem item)
+        // Prob tek objede durmadığı için dokunuşa birden fazla aday gelir: en yakından başlanır,
+        // ilk gidebilen oynanır. Tam isabetli dokunuş yine önce denendiği için bu kural yalnızca
+        // en öndeki objenin gidecek kutusu yokken devreye girer.
+        private void HandleItemsTapped(IReadOnlyList<StackItem> items)
         {
             if (GameManager.Instance.State != GameState.Playing || !_itemStack.IsSettled) { return; }
+            if (items == null || items.Count == 0) { return; }
 
-            if (!TryMatch(item)) { Miss(item); }
+            for (int i = 0; i < items.Count; i++)
+            {
+                if (TryMatch(items[i])) { return; }
+            }
+
+            Miss(items[0]);
         }
 
         private void Match(StackItem item, Box box, Transform slot)
