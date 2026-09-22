@@ -11540,6 +11540,7 @@ MonoBehaviour:
     m_Bits: 64
   _isBoxCastEnabled: 1
   _boxCastWidth: 0.3
+  _maxProbeHits: 2
 --- !u!114 &818496205
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -27303,6 +27304,8 @@ MonoBehaviour:
   _conveyor: {fileID: 1765644555}
   _itemStack: {fileID: 1765644554}
   _flightArcHeight: 1.5
+  _landScaleDuration: 0.35
+  _landSquashAmount: 0.35
   _shakeDuration: 0.2
   _shakeStrength: 0.15
 --- !u!114 &1765644558
@@ -28812,6 +28815,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1845607026}
   - component: {fileID: 1845607027}
+  - component: {fileID: 1845607028}
   m_Layer: 0
   m_Name: GamePanel
   m_TagString: Untagged
@@ -28857,6 +28861,27 @@ MonoBehaviour:
   _timer: {fileID: 1765644558}
   _timeText: {fileID: 1905568907}
   _goldText: {fileID: 244873561}
+--- !u!114 &1845607028
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1845607025}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 22150cf0ff74b854d935c4497fd328e2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MatchPack.UI.TimeBonusView
+  _booster: {fileID: 31022169}
+  _source: {fileID: 517751987}
+  _target: {fileID: 1905568906}
+  _textPrefab: {fileID: 6145398996866205841, guid: 75f246b078bd5fa4b893403334a79098, type: 3}
+  _layer: {fileID: 1845607026}
+  _textKey: ui.booster.timebonus.fly
+  _flyEase: 5
+  _punchScale: 1.3
+  _punchDuration: 0.3
 --- !u!114 &1850783263
 MonoBehaviour:
   m_ObjectHideFlags: 0

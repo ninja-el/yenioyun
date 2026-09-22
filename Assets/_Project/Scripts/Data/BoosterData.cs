@@ -21,10 +21,10 @@ namespace MatchPack.Data
         [Tooltip("Bu asset'in tanımladığı booster. Katalogda her tip bir kez bulunur.")]
         [SerializeField] private BoosterType _type;
 
-        [Tooltip("Booster adının localization key'i. Örnek: ui.booster.freeze.title")]
+        [Tooltip("Booster adının localization key'i. Örnek: ui.booster.timebonus.title")]
         [SerializeField] private string _titleKey;
 
-        [Tooltip("Booster açıklamasının localization key'i. Örnek: ui.booster.freeze.info")]
+        [Tooltip("Booster açıklamasının localization key'i. Örnek: ui.booster.timebonus.info")]
         [SerializeField] private string _infoKey;
 
         [Tooltip("Buton ve satın alma panelinde gösterilen ikon.")]
@@ -44,15 +44,19 @@ namespace MatchPack.Data
         [Tooltip("Booster kullanılınca ankraj noktasında oynatılacak efekt prefab'ı. Boşsa efekt oynatılmaz.")]
         [SerializeField] private GameObject _effectPrefab;
 
-        [Tooltip("Efektin ekranda kalma süresi (saniye). Time Freeze'de bunun yerine donma süresi kullanılır.")]
+        [Tooltip("Efektin ekranda kalma süresi (saniye).")]
         [SerializeField, Min(0f)] private float _effectDuration = 1f;
 
-        [Header("Time Freeze")]
-        [Tooltip("Sayacın duracağı süre (saniye).")]
-        [SerializeField, Min(0f)] private float _freezeDuration = 5f;
+        [Header("Ek Süre")]
+        [Tooltip("Sayaca eklenecek süre (saniye).")]
+        [SerializeField, Min(0f)] private float _bonusSeconds = 5f;
 
-        [Tooltip("Donma süresince bant da dursun mu?")]
-        [SerializeField] private bool _isBeltFrozen = true;
+        [Tooltip("\"+X sn\" yazısının butondan süre yazısına uçma süresi (saniye). Süre, yazı vardığında eklenir.")]
+        [SerializeField, Min(0f)] private float _bonusFlyDuration = 0.5f;
+
+        [Header("Shuffle")]
+        [Tooltip("Objelerin yeni yerlerine kayma süresi (saniye).")]
+        [SerializeField, Min(0f)] private float _shuffleDuration = 0.5f;
 
         [Header("Auto-Match")]
         [Tooltip("Items: belirli sayıda obje kutulara gönderilir. Boxes: belirli sayıda kutu tamamen doldurulur.")]
@@ -77,8 +81,9 @@ namespace MatchPack.Data
         public int PackAmount => _packAmount;
         public GameObject EffectPrefab => _effectPrefab;
         public float EffectDuration => _effectDuration;
-        public float FreezeDuration => _freezeDuration;
-        public bool IsBeltFrozen => _isBeltFrozen;
+        public float BonusSeconds => _bonusSeconds;
+        public float BonusFlyDuration => _bonusFlyDuration;
+        public float ShuffleDuration => _shuffleDuration;
         public AutoMatchMode AutoMatchMode => _autoMatchMode;
         public int AutoMatchCount => _autoMatchCount;
         public float AutoMatchInterval => _autoMatchInterval;

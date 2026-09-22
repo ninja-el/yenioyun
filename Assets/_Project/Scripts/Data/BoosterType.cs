@@ -7,7 +7,7 @@ namespace MatchPack.Data
     /// </summary>
     public enum BoosterType
     {
-        Freeze = 0,
+        TimeBonus = 0,
         Shuffle = 1,
         AutoMatch = 2,
         JokerBox = 3

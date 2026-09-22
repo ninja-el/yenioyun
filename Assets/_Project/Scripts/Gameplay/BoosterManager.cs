@@ -28,7 +28,7 @@ namespace MatchPack.Gameplay
         [Tooltip("Booster efektlerinin oynatılacağı nokta. Boş bırakılırsa efekt oynatılmaz.")]
         [SerializeField] private Transform _effectAnchor;
 
-        [Tooltip("Satın alma paneli açıkken durdurulacak sayaç.")]
+        [Tooltip("Satın alma paneli açıkken durdurulacak ve ek sürenin ekleneceği sayaç.")]
         [SerializeField] private LevelTimer _timer;
 
         [Tooltip("Satın alma paneli açıkken durdurulacak bant.")]
@@ -125,28 +125,24 @@ namespace MatchPack.Gameplay
         {
             IsGameplayPaused = isPaused;
 
-            ApplyHolds();
+            if (_timer != null) { _timer.SetPaused(isPaused); }
+            if (_conveyor != null) { _conveyor.SetSpeedScale(isPaused ? 0f : 1f); }
             if (InputManager.Instance != null) { InputManager.Instance.SetInputEnabled(!isPaused); }
         }
 
         /// <summary>
-        /// Sayacın ve bandın durup durmayacağını yeniden hesaplar. Kısıt iki kaynaktan gelebilir:
-        /// satın alma paneli oyunu durdurmuş olabilir veya Time Freeze sürüyor olabilir. Biri
-        /// kalktığında diğerinin kısıtı bozulmasın diye ikisi de tek noktadan uygulanır.
+        /// Sayaca süre ekler. Sayaç işlemiyorsa (level bitti veya kaybedildi) eklemez ve false döner.
         /// </summary>
-        public void ApplyHolds()
+        public bool TryAddTimerSeconds(float seconds)
         {
-            FreezeBooster freeze = FindBooster(BoosterType.Freeze) as FreezeBooster;
+            if (!IsTimerRunning) { return false; }
 
-            bool holdTimer = IsGameplayPaused || (freeze != null && freeze.IsFrozen);
-            bool holdBelt = IsGameplayPaused || (freeze != null && freeze.IsBeltFrozen);
-
-            if (_timer != null) { _timer.SetPaused(holdTimer); }
-            if (_conveyor != null) { _conveyor.SetSpeedScale(holdBelt ? 0f : 1f); }
+            _timer.AddSeconds(seconds);
+            return true;
         }
 
-        /// <summary>Time Freeze booster'ını kullanır. Butona bu method bağlanır.</summary>
-        public void UseFreeze() { TryUse(BoosterType.Freeze); }
+        /// <summary>Ek Süre booster'ını kullanır. Butona bu method bağlanır.</summary>
+        public void UseTimeBonus() { TryUse(BoosterType.TimeBonus); }
 
         /// <summary>Shuffle booster'ını kullanır. Butona bu method bağlanır.</summary>
         public void UseShuffle() { TryUse(BoosterType.Shuffle); }

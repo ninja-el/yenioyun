@@ -18,7 +18,7 @@ namespace MatchPack.Gameplay
         public float Remaining { get; private set; }
         public bool IsRunning { get; private set; }
 
-        /// <summary>Sayaç dondurulmuş mu? Time Freeze booster'ı bunu açar.</summary>
+        /// <summary>Sayaç dondurulmuş mu? Satın alma paneli açıkken açılır.</summary>
         public bool IsPaused { get; private set; }
 
         /// <summary>Sayacı verilen süreyle başlatır.</summary>
@@ -40,7 +40,7 @@ namespace MatchPack.Gameplay
 
         /// <summary>
         /// Sayacı kalan süreyi koruyarak dondurur veya çözer. Stop'tan farkı, çözüldüğünde
-        /// sayacın kaldığı yerden devam etmesidir; Time Freeze booster'ı bunu kullanır.
+        /// sayacın kaldığı yerden devam etmesidir; satın alma paneli bunu kullanır.
         /// </summary>
         public void SetPaused(bool isPaused)
         {
@@ -48,7 +48,7 @@ namespace MatchPack.Gameplay
         }
 
         /// <summary>
-        /// Kalan süreyi değiştirir. Pozitif değer süre ekler (devam etme), negatif değer ceza
+        /// Kalan süreyi değiştirir. Pozitif değer süre ekler (Ek Süre booster'ı), negatif değer ceza
         /// olarak düşer. Süre sıfırın altına inmez; sayaç durmuşsa hiçbir şey yapmaz.
         /// </summary>
         public void AddSeconds(float seconds)

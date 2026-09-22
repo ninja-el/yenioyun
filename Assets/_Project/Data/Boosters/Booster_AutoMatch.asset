@@ -21,8 +21,9 @@ MonoBehaviour:
   _packAmount: 3
   _effectPrefab: {fileID: 0}
   _effectDuration: 1
-  _freezeDuration: 5
-  _isBeltFrozen: 1
+  _bonusSeconds: 5
+  _bonusFlyDuration: 0.5
+  _shuffleDuration: 0.5
   _autoMatchMode: 0
   _autoMatchCount: 1
   _autoMatchInterval: 0.12

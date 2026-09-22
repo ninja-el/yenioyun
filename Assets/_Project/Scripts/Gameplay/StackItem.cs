@@ -1,4 +1,5 @@
-﻿using DG.Tweening;
+﻿using System;
+using DG.Tweening;
 using MatchPack.Core;
 using MatchPack.Data;
 using UnityEngine;
@@ -20,6 +21,7 @@ namespace MatchPack.Gameplay
         private float _boundingRadius;
         private Vector3 _baseScale;
         private RigidbodyInterpolation _interpolation;
+        private Sequence _moveSequence;
 
         public ItemType Type { get; private set; }
 
@@ -28,6 +30,9 @@ namespace MatchPack.Gameplay
 
         /// <summary>Obje fiziksel olarak durulmuş mu? Yığının oturduğunu anlamak için kullanılır.</summary>
         public bool IsResting => _rigidbody.IsSleeping();
+
+        /// <summary><see cref="MoveTo"/> ile başlatılan taşıma sürüyor mu?</summary>
+        public bool IsMoving => _moveSequence != null;
 
         private void Awake()
         {
@@ -75,6 +80,33 @@ namespace MatchPack.Gameplay
         }
 
         /// <summary>
+        /// Objeyi verilen poza verilen sürede kaydırır; varınca rigidbody'yi de o poza oturtur ve
+        /// <paramref name="onArrived"/>'ı çağırır. Çağrı öncesi obje <see cref="SetSimulated"/> ile
+        /// fizik dışına alınmış olmalıdır; collider kapalı olduğu için yolda başka objeye çarpmaz.
+        /// </summary>
+        public void MoveTo(Vector3 position, Quaternion rotation, float duration, Ease ease, Action onArrived)
+        {
+            StopMove();
+
+            _moveSequence = DOTween.Sequence()
+                .Join(transform.DOMove(position, duration).SetEase(ease))
+                .Join(transform.DORotateQuaternion(rotation, duration).SetEase(ease))
+                .OnComplete(() =>
+                {
+                    _moveSequence = null;
+                    Teleport(position, rotation);
+                    onArrived?.Invoke();
+                });
+        }
+
+        /// <summary>Süren taşımayı yarıda keser. Varış bildirimi yapılmaz.</summary>
+        public void StopMove()
+        {
+            _moveSequence?.Kill();
+            _moveSequence = null;
+        }
+
+        /// <summary>
         /// Kutuya iniş ölçek animasyonu: çarpma anında ezilme, ardından yaylanarak hedefe oturma.
         /// Hedef, objenin o anki ölçeğinin <see cref="ItemType.SelectedScale"/> katıdır; çarpan
         /// 1 iken obje bugünkü boyutuna oturur.
@@ -105,6 +137,7 @@ namespace MatchPack.Gameplay
 
         public void OnDespawned()
         {
+            StopMove();
             transform.DOKill();
             SetSimulated(false);
 

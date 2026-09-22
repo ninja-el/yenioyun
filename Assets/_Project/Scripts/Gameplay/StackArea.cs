@@ -92,6 +92,21 @@ namespace MatchPack.Gameplay
             return false;
         }
 
+        /// <summary>
+        /// Verilen noktayı, aynı turda ayrılmış başka bir yerle çakışmıyorsa ayırır. Shuffle'da
+        /// rastgele yer bulamayan objeyi başka bir objenin boşalttığı yere göndermek için kullanılır.
+        /// Nokta zaten bir objenin durduğu yer olduğundan duvar kontrolü yapılmaz; yerde duran
+        /// objenin küresi zemine değdiği için o kontrol her noktayı reddederdi.
+        /// </summary>
+        public bool TryReserveAt(Vector3 position, float radius)
+        {
+            float clearance = radius + _placementPadding;
+            if (IsReserved(position, clearance)) { return false; }
+
+            _reservations.Add(new Reservation { Position = position, Radius = clearance });
+            return true;
+        }
+
         private bool IsReserved(Vector3 candidate, float clearance)
         {
             for (int i = 0; i < _reservations.Count; i++)

@@ -100,25 +100,27 @@ Booster değerleri `GameConfig`'te değil, booster başına bir `BoosterData` as
 
 | Değer | Varsayılan | Kaynak |
 |---|---|---|
-| Time Freeze açılışı / donma süresi | Lvl 4 / 5 sn | `BoosterData` |
-| Time Freeze bandı da durdurur | Kapalı | `BoosterData.IsBeltFrozen` |
+| Ek Süre açılışı / eklenen süre | Lvl 4 / 5 sn | `BoosterData.BonusSeconds` |
+| Ek Süre "+X sn" yazısının uçma süresi (süre, yazı varınca eklenir) | 0.5 sn | `BoosterData.BonusFlyDuration` |
+| Ek Süre sonrası süre yazısının büyüme ölçeği / süresi | 1.3x / 0.3 sn | `TimeBonusView` |
 | Shuffle açılışı | Lvl 6 | `BoosterData` |
+| Shuffle'da objelerin yeni yerlerine kayma süresi | 0.5 sn | `BoosterData.ShuffleDuration` |
 | Auto-Match açılışı | Lvl 8 | `BoosterData` |
 | Auto-Match modu | Items (obje bazlı) | `BoosterData.AutoMatchMode` |
 | Auto-Match adedi | 1 (moda göre obje veya kutu) | `BoosterData.AutoMatchCount` |
 | Auto-Match hamleleri arası bekleme | 0.12 sn | `BoosterData.AutoMatchInterval` |
 | Joker Box açılışı / adedi | Lvl 10 / 1 kutu | `BoosterData` |
 | Joker kutunun alacağı obje adedi | Prefab'taki yuva sayısı (3) | Joker kutu prefab'ı |
-| Booster efektinin ekranda kalma süresi | 1 sn (Time Freeze'de donma süresi) | `BoosterData.EffectDuration` |
+| Booster efektinin ekranda kalma süresi | 1 sn | `BoosterData.EffectDuration` |
 | Booster paketi fiyatı | 40 gold | `BoosterData.GoldPrice` |
 | Booster paketindeki adet | 3 | `BoosterData.PackAmount` |
 | Booster adı / açıklaması | `ui.booster.<ad>.title` / `.info` | `BoosterData` localization key'i |
 
-Oyun içi buton sırası (ikonlara göre): `Booster_1` Auto-Match, `Booster_2` Time Freeze,
+Oyun içi buton sırası (ikonlara göre): `Booster_1` Auto-Match, `Booster_2` Ek Süre,
 `Booster_3` Shuffle, `Booster_4` Joker Box.
 
 Boosterlar envanterden tüketilir, cooldown yoktur, level içinde kullanım limiti stok kadardır.
-Envanter index'i `BoosterType` enum sırasıdır: 0 Freeze, 1 Shuffle, 2 AutoMatch, 3 JokerBox.
+Envanter index'i `BoosterType` enum sırasıdır: 0 TimeBonus, 1 Shuffle, 2 AutoMatch, 3 JokerBox.
 
 ## Alınmış kararlar
 
@@ -175,18 +177,18 @@ Envanter index'i `BoosterType` enum sırasıdır: 0 Freeze, 1 Shuffle, 2 AutoMat
 | 33 | `PlayerData.BoosterCounts` index eşlemesi `BoosterType` enum sırasıdır (0 Freeze, 1 Shuffle, 2 AutoMatch, 3 JokerBox) | Envanter dizisi zaten index bazlıydı ve `ShopProduct.BoosterRewards` de aynı sırayı kullanıyor. Araya yeni booster eklenirse eski kayıtlardaki adetler kayar; yeni booster daima listenin sonuna eklenir |
 | 34 | Joker kutu bir tipe kilitlenirken aynı tipten doldurulmamış bir kutu iptal edilir: önce kuyruktaki kutu, o yoksa banttaki boş kutu (banttan ayrılıp çıkışa gider) | Level'in obje sayısı kutu hedefinin tam katıdır. Joker kutu fazladan 3 yuva açtığı için karşılığında bir kutu iptal edilmezse level sonunda objesi kalmayan, asla dolmayacak bir kutu bantta dönerdi. İptal edilecek kutu yoksa joker o tipi kabul etmez |
 | 34a | Joker kutu, aynı tipten normal kutu varken seçilmez; yalnızca uygun normal kutu yokken aday olur | Oyuncunun elindeki joker, zaten yapılabilen bir hamlede harcanmasın |
-| 35 | Time Freeze sayacı `Stop`/`Resume` ile değil yeni `LevelTimer.SetPaused` ile durdurur | `Resume(extraSeconds)` kalan süreyi devam bedelinin süresine çekiyor; donma kalan süreyi olduğu gibi korumalı |
+| 35 | ~~Kaldırıldı (bkz. #50).~~ Time Freeze sayacı `Stop`/`Resume` ile değil yeni `LevelTimer.SetPaused` ile durdurur | `Resume(extraSeconds)` kalan süreyi devam bedelinin süresine çekiyor; donma kalan süreyi olduğu gibi korumalı |
 | 36 | Her booster kendi `BoosterBehaviour` bileşenidir; `BoosterManager` yalnızca kilit/stok kontrolü yapıp etkiyi devreder | Dört etkinin tek sınıfta toplanması 200 satır kuralını aşıyordu ve bant/yığın/sayaç referanslarının hepsini tek sınıfa bağlıyordu |
 | 37 | Etki uygulanamazsa (uygun hedef yok, booster zaten çalışıyor) booster envanterden düşülmez | Oyuncu hiçbir şey olmadan booster kaybetmesin |
 | 38 | Oyun içi HUD (`InGame/GamePanel`) `UIManager` tarafından yalnızca `GameState.Playing` iken açılır | Panel sahnede kapalı duruyordu ve kimse açmıyordu; booster butonları hiç aktif olmuyordu. Görünürlük kuralı 07-MVP K-07 kartındaki HUD şartıyla aynı |
 | 39 | Stoğu biten booster'a basılınca `BoosterPurchasePanel` o booster'ın verisiyle (ad, açıklama, ikon, adet, fiyat) açılır | Panel sahnede tek bir booster için sabit metinle duruyordu; dört booster için tek panel kullanılıyor |
 | 40 | Satın alma paneli açıkken oyun yerinde durur: sayaç, bant ve dokunuş kapanır (`BoosterManager.SetGameplayPaused`) | Oyuncu satın alma yaparken süre işlemeye devam etmemeli. `Time.timeScale` yerine mevcut duraklatma yolları kullanıldı; timeScale tween'leri ve yükleme ekranını da dondururdu |
-| 40a | Donma (Time Freeze) sürerken panel açılıp kapanırsa sayaç ve bant donmuş kalır | İki duraklatma sebebi üst üste geldiğinde panelin kapanması donmayı erken bitiriyordu |
+| 40a | ~~Kaldırıldı (bkz. #50).~~ Donma (Time Freeze) sürerken panel açılıp kapanırsa sayaç ve bant donmuş kalır | İki duraklatma sebebi üst üste geldiğinde panelin kapanması donmayı erken bitiriyordu |
 | 41 | Satın alma bitince panel kapanır ve booster kendiliğinden kullanılır | Oyuncu zaten kullanmak için satın aldı; ikinci bir tıklama istemiyor |
 | 42 | Gold yetmezse satın alma butonu gold popup'ını açar, panel açık kalır | Market paneli `MainMenu` altında olduğu için oyun içinde açılamıyor (karar #22'deki ayarlar paneliyle aynı sorun). `LevelResultScreen.ContinueWithGold` de aynı durumda gold popup'ı açıyor |
 | 43 | Kazanma panelinde `Gold_Btn` sonraki bölümü başlatır (`_winNextLevelButton`), `Close_Btn` ödülü alıp menüye döner | Buton hem sahnedeki OnClick'ten `NextLevel`'ı hem koddan `ClaimAndReturnToMenu`'yu çağırıyordu; iki iş tek butona bağlıydı. Artık tek kaynak koddaki listener, sahnedeki kopya çağrı kaldırıldı |
-| 47 | Time Freeze yalnızca sayacı durdurur; bant ve kutular dönmeye devam eder (`IsBeltFrozen` kapalı) | GDD'den türetilen ilk kural bandı da durduruyordu, oynanışta bandın da donması booster'ı "her şeyi dondur"a çevirip hamle yapılacak zamanı da öldürüyordu. Alan yerinde bırakıldı, istenirse asset'ten tekrar açılabilir |
-| 47a | Sayacın ve bandın durma kararı tek noktada hesaplanır (`BoosterManager.ApplyHolds`) | İki kaynak var: satın alma paneli ve Time Freeze. Her biri kendi başına sayaca/banda yazınca, biri bittiğinde diğerinin kısıtını da kaldırıyordu (panel kapanınca bant donmadığı halde duruyordu). Freeze artık yalnızca kendi durumunu tutuyor |
+| 47 | ~~Kaldırıldı (bkz. #50).~~ Time Freeze yalnızca sayacı durdurur; bant ve kutular dönmeye devam eder (`IsBeltFrozen` kapalı) | GDD'den türetilen ilk kural bandı da durduruyordu, oynanışta bandın da donması booster'ı "her şeyi dondur"a çevirip hamle yapılacak zamanı da öldürüyordu. Alan yerinde bırakıldı, istenirse asset'ten tekrar açılabilir |
+| 47a | ~~Kaldırıldı (bkz. #50).~~ Sayacın ve bandın durma kararı tek noktada hesaplanır (`BoosterManager.ApplyHolds`) | İki kaynak var: satın alma paneli ve Time Freeze. Her biri kendi başına sayaca/banda yazınca, biri bittiğinde diğerinin kısıtını da kaldırıyordu (panel kapanınca bant donmadığı halde duruyordu). Freeze artık yalnızca kendi durumunu tutuyor |
 | 46 | Bandın doku offseti hem açılışta hem çıkışta sıfırlanır (`trail.Awake` / `trail.OnDestroy`) | Offset paylaşılan materyal asset'ine yazıldığı için editörde kalıcı oluyordu: her oturum bir öncekinin bıraktığı yerden başlıyor, `.mat` dosyası da her oynayışta değişiyordu. Çıkışta da sıfırlanınca asset daima 0'da duruyor. Kalıcı çözüm materyali runtime'da kopyalamak veya `MaterialPropertyBlock` kullanmaktır; o, materyali kullanan renderer'ların da değiştirilmesini gerektirdiği için yapılmadı |
 | 45 | HUD'daki kalan süre `GameplayHUD` bileşeniyle `LevelTimer.OnTimerTicked`'ten beslenir; biçim `mm:ss` | Yazı sahnede elle girilmiş sabit bir metindi ("02:00") ve sayacı kimse dinlemiyordu. Bileşen `GamePanel` üzerinde durur, panel kapanınca aboneliğini bırakır |
 | 44 | Joker kutu prefab'ı `BoxJoker.prefab`, `Assets/Atakan/Testing/Box (1) Variant.prefab`'ın varyantıdır | Bant o klasördeki kutu varyantlarını kullanıyor ve yükseklik/ölçü değerleri onlarda; temel `Box.prefab`'tan türetilen kutu bandın 0.4 birim altında kalıyordu. O klasör temizlenirse varyantın temeli yeniden bağlanmalı |
@@ -196,6 +198,8 @@ Envanter index'i `BoosterType` enum sırasıdır: 0 Freeze, 1 Shuffle, 2 AutoMat
 | 41 | Metinler tabloda key ile durur (`Resources/LocalizationTable.asset`); statik yazılar `LocalizedText` bileşeniyle, kodun yazdığı yazılar `Loc.Get` ile çözülür | Tek kaynak; eksik çeviri ekranda key olarak görünür, sessizce boş kalmaz. Fallback zinciri: seçili dil -> English -> key |
 | 48 | Dokunuş probu ilk objede durmaz: ışın boyunca en fazla `_maxProbeHits` (varsayılan 2) obje toplanır, `MatchResolver` yakından uzağa deneyip gidecek kutusu olan ilk objeyi oynar | Tombul parmak: oyuncu doğru objeye bassa bile kenarından geçen komşu obje probu kapatıp hamleyi yakıyordu. Adayları sıralı denemek, nokta atışı dokunuşu bozmadan (doğru obje zaten en yakın olduğu için önce denenir) yanlış seçimi engelliyor. Adet Inspector'dan ayarlanır ki pay oyun hissine göre değiştirilebilsin |
 | 49 | Obje ölçeği uçuş boyunca değişmez; yuvasına oturduğu an ezil-yaylan animasyonu (`StackItem.PlayBoxLandingScale`) oynar. Hedef boyut `ItemType.SelectedScale` çarpanıyla tipe göre ayarlanır, varsayılan 1 | Uçuş sırasında küçülen obje kutuya girmeden önce gözden kayboluyor gibi duruyordu. Animasyonu uçuşun son anlarına hizalayan bir deneme de yapıldı; oynanışta aceleci durduğu için temas anında başlatmaya geri dönüldü, abartı (0.35) ve süre (0.35 sn) yükseltilerek iniş okunur kılındı. Çarpan hedefi o anki yerel ölçek üzerinden hesaplar, yani 1'de bugünkü davranış aynen korunur ve yalnızca kutuya sığmayan tipler için düşürülür. `StackItem` havuza dönerken kendi ölçeğine geri getirilir |
+| 50 | Time Freeze kaldırıldı, yerine Ek Süre (`TimeBonusBooster`, `BoosterType.TimeBonus` = 0) geldi: sayacı durdurmak yerine süreye 5 sn ekler. Butondan "+5 sn" yazısı süre yazısına uçar (`TimeBonusView` + havuzlu `FloatingText`), süre yazı varınca eklenir ve süre yazısı büyüyüp küçülür. Sayacı artık yalnızca satın alma paneli durdurur, `ApplyHolds` kaldırıldı | Oyuncu isteği. Enum değeri aynı index'te kaldığı için kayıtlardaki stok korunur. Süreyi zamanlayan booster'dır (mantık), UI yalnızca aynı süreyle yazıyı uçurur; böylece UI kural işletmez. Uçuş sırasında süre biterse süre eklenmez ve zıplama oynamaz |
+| 51 | Shuffle objeleri ışınlamaz; hepsi fizik dışına alınıp (collider kapalı) yeni noktalarına tween ile kayar, hepsi varınca fizik birlikte açılır (`ItemStack.Reshuffle`, `StackItem.MoveTo`) | Oyuncu isteği. Collider kapalı olduğu için yolda birbirlerine çarpıp itişmezler; varış noktaları yine çakışmasız ayrıldığı için vardıklarında da iç içe olmazlar. Kayma sürerken yeni obje doğmaz (boş yer araması kayan objeleri göremez) ve ikinci Shuffle reddedilir. Auto-Match kayan bir objeyi alırsa o objenin kayması kesilip varmış sayılır. Rastgele boş nokta bulamayan obje (yığın sıkken 24 deneme yetmiyor) yerinde kalmaz; başka bir objenin boşalttığı yere gider (`StackArea.TryReserveAt`), ayrılabilen yer kalmazsa yine eski bir yere gider ve olası küçük çakışmayı fizik çözer |
 
 ## Açık sorular
 

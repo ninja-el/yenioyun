@@ -93,7 +93,7 @@ namespace MatchPack.Gameplay
             _isRunning = true;
         }
 
-        /// <summary>Bant hızını ölçekler. Time Freeze booster'ı 0 vererek bandı durdurur.</summary>
+        /// <summary>Bant hızını ölçekler. Satın alma paneli 0 vererek bandı durdurur.</summary>
         public void SetSpeedScale(float scale)
         {
             _speedScale = Mathf.Max(0f, scale);
