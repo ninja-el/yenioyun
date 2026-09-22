@@ -10,10 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 57dae5e3582d41cb9f5a42b656805a13, type: 3}
-  m_Name: Item_Apple
-  m_EditorClassIdentifier: 
-  _id: apple
-  _displayName: Apple
-  _prefab: {fileID: 3000010000000000, guid: 9fcfdc1878614557a9c62a200b215fe2, type: 3}
+  m_Name: Item_Pepper
+  m_EditorClassIdentifier: Assembly-CSharp::MatchPack.Data.ItemType
+  _id: pepper
+  _displayName: Pepper
+  _prefab: {fileID: 8313820346137735105, guid: 25f6dc7b16795694799c6eaff7f5f11d, type: 3}
   _icon: {fileID: 0}
   _selectedScale: 1

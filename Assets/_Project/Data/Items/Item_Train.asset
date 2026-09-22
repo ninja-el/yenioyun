@@ -10,10 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 57dae5e3582d41cb9f5a42b656805a13, type: 3}
-  m_Name: Item_Apple
-  m_EditorClassIdentifier: 
-  _id: apple
-  _displayName: Apple
-  _prefab: {fileID: 3000010000000000, guid: 9fcfdc1878614557a9c62a200b215fe2, type: 3}
+  m_Name: Item_Train
+  m_EditorClassIdentifier: Assembly-CSharp::MatchPack.Data.ItemType
+  _id: train
+  _displayName: Train
+  _prefab: {fileID: 1045817567282519234, guid: 56a884857a4a1d045a1905f55196adbb, type: 3}
   _icon: {fileID: 0}
   _selectedScale: 1
