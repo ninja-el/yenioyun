@@ -10,8 +10,8 @@ Değer değişirse önce bu dosya güncellenir.
 |---|---|---|
 | Kutu kapasitesi | 3 obje | `GameConfig` |
 | Bantta aynı anda duran doldurulabilir kutu | 3 | `LevelData.conveyorCapacity` |
-| Level süresi | 60 sn | `LevelData.duration` |
-| Level kutu hedefi | Level'e özel | `LevelData.targetBoxCount` |
+| Level süresi | 30–180 sn (bkz. Level dengesi) | `LevelData.duration` |
+| Level kutu hedefi | Level'e özel, tahmin modelinden (bkz. Level dengesi) | `LevelData.targetBoxCount` |
 | Yığındaki toplam obje | `targetBoxCount * 3` | `LevelData` (kural, ihlal edilemez) |
 | Hatalı hamle süre cezası | Kapalı (3 hatada -5 sn opsiyonu `GameConfig` bayrağı) | `GameConfig` |
 | Objenin kutuya uçuş süresi | 0.35 sn | `GameConfig` |
@@ -35,6 +35,40 @@ Değer değişirse önce bu dosya güncellenir.
 | Objenin kutudaki ölçek çarpanı | 1 (tipe göre `ItemType.SelectedScale`) | `ItemType` |
 | Hatalı hamlede kamera sarsıntısı | 0.2 sn / 0.15 şiddet | `MatchResolver` |
 | Hedef FPS | 60 | Proje ayarı |
+
+## Level dengesi
+
+Bölümler elle değil, `Data/Config/LevelBalanceConfig.asset` eğrilerinden `MatchPack/Generate Levels`
+menüsüyle üretilir (`Level_001…050` + `LevelCatalog`). Değer değişince menü yeniden çalıştırılır;
+var olan asset'lerin üzerine yazılır, GUID'ler korunur. Sayılar oynanış testiyle ayarlanacak tahminlerdir.
+
+**Tahmin modeli:** ortalama oyuncunun kutu başına süresi
+`kutu kapasitesi x (obje başı süre + ek tip başı süre x (tip sayısı - 1)) + kutu ek süresi`.
+Kutu hedefi = `taban(süre / kutu başı süre x hedef zaman kullanımı)`. Zaman kullanımı 1 ise ortalama
+oyuncu süreyi tam yetiştirir. Kaybetme oranı, oyuncu süresinin normal dağıldığı kabulüyle
+`1 - Φ((1/kullanım - 1) / hız farkı)` olarak tahmin edilir.
+
+| Değer | Varsayılan | Kaynak |
+|---|---|---|
+| Obje başı bulma + dokunma süresi (tek tip) | 0.9 sn | `LevelBalanceConfig` |
+| Ek obje tipi başına süre | 0.08 sn | `LevelBalanceConfig` |
+| Kutu başı ek süre (kutu girişi, hatalı hamle) | 0.4 sn | `LevelBalanceConfig` |
+| Oyuncular arası hız farkı (std / ortalama) | 0.2 | `LevelBalanceConfig` |
+| Bölüm sayısı | 50 | `LevelBalanceConfig` |
+| Süre | 30 sn → 180 sn, 25. bölümde tavana ulaşır; 5 sn'ye yuvarlanır | `LevelBalanceConfig` |
+| Tavandan sonra normal bölüm süresi | Zor bölüme kalan her bölüm için -10 sn (140/150/160/170, zor 180) | `LevelBalanceConfig` |
+| Zor bölüm aralığı | Her 5 bölümde bir (5, 10, 15…) | `LevelBalanceConfig` |
+| Obje tipi sayısı | 3 → 18, eğri üssü 0.7 (ilk bölümlerde daha hızlı artar), zor bölümde +2 | `LevelBalanceConfig` |
+| Açık obje tipi | İlk bölümde 4, her bölümde +1 (havuz sırasıyla) | `LevelBalanceConfig.ItemPool` |
+| Hedef zaman kullanımı, normal | 0.60 → 0.85 (tahmini kaybetme ~%0 → ~%15) | `LevelBalanceConfig` |
+| Hedef zaman kullanımı, zor | 0.88 → 0.98 (tahmini kaybetme ~%20 → ~%43) | `LevelBalanceConfig` |
+| Süreye göre obje sayısı | `30 x (süre / 30)^k`, k = log(45/30) / log(60/30) ≈ 0.585: 30 sn → 30, 60 sn → 45, 180 sn → 87 obje; 100 objede bir sonraki obje ~4 sn ekler. Kutu hedefi tahmin modeli ile bu eğriden büyük olanıdır | `LevelBalanceConfig` (iki nokta) |
+| Normal bölümde en fazla obje | 150 (zor bölümde sınır yok) | `LevelBalanceConfig` |
+| Rastgelelik tohumu | 1234 | `LevelBalanceConfig` |
+
+Not: Bugünkü katsayılarla obje eğrisi bütün bölümlerde modelin önerdiği kutu sayısının üstünde kalıyor;
+kutu hedefini eğri belirliyor ve model bölümleri zor (%35–88 kaybetme) görüyor. Oynanış testinden sonra
+model katsayıları (obje başı süre) gerçek hıza göre ayarlanmalı.
 
 ## Yükleme ve level sonu
 
@@ -200,6 +234,8 @@ Envanter index'i `BoosterType` enum sırasıdır: 0 TimeBonus, 1 Shuffle, 2 Auto
 | 49 | Obje ölçeği uçuş boyunca değişmez; yuvasına oturduğu an ezil-yaylan animasyonu (`StackItem.PlayBoxLandingScale`) oynar. Hedef boyut `ItemType.SelectedScale` çarpanıyla tipe göre ayarlanır, varsayılan 1 | Uçuş sırasında küçülen obje kutuya girmeden önce gözden kayboluyor gibi duruyordu. Animasyonu uçuşun son anlarına hizalayan bir deneme de yapıldı; oynanışta aceleci durduğu için temas anında başlatmaya geri dönüldü, abartı (0.35) ve süre (0.35 sn) yükseltilerek iniş okunur kılındı. Çarpan hedefi o anki yerel ölçek üzerinden hesaplar, yani 1'de bugünkü davranış aynen korunur ve yalnızca kutuya sığmayan tipler için düşürülür. `StackItem` havuza dönerken kendi ölçeğine geri getirilir |
 | 50 | Time Freeze kaldırıldı, yerine Ek Süre (`TimeBonusBooster`, `BoosterType.TimeBonus` = 0) geldi: sayacı durdurmak yerine süreye 5 sn ekler. Butondan "+5 sn" yazısı süre yazısına uçar (`TimeBonusView` + havuzlu `FloatingText`), süre yazı varınca eklenir ve süre yazısı büyüyüp küçülür. Sayacı artık yalnızca satın alma paneli durdurur, `ApplyHolds` kaldırıldı | Oyuncu isteği. Enum değeri aynı index'te kaldığı için kayıtlardaki stok korunur. Süreyi zamanlayan booster'dır (mantık), UI yalnızca aynı süreyle yazıyı uçurur; böylece UI kural işletmez. Uçuş sırasında süre biterse süre eklenmez ve zıplama oynamaz |
 | 51 | Shuffle objeleri ışınlamaz; hepsi fizik dışına alınıp (collider kapalı) yeni noktalarına tween ile kayar, hepsi varınca fizik birlikte açılır (`ItemStack.Reshuffle`, `StackItem.MoveTo`) | Oyuncu isteği. Collider kapalı olduğu için yolda birbirlerine çarpıp itişmezler; varış noktaları yine çakışmasız ayrıldığı için vardıklarında da iç içe olmazlar. Kayma sürerken yeni obje doğmaz (boş yer araması kayan objeleri göremez) ve ikinci Shuffle reddedilir. Auto-Match kayan bir objeyi alırsa o objenin kayması kesilip varmış sayılır. Rastgele boş nokta bulamayan obje (yığın sıkken 24 deneme yetmiyor) yerinde kalmaz; başka bir objenin boşalttığı yere gider (`StackArea.TryReserveAt`), ayrılabilen yer kalmazsa yine eski bir yere gider ve olası küçük çakışmayı fizik çözer |
+| 52 | Bölümler `LevelBalanceConfig` eğrilerinden editör aracıyla (`LevelGenerator`) üretilir; üretici her kutuyu `Items` listesine ayrı ve karışık sırada yazar, bölümde yeni açılan tip her zaman yer alır | 50 bölümü elle dengelemek yerine tek bir tahmin modeli ayarlanıyor. Bant kutuları `Items` sırasıyla gönderdiği için tip başına tek satır, aynı tipin kutularını art arda getiriyordu |
+| 53 | Banta gelen kutunun tipi `Items` sırasından değil, yığında o an duran objelerden rastgele seçilir (`Conveyor.TakeNextBoxType`); banttaki kutuların boş yuvalarına düşen objeler sayılmaz. `Conveyor.Build` yığını `LevelManager`'dan parametre olarak alır | Oyuncu isteği. Parametre olarak alınması sahneye/prefab'a yeni referans bağlamayı gerektirmiyor. Karşılanmış objeler sayılmazsa yığında 3 elma varken ikinci elma kutusu gelip doldurulamadan dönmüyor. 52 numaralı karardaki üretici karıştırması artık kutu sırasını belirlemiyor, yalnızca zararsız kaldı |
 
 ## Açık sorular
 

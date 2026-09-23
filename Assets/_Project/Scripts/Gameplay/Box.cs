@@ -68,6 +68,9 @@ namespace MatchPack.Gameplay
         /// <summary>Yuvası ayrılmış obje sayısı. Aynı tipten kutular arasında en dolusu bununla seçilir.</summary>
         public int ItemCount => _items.Count;
 
+        /// <summary>Henüz ayrılmamış yuva sayısı.</summary>
+        public int FreeSlotCount => _itemSlots.Length - _items.Count;
+
         /// <summary>Tipsiz gelip ilk objeden tipini alan kutu mu?</summary>
         public bool IsJoker => _isJoker;
 

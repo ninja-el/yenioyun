@@ -44,6 +44,10 @@ Bant **kapalı bir turdur**; kutular bant üzerinde sürekli hareket eder, sabit
 - **Yeni kutu ne zaman gelir:** Yığında kalan obje sayısı, o an bantta olan kutuların toplam boş
   yuva sayısından **fazlaysa** yeni kutu gönderilir. Kalan objeler banttaki kutulara sığıyorsa
   yeni kutu gelmez. Level boyunca gönderilen toplam kutu sayısı `LevelData.targetBoxCount`'tur.
+- **Gelen kutunun tipi:** Yığında o an duran objelerden rastgele seçilir (obje adedine göre
+  ağırlıklı). Banttaki kutuların boş yuvalarıyla zaten karşılanan objeler sayılmaz; uygun obje
+  yoksa kalan kutulardan rastgele biri gelir. Tip başına kutu sayısı level verisindeki gibi kalır,
+  yalnızca geliş sırası değişir.
 - Bandın görsel dönüşü (doku kayması, tahrik silindirleri) kutuların hızıyla aynı değerden
   beslenir; ikisi ayrı ayrı ayarlanmaz.
 

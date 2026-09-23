@@ -37,11 +37,12 @@ namespace MatchPack.Gameplay
         [Tooltip("Kutu prefab'ları. Kutular sırayla bu listeden alınır, liste sonuna gelince başa döner.")]
         [SerializeField] private GameObject[] _boxPrefabs;
 
-        private readonly Queue<ItemType> _boxQueue = new Queue<ItemType>();
-        private readonly List<ItemType> _queueBuffer = new List<ItemType>();
+        private readonly List<ItemType> _queuedBoxTypes = new List<ItemType>();
+        private readonly Dictionary<ItemType, int> _uncoveredItemCounts = new Dictionary<ItemType, int>();
         private readonly List<LeavingBox> _leavingBoxes = new List<LeavingBox>();
 
         private ConveyorPath _path;
+        private ItemStack _itemStack;
         private Box[] _slotBoxes;
         private SlotState[] _slotStates;
         private float[] _slotProgress;
@@ -55,13 +56,16 @@ namespace MatchPack.Gameplay
         private bool _isRunning;
 
         /// <summary>Henüz banta girmemiş kutu sayısı.</summary>
-        public int QueuedBoxCount => _boxQueue.Count;
+        public int QueuedBoxCount => _queuedBoxTypes.Count;
 
         /// <summary>Bant çalışıyor mu? Level bitince veya bant boşaltılınca false olur.</summary>
         public bool IsRunning => _isRunning;
 
-        /// <summary>Level'in kutularını kurar ve bandı çalıştırır.</summary>
-        public void Build(LevelData level, ConveyorPath path)
+        /// <summary>
+        /// Level'in kutularını kurar ve bandı çalıştırır. Gelen her kutunun tipi, o an yığında
+        /// duran objelerden rastgele seçilir.
+        /// </summary>
+        public void Build(LevelData level, ConveyorPath path, ItemStack itemStack)
         {
             Clear();
 
@@ -78,6 +82,7 @@ namespace MatchPack.Gameplay
             }
 
             _path = path;
+            _itemStack = itemStack;
             _capacity = Mathf.Min(level.ConveyorCapacity, _path.SlotCount);
 
             _slotBoxes = new Box[_path.SlotCount];
@@ -208,10 +213,10 @@ namespace MatchPack.Gameplay
             }
 
             _leavingBoxes.Clear();
-            _boxQueue.Clear();
-            _queueBuffer.Clear();
+            _queuedBoxTypes.Clear();
             _queuedJokerCount = 0;
             _path = null;
+            _itemStack = null;
         }
 
         private void Update()
@@ -258,7 +263,7 @@ namespace MatchPack.Gameplay
             // yeni kutu gelir" der. Toplam obje targetBoxCount * kapasite olduğu için kalan obje
             // daima kuyruktaki kutuların kapasitesi + banttaki boş yuvaya eşittir; kural bu yüzden
             // "kuyrukta kutu var mı" kontrolüne indirgenir.
-            if (_boxQueue.Count == 0) { return false; }
+            if (_queuedBoxTypes.Count == 0) { return false; }
 
             return GetFillableBoxCount() < _capacity;
         }
@@ -268,7 +273,64 @@ namespace MatchPack.Gameplay
             Box box = GetNextBox();
             if (box == null) { return; }
 
-            PlaceBox(slotIndex, box, _boxQueue.Dequeue());
+            PlaceBox(slotIndex, box, TakeNextBoxType());
+        }
+
+        // Kutu, yığında görünen ve banttaki kutulara henüz yuva bulamamış objelerden rastgele seçilir;
+        // tip başına kutu sayısı level verisindeki gibi kalır, yalnızca geliş sırası değişir.
+        private ItemType TakeNextBoxType()
+        {
+            CountUncoveredStackItems();
+
+            int totalWeight = 0;
+            foreach (KeyValuePair<ItemType, int> pair in _uncoveredItemCounts)
+            {
+                if (pair.Value > 0 && _queuedBoxTypes.Contains(pair.Key)) { totalWeight += pair.Value; }
+            }
+
+            ItemType picked = totalWeight > 0
+                ? PickWeightedQueuedType(UnityEngine.Random.Range(0, totalWeight))
+                : _queuedBoxTypes[UnityEngine.Random.Range(0, _queuedBoxTypes.Count)];
+
+            _queuedBoxTypes.Remove(picked);
+            return picked;
+        }
+
+        private ItemType PickWeightedQueuedType(int roll)
+        {
+            ItemType last = null;
+            foreach (KeyValuePair<ItemType, int> pair in _uncoveredItemCounts)
+            {
+                if (pair.Value <= 0 || !_queuedBoxTypes.Contains(pair.Key)) { continue; }
+
+                last = pair.Key;
+                roll -= pair.Value;
+                if (roll < 0) { return pair.Key; }
+            }
+
+            return last;
+        }
+
+        private void CountUncoveredStackItems()
+        {
+            _uncoveredItemCounts.Clear();
+            if (_itemStack == null) { return; }
+
+            IReadOnlyList<StackItem> items = _itemStack.Items;
+            for (int i = 0; i < items.Count; i++)
+            {
+                ItemType type = items[i].Type;
+                _uncoveredItemCounts.TryGetValue(type, out int count);
+                _uncoveredItemCounts[type] = count + 1;
+            }
+
+            for (int i = 0; i < _slotBoxes.Length; i++)
+            {
+                Box box = _slotBoxes[i];
+                if (box == null || !box.IsTypeLocked || !_uncoveredItemCounts.ContainsKey(box.Type)) { continue; }
+
+                _uncoveredItemCounts[box.Type] -= box.FreeSlotCount;
+            }
         }
 
         private void DispatchJokerBox(int slotIndex)
@@ -318,45 +380,18 @@ namespace MatchPack.Gameplay
 
         private bool HasBoxCredit(ItemType type)
         {
-            return _boxQueue.Contains(type) || FindEmptyBoxSlot(type) >= 0;
+            return _queuedBoxTypes.Contains(type) || FindEmptyBoxSlot(type) >= 0;
         }
 
         private bool ConsumeBoxCredit(ItemType type)
         {
-            if (TryRemoveQueuedBox(type)) { return true; }
+            if (_queuedBoxTypes.Remove(type)) { return true; }
 
             int slotIndex = FindEmptyBoxSlot(type);
             if (slotIndex < 0) { return false; }
 
             DetachBox(slotIndex);
             return true;
-        }
-
-        private bool TryRemoveQueuedBox(ItemType type)
-        {
-            _queueBuffer.Clear();
-            bool isRemoved = false;
-
-            while (_boxQueue.Count > 0)
-            {
-                ItemType queued = _boxQueue.Dequeue();
-
-                if (!isRemoved && queued == type)
-                {
-                    isRemoved = true;
-                    continue;
-                }
-
-                _queueBuffer.Add(queued);
-            }
-
-            for (int i = 0; i < _queueBuffer.Count; i++)
-            {
-                _boxQueue.Enqueue(_queueBuffer[i]);
-            }
-
-            _queueBuffer.Clear();
-            return isRemoved;
         }
 
         private int FindEmptyBoxSlot(ItemType type)
@@ -449,7 +484,7 @@ namespace MatchPack.Gameplay
 
         private void CheckCompletion()
         {
-            if (_boxQueue.Count > 0 || _queuedJokerCount > 0 || _leavingBoxes.Count > 0) { return; }
+            if (_queuedBoxTypes.Count > 0 || _queuedJokerCount > 0 || _leavingBoxes.Count > 0) { return; }
 
             for (int i = 0; i < _slotBoxes.Length; i++)
             {
@@ -506,7 +541,7 @@ namespace MatchPack.Gameplay
                 int boxCount = entry.Count / _config.BoxCapacity;
                 for (int j = 0; j < boxCount; j++)
                 {
-                    _boxQueue.Enqueue(entry.Type);
+                    _queuedBoxTypes.Add(entry.Type);
                 }
             }
         }
