@@ -35,9 +35,9 @@ Material:
     serializedVersion: 3
     m_TexEnvs:
     - _AlbedoMap:
-        m_Texture: {fileID: 2800000, guid: 3fecf209f325572429f8ea4b2d777991, type: 3}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
+        m_Texture: {fileID: 2800000, guid: f129a99f74fa87b428a28a6a383408aa, type: 3}
+        m_Scale: {x: 0.6666667, y: 2.5}
+        m_Offset: {x: 0, y: -0.27}
     - _BaseMap:
         m_Texture: {fileID: 2800000, guid: 6a40bece1e9ae614192e1da6b66d969d, type: 3}
         m_Scale: {x: 1, y: 1}
@@ -95,7 +95,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MainTex:
-        m_Texture: {fileID: 2800000, guid: 3fecf209f325572429f8ea4b2d777991, type: 3}
+        m_Texture: {fileID: 2800000, guid: f129a99f74fa87b428a28a6a383408aa, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MetallicGlossMap:
@@ -253,7 +253,7 @@ Material:
     - _ScreenSpaceReflections: 1
     - _ScreenSpaceReflectionsContributeTransparent: 1
     - _SketchMapScale: 1
-    - _Smoothness: 1
+    - _Smoothness: 0.64
     - _SmoothnessTextureChannel: 0
     - _Specular: 1
     - _SpecularHighlights: 1
@@ -282,9 +282,9 @@ Material:
     - _ZTest: 4
     - _ZWrite: 1
     m_Colors:
-    - _AlbedoColor: {r: 0.851, g: 0.851, b: 0.851, a: 1}
+    - _AlbedoColor: {r: 1, g: 1, b: 1, a: 1}
     - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
-    - _Color: {r: 0.851, g: 0.851, b: 0.851, a: 1}
+    - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _DissolveBorderColor: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _GoochBrightColor: {r: 1, g: 1, b: 1, a: 1}

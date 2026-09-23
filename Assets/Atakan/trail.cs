@@ -27,6 +27,6 @@ public class trail : MonoBehaviour
     {
         if (_material == null) { return; }
 
-        _material.mainTextureOffset = Vector2.zero;
+        _material.mainTextureOffset = new Vector2(0, -0.27f);
     }
 }
