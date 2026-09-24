@@ -21,15 +21,9 @@ namespace MatchPack.Data
         [Tooltip("Kutunun üzerinde görünecek ikon.")]
         [SerializeField] private Sprite _icon;
 
-        [Tooltip("Obje kutuya girdiğinde alacağı ölçek çarpanı. 1 = yığındaki boyutuyla aynı kalır.")]
-        [SerializeField, Min(0.01f)] private float _selectedScale = 1f;
-
         public string Id => _id;
         public string DisplayName => _displayName;
         public GameObject Prefab => _prefab;
         public Sprite Icon => _icon;
-
-        /// <summary>Obje kutuya oturduğunda ölçeğinin çarpılacağı değer. Kutuya sığmayan objeler için küçültülür.</summary>
-        public float SelectedScale => _selectedScale;
     }
 }

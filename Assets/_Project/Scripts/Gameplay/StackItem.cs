@@ -107,25 +107,47 @@ namespace MatchPack.Gameplay
         }
 
         /// <summary>
-        /// Kutuya iniş ölçek animasyonu: çarpma anında ezilme, ardından yaylanarak hedefe oturma.
-        /// Hedef, objenin o anki ölçeğinin <see cref="ItemType.SelectedScale"/> katıdır; çarpan
-        /// 1 iken obje bugünkü boyutuna oturur.
+        /// Kutuya oturma yaylanması: dikey ve yatay eksen ayrı genlik ve sürelerle, sönümlenerek
+        /// büyüyüp küçülür. Yatay eksen dikeyin tersi yönde başlar; biri uzarken diğeri incelir.
+        /// Obje sonunda animasyon başındaki boyutuna döner.
         /// </summary>
-        public void PlayBoxLandingScale(float duration, float squashAmount)
+        public void PlaySettleWobble(
+            float verticalAmount, float verticalDuration,
+            float horizontalAmount, float horizontalDuration,
+            int oscillations)
         {
-            float multiplier = Type != null ? Type.SelectedScale : 1f;
+            // Obje yuvaya dünya ölçeği korunarak parent edildiği için taban, prefab ölçeği değil
+            // o anki yerel ölçektir.
+            Vector3 baseScale = transform.localScale;
 
-            // Uçuş sırasında obje yuvaya dünya ölçeği korunarak parent edildiği için hedef, prefab
-            // ölçeği değil o anki yerel ölçek üzerinden hesaplanır.
-            Vector3 target = transform.localScale * multiplier;
-            Vector3 squash = new Vector3(
-                target.x * (1f + squashAmount),
-                target.y * (1f - squashAmount),
-                target.z * (1f + squashAmount));
+            PlayScaleOscillation(verticalAmount, verticalDuration, oscillations, factor =>
+            {
+                Vector3 scale = transform.localScale;
+                scale.y = baseScale.y * factor;
+                transform.localScale = scale;
+            });
 
-            DOTween.Sequence()
-                .Append(transform.DOScale(squash, duration * 0.35f).SetEase(Ease.OutQuad))
-                .Append(transform.DOScale(target, duration * 0.65f).SetEase(Ease.OutBack));
+            PlayScaleOscillation(-horizontalAmount, horizontalDuration, oscillations, factor =>
+            {
+                Vector3 scale = transform.localScale;
+                scale.x = baseScale.x * factor;
+                scale.z = baseScale.z * factor;
+                transform.localScale = scale;
+            });
+        }
+
+        private void PlayScaleOscillation(float amount, float duration, int oscillations, Action<float> applyFactor)
+        {
+            float angularSpeed = Mathf.PI * 2f * oscillations;
+
+            // Hedef transform olarak işaretlenir ki OnDespawned'daki DOKill yarım kalan yaylanmayı da kessin.
+            DOVirtual.Float(0f, 1f, duration, t =>
+                {
+                    float damping = (1f - t) * (1f - t);
+                    applyFactor(1f + amount * Mathf.Sin(t * angularSpeed) * damping);
+                })
+                .SetEase(Ease.Linear)
+                .SetTarget(transform);
         }
 
         public void OnSpawned()
@@ -141,8 +163,8 @@ namespace MatchPack.Gameplay
             transform.DOKill();
             SetSimulated(false);
 
-            // Kutuya oturan obje küçültülmüş olabilir; havuza kendi ölçeğiyle dönmezse bir sonraki
-            // kullanımda yığına o boyutla doğar.
+            // Kutuya oturan obje yaylanmanın ortasında olabilir; havuza kendi ölçeğiyle dönmezse bir
+            // sonraki kullanımda yığına o boyutla doğar.
             transform.localScale = _baseScale;
             Type = null;
         }

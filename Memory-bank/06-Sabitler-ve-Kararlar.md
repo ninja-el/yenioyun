@@ -31,8 +31,9 @@ Değer değişirse önce bu dosya güncellenir.
 | Dokunuş probu | Kutu (BoxCast), 0.3 birim kenar | `InputManager` |
 | Probun toplayacağı en fazla obje | 2 | `InputManager` |
 | Objenin uçuş kavisi yüksekliği | 1.5 birim | `MatchResolver` |
-| Kutuya iniş ölçek animasyonu | 0.35 sn / 0.35 abartı | `MatchResolver` |
-| Objenin kutudaki ölçek çarpanı | 1 (tipe göre `ItemType.SelectedScale`) | `ItemType` |
+| Kutuya oturma yaylanması, dikey (Y) | 0.25 genlik / 0.4 sn | `MatchResolver` |
+| Kutuya oturma yaylanması, yatay (X-Z, ters fazda) | 0.15 genlik / 0.55 sn | `MatchResolver` |
+| Yaylanmanın salınım sayısı | 2 | `MatchResolver` |
 | Hatalı hamlede kamera sarsıntısı | 0.2 sn / 0.15 şiddet | `MatchResolver` |
 | Hedef FPS | 60 | Proje ayarı |
 
@@ -236,6 +237,7 @@ Envanter index'i `BoosterType` enum sırasıdır: 0 TimeBonus, 1 Shuffle, 2 Auto
 | 51 | Shuffle objeleri ışınlamaz; hepsi fizik dışına alınıp (collider kapalı) yeni noktalarına tween ile kayar, hepsi varınca fizik birlikte açılır (`ItemStack.Reshuffle`, `StackItem.MoveTo`) | Oyuncu isteği. Collider kapalı olduğu için yolda birbirlerine çarpıp itişmezler; varış noktaları yine çakışmasız ayrıldığı için vardıklarında da iç içe olmazlar. Kayma sürerken yeni obje doğmaz (boş yer araması kayan objeleri göremez) ve ikinci Shuffle reddedilir. Auto-Match kayan bir objeyi alırsa o objenin kayması kesilip varmış sayılır. Rastgele boş nokta bulamayan obje (yığın sıkken 24 deneme yetmiyor) yerinde kalmaz; başka bir objenin boşalttığı yere gider (`StackArea.TryReserveAt`), ayrılabilen yer kalmazsa yine eski bir yere gider ve olası küçük çakışmayı fizik çözer |
 | 52 | Bölümler `LevelBalanceConfig` eğrilerinden editör aracıyla (`LevelGenerator`) üretilir; üretici her kutuyu `Items` listesine ayrı ve karışık sırada yazar, bölümde yeni açılan tip her zaman yer alır | 50 bölümü elle dengelemek yerine tek bir tahmin modeli ayarlanıyor. Bant kutuları `Items` sırasıyla gönderdiği için tip başına tek satır, aynı tipin kutularını art arda getiriyordu |
 | 53 | Banta gelen kutunun tipi `Items` sırasından değil, yığında o an duran objelerden rastgele seçilir (`Conveyor.TakeNextBoxType`); banttaki kutuların boş yuvalarına düşen objeler sayılmaz. `Conveyor.Build` yığını `LevelManager`'dan parametre olarak alır | Oyuncu isteği. Parametre olarak alınması sahneye/prefab'a yeni referans bağlamayı gerektirmiyor. Karşılanmış objeler sayılmazsa yığında 3 elma varken ikinci elma kutusu gelip doldurulamadan dönmüyor. 52 numaralı karardaki üretici karıştırması artık kutu sırasını belirlemiyor, yalnızca zararsız kaldı |
+| 54 | Karar 49 geri alındı: kutuya iniş ezil-yaylan animasyonu ve `ItemType.SelectedScale` çarpanı kaldırıldı. Yerine obje yuvasına oturduktan sonra `StackItem.PlaySettleWobble` oynar; dikey (Y) ve yatay (X-Z) eksen farklı genlik ve sürelerle, ters fazda, sönümlenen sinüsle büyüyüp küçülür ve obje sonunda kendi boyutuna döner | İki eksenin birbirinden kayması tek eğrili ezilmeden daha canlı bir jöle hissi veriyor. Obje boyutu artık kutuda kalıcı olarak değişmediği için çarpana gerek kalmadı; tüm tiplerde değeri zaten 1 idi |
 
 ## Açık sorular
 
