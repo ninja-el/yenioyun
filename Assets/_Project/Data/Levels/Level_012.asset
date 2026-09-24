@@ -18,44 +18,18 @@ MonoBehaviour:
   _conveyorCapacity: 3
   _items:
   - _type: {fileID: 11400000, guid: 03830ed8eb44c4b47980d6ad757d36d7, type: 2}
-    _count: 3
+    _count: 9
   - _type: {fileID: 11400000, guid: 37f6a4d649c38c842b88e2fb5bb9e995, type: 2}
-    _count: 3
+    _count: 9
   - _type: {fileID: 11400000, guid: 2b1d6fc5c04c64d4285fae29e91aa409, type: 2}
-    _count: 3
+    _count: 9
   - _type: {fileID: 11400000, guid: 0208f87a0700b7641ac8c60ac800c5b7, type: 2}
-    _count: 3
-  - _type: {fileID: 11400000, guid: 03830ed8eb44c4b47980d6ad757d36d7, type: 2}
-    _count: 3
-  - _type: {fileID: 11400000, guid: 37f6a4d649c38c842b88e2fb5bb9e995, type: 2}
-    _count: 3
+    _count: 9
   - _type: {fileID: 11400000, guid: 80ed295338e848a080c673f93593a512, type: 2}
-    _count: 3
-  - _type: {fileID: 11400000, guid: 2b1d6fc5c04c64d4285fae29e91aa409, type: 2}
-    _count: 3
+    _count: 6
   - _type: {fileID: 11400000, guid: b225eba9b2ea4d008c72a4c33ff0ec4f, type: 2}
-    _count: 3
-  - _type: {fileID: 11400000, guid: 37f6a4d649c38c842b88e2fb5bb9e995, type: 2}
-    _count: 3
+    _count: 6
   - _type: {fileID: 11400000, guid: e9b0c108223f7234e83e6a4ba51e43ec, type: 2}
-    _count: 3
-  - _type: {fileID: 11400000, guid: 80ed295338e848a080c673f93593a512, type: 2}
-    _count: 3
-  - _type: {fileID: 11400000, guid: e9b0c108223f7234e83e6a4ba51e43ec, type: 2}
-    _count: 3
+    _count: 6
   - _type: {fileID: 11400000, guid: d91b7fb258af50f46afaf703111bd89b, type: 2}
-    _count: 3
-  - _type: {fileID: 11400000, guid: 0208f87a0700b7641ac8c60ac800c5b7, type: 2}
-    _count: 3
-  - _type: {fileID: 11400000, guid: d91b7fb258af50f46afaf703111bd89b, type: 2}
-    _count: 3
-  - _type: {fileID: 11400000, guid: 03830ed8eb44c4b47980d6ad757d36d7, type: 2}
-    _count: 3
-  - _type: {fileID: 11400000, guid: 2b1d6fc5c04c64d4285fae29e91aa409, type: 2}
-    _count: 3
-  - _type: {fileID: 11400000, guid: b225eba9b2ea4d008c72a4c33ff0ec4f, type: 2}
-    _count: 3
-  - _type: {fileID: 11400000, guid: 0208f87a0700b7641ac8c60ac800c5b7, type: 2}
-    _count: 3
-  - _type: {fileID: 11400000, guid: d91b7fb258af50f46afaf703111bd89b, type: 2}
-    _count: 3
+    _count: 9

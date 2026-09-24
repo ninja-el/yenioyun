@@ -18,32 +18,16 @@ MonoBehaviour:
   _conveyorCapacity: 3
   _items:
   - _type: {fileID: 11400000, guid: b225eba9b2ea4d008c72a4c33ff0ec4f, type: 2}
-    _count: 3
+    _count: 6
   - _type: {fileID: 11400000, guid: e9b0c108223f7234e83e6a4ba51e43ec, type: 2}
-    _count: 6
+    _count: 9
   - _type: {fileID: 11400000, guid: fcae6bdcd544a8f44aacb17001917bbb, type: 2}
-    _count: 3
-  - _type: {fileID: 11400000, guid: b28aa67661f93a6449ca8696d396ea62, type: 2}
     _count: 6
-  - _type: {fileID: 11400000, guid: 03830ed8eb44c4b47980d6ad757d36d7, type: 2}
-    _count: 3
-  - _type: {fileID: 11400000, guid: 80ed295338e848a080c673f93593a512, type: 2}
-    _count: 3
-  - _type: {fileID: 11400000, guid: 2b1d6fc5c04c64d4285fae29e91aa409, type: 2}
-    _count: 3
-  - _type: {fileID: 11400000, guid: fcae6bdcd544a8f44aacb17001917bbb, type: 2}
-    _count: 3
   - _type: {fileID: 11400000, guid: b28aa67661f93a6449ca8696d396ea62, type: 2}
-    _count: 3
-  - _type: {fileID: 11400000, guid: 80ed295338e848a080c673f93593a512, type: 2}
-    _count: 3
+    _count: 9
   - _type: {fileID: 11400000, guid: 03830ed8eb44c4b47980d6ad757d36d7, type: 2}
-    _count: 3
-  - _type: {fileID: 11400000, guid: 2b1d6fc5c04c64d4285fae29e91aa409, type: 2}
     _count: 6
-  - _type: {fileID: 11400000, guid: b225eba9b2ea4d008c72a4c33ff0ec4f, type: 2}
-    _count: 3
-  - _type: {fileID: 11400000, guid: e9b0c108223f7234e83e6a4ba51e43ec, type: 2}
-    _count: 3
   - _type: {fileID: 11400000, guid: 80ed295338e848a080c673f93593a512, type: 2}
-    _count: 3
+    _count: 9
+  - _type: {fileID: 11400000, guid: 2b1d6fc5c04c64d4285fae29e91aa409, type: 2}
+    _count: 9

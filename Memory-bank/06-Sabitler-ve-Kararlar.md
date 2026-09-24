@@ -33,6 +33,7 @@ Değer değişirse önce bu dosya güncellenir.
 | Yığının oturması için zaman aşımı | 1 sn | `ItemStack` |
 | Dokunuş probu | Kutu (BoxCast), 0.3 birim kenar | `InputManager` |
 | Probun toplayacağı en fazla obje | 2 | `InputManager` |
+| Obje tipinin bölüme özel boyut çarpanı | 1 (satır başına, 0.01 alt sınır) | `LevelData.Items[].ScaleMultiplier` |
 | Objenin uçuş kavisi yüksekliği | 1.5 birim | `MatchResolver` |
 | Hatalı hamlede kamera sarsıntısı | 0.2 sn / 0.15 şiddet | `MatchResolver` |
 | Hedef FPS | 60 | Proje ayarı |
@@ -240,6 +241,7 @@ Envanter index'i `BoosterType` enum sırasıdır: 0 TimeBonus, 1 Shuffle, 2 Auto
 | 54 | Karar 49 geri alındı: kutuya iniş ezil-yaylan animasyonu ve `ItemType.SelectedScale` çarpanı kaldırıldı. Yerine obje yuvasına oturduktan sonra `StackItem.PlaySettleWobble` oynar; dikey (Y) ve yatay (X-Z) eksen farklı genlik ve sürelerle, ters fazda, sönümlenen sinüsle büyüyüp küçülür ve obje sonunda kendi boyutuna döner | İki eksenin birbirinden kayması tek eğrili ezilmeden daha canlı bir jöle hissi veriyor. Obje boyutu artık kutuda kalıcı olarak değişmediği için çarpana gerek kalmadı; tüm tiplerde değeri zaten 1 idi |
 | 54a | Karar 54'teki kutuya oturma yaylanması (`StackItem.PlaySettleWobble`) da kaldırıldı; obje yuvasına ölçek animasyonu olmadan oturur | Oyuncu isteği: kutuya yerleşmede hiçbir boyut animasyonu olmayacak |
 | 55 | Karar 10a güncellendi: dolan kutu çıkış noktasına gitmez; bulunduğu yerde banttan ayrılır, kapakları kapanır (`Box.PlayDeparture`), ardından Y ekseninde yükselirken küçülür (ölçek = 1 - katedilen yükseklik / yükselme mesafesi) ve 0 ölçeğe varınca havuza döner. Joker yüzünden iptal edilen boş kutu eski yoldan çıkışa gider. Kapaklar menteşe etrafında tek eksende açı ilerletilerek döner; kapalı açılar `kutu.fbx` geometrisinden hesaplanıp prefab'a yazıldı. Uzun kapaklar (kuzey/güney) 2° eksik kapanır ve 0.12 sn geç başlar ki kısa kapakların üstüne binsin | Quaternion ara değeri 180°'yi aşan dönüşte kısa yolu seçip kapağı kutunun içinden geçirir. Ölçek yükseklikten türetildiği için 0 ölçeğe tam yükselme mesafesinde varılır. İlk denemedeki InQuad eğrisi hareketi sona yığıp kutunun yerinde durup birden kaybolması gibi görünüyordu; InOutSine ve 0.6 sn ile küçülme baştan itibaren okunur |
+| 56 | `LevelData`'daki her obje satırına bölüme özel boyut çarpanı eklendi; obje prefab ölçeği x çarpan boyutunda doğar ve yığında yer ayırma yarıçapı da aynı çarpanla büyür/küçülür. Level'larda her tip tek satırdadır (üretici tipleri tek satırda toplar; 50 level buna göre birleştirildi, tip başına adetler değişmedi). Elle aynı tip iki satıra yazılırsa ilk satırın çarpanı geçerlidir. `MatchPack/Generate Levels` yeniden çalışınca çarpanlar tipe göre korunur | Tip bazlı boyut (karar 49'daki `ItemType.SelectedScale`) tüm bölümleri etkiliyordu; boyut ayarı bölüm dengesinin parçası olduğu için `LevelData`'da tutulur. Obje kutuya dünya ölçeğini koruyarak girdiği için kutuda da çarpanlı boyutuyla durur |
 
 ## Açık sorular
 

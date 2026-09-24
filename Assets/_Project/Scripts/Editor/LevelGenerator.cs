@@ -114,7 +114,8 @@ namespace MatchPack.EditorTools
                 boxes.Add(types[i % types.Count]);
             }
 
-            // Bant kutuları Items sırasıyla gönderir; karıştırılmazsa aynı tipin kutuları art arda gelir.
+            // Bant kutu tipini yığından seçtiği için bu sıra yalnızca Items satırlarının sırasını belirler;
+            // karıştırma, var olan asset'lerin yeniden üretimde aynı çıkması için korunur.
             for (int i = boxes.Count - 1; i > 0; i--)
             {
                 int j = random.Next(i + 1);
@@ -126,20 +127,33 @@ namespace MatchPack.EditorTools
 
         private static void WriteItems(SerializedProperty items, List<ItemType> boxTypes, int boxCapacity)
         {
+            // Boyut çarpanı elle ayarlanan bir değerdir; üretim yeniden çalışınca kaybolmaması için tipe göre taşınır.
+            var scaleMultipliers = new Dictionary<Object, float>();
+            for (int i = 0; i < items.arraySize; i++)
+            {
+                SerializedProperty existing = items.GetArrayElementAtIndex(i);
+                Object type = existing.FindPropertyRelative("_type").objectReferenceValue;
+                if (type != null) { scaleMultipliers.TryAdd(type, existing.FindPropertyRelative("_scaleMultiplier").floatValue); }
+            }
+
+            // Her tip tek satırda toplanır; satır sırası tipin kutu sırasında ilk göründüğü yerdir.
+            var rowByType = new Dictionary<ItemType, int>();
             items.arraySize = 0;
             for (int i = 0; i < boxTypes.Count; i++)
             {
-                int last = items.arraySize - 1;
-                if (last >= 0 && items.GetArrayElementAtIndex(last).FindPropertyRelative("_type").objectReferenceValue == boxTypes[i])
+                if (rowByType.TryGetValue(boxTypes[i], out int row))
                 {
-                    items.GetArrayElementAtIndex(last).FindPropertyRelative("_count").intValue += boxCapacity;
+                    items.GetArrayElementAtIndex(row).FindPropertyRelative("_count").intValue += boxCapacity;
                     continue;
                 }
 
+                rowByType.Add(boxTypes[i], items.arraySize);
                 items.arraySize++;
                 SerializedProperty entry = items.GetArrayElementAtIndex(items.arraySize - 1);
                 entry.FindPropertyRelative("_type").objectReferenceValue = boxTypes[i];
                 entry.FindPropertyRelative("_count").intValue = boxCapacity;
+                entry.FindPropertyRelative("_scaleMultiplier").floatValue =
+                    scaleMultipliers.TryGetValue(boxTypes[i], out float multiplier) ? multiplier : 1f;
             }
         }
 

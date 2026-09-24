@@ -20,8 +20,12 @@ namespace MatchPack.Data
             [Tooltip("Bu tipten kaç adet eklenecek.")]
             [SerializeField, Min(0)] private int _count;
 
+            [Tooltip("Bu bölümde bu tipin boyut çarpanı. 1 = prefab boyutu, 1.5 = %50 büyük, 0.8 = %20 küçük.")]
+            [SerializeField, Min(0.01f)] private float _scaleMultiplier = 1f;
+
             public ItemType Type => _type;
             public int Count => _count;
+            public float ScaleMultiplier => _scaleMultiplier;
         }
 
         [Tooltip("Bölüm numarası. Level_012 asset'i için 12.")]

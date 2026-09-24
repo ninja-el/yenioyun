@@ -26,6 +26,7 @@ namespace MatchPack.Gameplay
         private readonly List<StackItem> _items = new List<StackItem>();
         private readonly List<StackItem> _spawnBuffer = new List<StackItem>();
         private readonly List<ItemType> _typeBuffer = new List<ItemType>();
+        private readonly Dictionary<ItemType, float> _scaleMultipliers = new Dictionary<ItemType, float>();
         private readonly Queue<ItemType> _pendingTypes = new Queue<ItemType>();
         private readonly List<Vector3> _vacatedSpots = new List<Vector3>();
         private readonly List<StackItem> _unplacedItems = new List<StackItem>();
@@ -266,15 +267,25 @@ namespace MatchPack.Gameplay
             return true;
         }
 
+        private float GetScaleMultiplier(ItemType type)
+        {
+            return _scaleMultipliers.TryGetValue(type, out float multiplier) ? multiplier : 1f;
+        }
+
         private void CollectTypes(LevelData level)
         {
             _typeBuffer.Clear();
+            _scaleMultipliers.Clear();
             IReadOnlyList<LevelData.ItemEntry> entries = level.Items;
 
             for (int i = 0; i < entries.Count; i++)
             {
                 LevelData.ItemEntry entry = entries[i];
                 if (entry.Type == null) { continue; }
+
+                // Aynı tip birden fazla satırda geçerse ilk satırın çarpanı geçerlidir; yığında aynı
+                // tipin objeleri farklı boyutta durmaz.
+                _scaleMultipliers.TryAdd(entry.Type, entry.ScaleMultiplier);
 
                 for (int j = 0; j < entry.Count; j++)
                 {
@@ -304,6 +315,7 @@ namespace MatchPack.Gameplay
                 }
 
                 StackItem item = instance.GetComponent<StackItem>();
+                item.Setup(type, GetScaleMultiplier(type));
 
                 if (!_area.TryReserveSpot(item.BoundingRadius, out Vector3 position))
                 {
@@ -314,7 +326,6 @@ namespace MatchPack.Gameplay
 
                 _pendingTypes.Dequeue();
                 item.SetSimulated(false);
-                item.Setup(type);
                 item.Teleport(position, UnityEngine.Random.rotation);
 
                 _items.Add(item);

@@ -18,46 +18,22 @@ MonoBehaviour:
   _conveyorCapacity: 3
   _items:
   - _type: {fileID: 11400000, guid: cb955473e0920184a9046041eba891c9, type: 2}
-    _count: 6
+    _count: 9
   - _type: {fileID: 11400000, guid: a2bab7e09226ae7498c7a8750bfbc203, type: 2}
-    _count: 3
+    _count: 6
   - _type: {fileID: 11400000, guid: fcae6bdcd544a8f44aacb17001917bbb, type: 2}
-    _count: 3
+    _count: 9
   - _type: {fileID: 11400000, guid: b28aa67661f93a6449ca8696d396ea62, type: 2}
     _count: 6
   - _type: {fileID: 11400000, guid: e9b0c108223f7234e83e6a4ba51e43ec, type: 2}
-    _count: 3
-  - _type: {fileID: 11400000, guid: fcae6bdcd544a8f44aacb17001917bbb, type: 2}
-    _count: 3
+    _count: 6
   - _type: {fileID: 11400000, guid: 7baad724dc16aaf469a0a9609212c82d, type: 2}
-    _count: 3
+    _count: 9
   - _type: {fileID: 11400000, guid: 0208f87a0700b7641ac8c60ac800c5b7, type: 2}
-    _count: 3
+    _count: 6
   - _type: {fileID: 11400000, guid: d91b7fb258af50f46afaf703111bd89b, type: 2}
-    _count: 3
-  - _type: {fileID: 11400000, guid: a2bab7e09226ae7498c7a8750bfbc203, type: 2}
-    _count: 3
-  - _type: {fileID: 11400000, guid: 7baad724dc16aaf469a0a9609212c82d, type: 2}
-    _count: 3
-  - _type: {fileID: 11400000, guid: d91b7fb258af50f46afaf703111bd89b, type: 2}
-    _count: 3
-  - _type: {fileID: 11400000, guid: 7baad724dc16aaf469a0a9609212c82d, type: 2}
-    _count: 3
-  - _type: {fileID: 11400000, guid: cb955473e0920184a9046041eba891c9, type: 2}
-    _count: 3
-  - _type: {fileID: 11400000, guid: fcae6bdcd544a8f44aacb17001917bbb, type: 2}
-    _count: 3
-  - _type: {fileID: 11400000, guid: d91b7fb258af50f46afaf703111bd89b, type: 2}
-    _count: 3
+    _count: 9
   - _type: {fileID: 11400000, guid: 4bf2c081bf1c7f04ba049fc024364866, type: 2}
-    _count: 3
+    _count: 6
   - _type: {fileID: 11400000, guid: 03830ed8eb44c4b47980d6ad757d36d7, type: 2}
-    _count: 3
-  - _type: {fileID: 11400000, guid: e9b0c108223f7234e83e6a4ba51e43ec, type: 2}
-    _count: 3
-  - _type: {fileID: 11400000, guid: 4bf2c081bf1c7f04ba049fc024364866, type: 2}
-    _count: 3
-  - _type: {fileID: 11400000, guid: 0208f87a0700b7641ac8c60ac800c5b7, type: 2}
-    _count: 3
-  - _type: {fileID: 11400000, guid: 03830ed8eb44c4b47980d6ad757d36d7, type: 2}
-    _count: 3
+    _count: 6

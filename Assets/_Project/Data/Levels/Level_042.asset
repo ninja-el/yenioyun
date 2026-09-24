@@ -18,7 +18,7 @@ MonoBehaviour:
   _conveyorCapacity: 3
   _items:
   - _type: {fileID: 11400000, guid: 6882cf707595f764b96d646af549892c, type: 2}
-    _count: 3
+    _count: 6
   - _type: {fileID: 11400000, guid: 1a4dbb4d51b8b9041ba0a53725466b8f, type: 2}
     _count: 3
   - _type: {fileID: 11400000, guid: 0ef5ea1dcf276f84180e1d586a70c436, type: 2}
@@ -26,44 +26,26 @@ MonoBehaviour:
   - _type: {fileID: 11400000, guid: 37f6a4d649c38c842b88e2fb5bb9e995, type: 2}
     _count: 3
   - _type: {fileID: 11400000, guid: ca57f716f475b174ea25a65e305be43c, type: 2}
-    _count: 3
+    _count: 6
   - _type: {fileID: 11400000, guid: 2858f2e63033a0248b73aa8cb263d23c, type: 2}
-    _count: 3
+    _count: 6
   - _type: {fileID: 11400000, guid: 7a63375aa705008488bb83a5f95f747d, type: 2}
-    _count: 3
+    _count: 6
   - _type: {fileID: 11400000, guid: 9ba481b897eac9d4d9891f071fa11a95, type: 2}
-    _count: 3
+    _count: 6
   - _type: {fileID: 11400000, guid: dbe2c9ea6a161db42929eb0449b103c1, type: 2}
     _count: 3
   - _type: {fileID: 11400000, guid: c6ec24726c83b29469a2b50e1584d07d, type: 2}
-    _count: 3
-  - _type: {fileID: 11400000, guid: ca57f716f475b174ea25a65e305be43c, type: 2}
-    _count: 3
+    _count: 6
   - _type: {fileID: 11400000, guid: 7baad724dc16aaf469a0a9609212c82d, type: 2}
-    _count: 3
-  - _type: {fileID: 11400000, guid: 2858f2e63033a0248b73aa8cb263d23c, type: 2}
-    _count: 3
-  - _type: {fileID: 11400000, guid: 9ba481b897eac9d4d9891f071fa11a95, type: 2}
-    _count: 3
+    _count: 6
   - _type: {fileID: 11400000, guid: 2a72c319fd4625649b135f955bfe2942, type: 2}
     _count: 6
   - _type: {fileID: 11400000, guid: 03830ed8eb44c4b47980d6ad757d36d7, type: 2}
-    _count: 3
+    _count: 6
   - _type: {fileID: 11400000, guid: d91b7fb258af50f46afaf703111bd89b, type: 2}
     _count: 3
   - _type: {fileID: 11400000, guid: ef53bd5dbc2a7fd4e8d577209d498b4a, type: 2}
     _count: 3
-  - _type: {fileID: 11400000, guid: 7a63375aa705008488bb83a5f95f747d, type: 2}
-    _count: 3
   - _type: {fileID: 11400000, guid: 6f37f2e61f59e7b48ad6f3620ef63388, type: 2}
-    _count: 3
-  - _type: {fileID: 11400000, guid: 6882cf707595f764b96d646af549892c, type: 2}
-    _count: 3
-  - _type: {fileID: 11400000, guid: 7baad724dc16aaf469a0a9609212c82d, type: 2}
-    _count: 3
-  - _type: {fileID: 11400000, guid: 03830ed8eb44c4b47980d6ad757d36d7, type: 2}
-    _count: 3
-  - _type: {fileID: 11400000, guid: c6ec24726c83b29469a2b50e1584d07d, type: 2}
-    _count: 3
-  - _type: {fileID: 11400000, guid: 6f37f2e61f59e7b48ad6f3620ef63388, type: 2}
-    _count: 3
+    _count: 6

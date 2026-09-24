@@ -22,11 +22,15 @@ namespace MatchPack.Gameplay
         private Vector3 _baseScale;
         private RigidbodyInterpolation _interpolation;
         private Sequence _moveSequence;
+        private float _scaleMultiplier = 1f;
 
         public ItemType Type { get; private set; }
 
-        /// <summary>Objenin herhangi bir dönüşte kaplayabileceği yarıçap. Doğma aralığı bundan hesaplanır.</summary>
-        public float BoundingRadius => _boundingRadius;
+        /// <summary>
+        /// Objenin herhangi bir dönüşte kaplayabileceği yarıçap. Doğma aralığı bundan hesaplanır;
+        /// bölüme özel boyut çarpanını içerir.
+        /// </summary>
+        public float BoundingRadius => _boundingRadius * _scaleMultiplier;
 
         /// <summary>Obje fiziksel olarak durulmuş mu? Yığının oturduğunu anlamak için kullanılır.</summary>
         public bool IsResting => _rigidbody.IsSleeping();
@@ -42,10 +46,15 @@ namespace MatchPack.Gameplay
             _interpolation = _rigidbody.interpolation;
         }
 
-        /// <summary>Objeyi bir tipe hazırlar. Havuzdan alındıktan sonra çağrılır.</summary>
-        public void Setup(ItemType type)
+        /// <summary>
+        /// Objeyi bir tipe ve bölüme özel boyut çarpanına hazırlar. Havuzdan alındıktan sonra,
+        /// yığında yer ayrılmadan önce çağrılır; ayrılacak yer çarpanlı boyuta göre hesaplanır.
+        /// </summary>
+        public void Setup(ItemType type, float scaleMultiplier)
         {
             Type = type;
+            _scaleMultiplier = scaleMultiplier;
+            transform.localScale = _baseScale * scaleMultiplier;
         }
 
         /// <summary>
@@ -111,6 +120,7 @@ namespace MatchPack.Gameplay
             // Havuzdan çıkan obje havuz kökünün konumundadır; fizik ancak çağıran onu yerleştirdikten sonra açılır.
             SetSimulated(false);
             transform.localScale = _baseScale;
+            _scaleMultiplier = 1f;
         }
 
         public void OnDespawned()
@@ -122,6 +132,7 @@ namespace MatchPack.Gameplay
             // Yuvaya dünya ölçeği korunarak parent edilen objenin yerel ölçeği değişir; havuza kendi
             // ölçeğiyle dönmezse bir sonraki kullanımda yığına o boyutla doğar.
             transform.localScale = _baseScale;
+            _scaleMultiplier = 1f;
             Type = null;
         }
     }
