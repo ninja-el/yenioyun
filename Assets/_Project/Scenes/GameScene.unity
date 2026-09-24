@@ -1287,6 +1287,7 @@ GameObject:
   - component: {fileID: 1479627211}
   - component: {fileID: 1479627213}
   - component: {fileID: 1479627212}
+  - component: {fileID: 1479627214}
   m_Layer: 0
   m_Name: Text (TMP)
   m_TagString: Untagged
@@ -1335,8 +1336,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: 15 / 20
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: f8dc2bf71eeef31489c86c0a003fc7e3, type: 2}
-  m_sharedMaterial: {fileID: 3895459845586079530, guid: f8dc2bf71eeef31489c86c0a003fc7e3, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 63ecb7fa86ee7b84f814e582511932fb, type: 2}
+  m_sharedMaterial: {fileID: 2796896750567053294, guid: 63ecb7fa86ee7b84f814e582511932fb, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -1405,6 +1406,19 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &1479627214
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1479627210}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4d59a3b675bc4f99a3d02c565e8ba0c2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MatchPack.UI.BoxCounterView
+  _text: {fileID: 1479627212}
 --- !u!222 &1479627213
 CanvasRenderer:
   m_ObjectHideFlags: 0

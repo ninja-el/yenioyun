@@ -1,3 +1,4 @@
+using System;
 using MatchPack.Data;
 using MatchPack.Gameplay;
 using UnityEngine;
@@ -12,6 +13,9 @@ namespace MatchPack.Core
     {
         public static LevelManager Instance { get; private set; }
 
+        /// <summary>Banta giren kutu sayısı değiştiğinde (yeni kutu girdi veya level kuruldu) yayınlanır.</summary>
+        public event Action<int> OnSpawnedBoxCountChanged;
+
         [Tooltip("Devam etme süresinin okunduğu config.")]
         [SerializeField] private GameConfig _config;
 
@@ -20,11 +24,15 @@ namespace MatchPack.Core
         [SerializeField] private LevelTimer _timer;
 
         private int _filledBoxCount;
+        private int _spawnedBoxCount;
         private bool _isStackSettled;
         private bool _isLevelStarted;
 
         /// <summary>Bu levelde şimdiye kadar dolan kutu sayısı.</summary>
         public int FilledBoxCount => _filledBoxCount;
+
+        /// <summary>Bu levelde şimdiye kadar banta giren kutu sayısı. Joker kutular da sayılır.</summary>
+        public int SpawnedBoxCount => _spawnedBoxCount;
 
         private void Awake()
         {
@@ -74,9 +82,12 @@ namespace MatchPack.Core
             }
 
             _filledBoxCount = 0;
+            _spawnedBoxCount = 0;
             _isStackSettled = false;
             _isLevelStarted = false;
+            OnSpawnedBoxCountChanged?.Invoke(_spawnedBoxCount);
 
+            _conveyor.OnBoxSpawned += HandleBoxSpawned;
             _conveyor.OnBoxFilled += HandleBoxFilled;
             _conveyor.OnAllBoxesCompleted += HandleAllBoxesCompleted;
             _itemStack.OnStackSettled += HandleStackSettled;
@@ -111,6 +122,12 @@ namespace MatchPack.Core
             _timer.StartTimer(GameManager.Instance.CurrentLevel.Duration);
         }
 
+        private void HandleBoxSpawned(Box box)
+        {
+            _spawnedBoxCount++;
+            OnSpawnedBoxCountChanged?.Invoke(_spawnedBoxCount);
+        }
+
         private void HandleBoxFilled(Box box)
         {
             _filledBoxCount++;
@@ -138,6 +155,7 @@ namespace MatchPack.Core
         {
             _timer.Stop();
 
+            _conveyor.OnBoxSpawned -= HandleBoxSpawned;
             _conveyor.OnBoxFilled -= HandleBoxFilled;
             _conveyor.OnAllBoxesCompleted -= HandleAllBoxesCompleted;
             _itemStack.OnStackSettled -= HandleStackSettled;
