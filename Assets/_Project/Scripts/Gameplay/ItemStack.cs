@@ -102,7 +102,7 @@ namespace MatchPack.Gameplay
             for (int i = 0; i < _items.Count; i++)
             {
                 _items[i].SetSimulated(false);
-                _vacatedSpots.Add(_items[i].transform.position);
+                _vacatedSpots.Add(_items[i].BoundsCenter);
             }
 
             // Collider'lar kapandı; yeni noktalar aranmadan önce fizik motorunun bunu görmesi gerekir,
@@ -217,7 +217,7 @@ namespace MatchPack.Gameplay
 
         private int FindVacatedSpot(StackItem item, bool mustReserve)
         {
-            Vector3 currentPosition = item.transform.position;
+            Vector3 currentPosition = item.BoundsCenter;
 
             for (int i = 0; i < _vacatedSpots.Count; i++)
             {
@@ -233,7 +233,9 @@ namespace MatchPack.Gameplay
         private void StartShuffleMove(StackItem item, Vector3 position, float duration, Ease ease)
         {
             _shufflingItemCount++;
-            item.MoveTo(position, UnityEngine.Random.rotation, duration, ease, _handleShuffleArrived);
+            // Yer collider merkezine göre ayrıldı; pivot, seçilen rotasyonda merkezi oraya getirecek yere gider.
+            Quaternion rotation = UnityEngine.Random.rotation;
+            item.MoveTo(item.GetPivotForCenter(position, rotation), rotation, duration, ease, _handleShuffleArrived);
         }
 
         private void HandleShuffleArrived()
@@ -326,7 +328,8 @@ namespace MatchPack.Gameplay
 
                 _pendingTypes.Dequeue();
                 item.SetSimulated(false);
-                item.Teleport(position, UnityEngine.Random.rotation);
+                Quaternion rotation = UnityEngine.Random.rotation;
+                item.Teleport(item.GetPivotForCenter(position, rotation), rotation);
 
                 _items.Add(item);
                 _spawnBuffer.Add(item);

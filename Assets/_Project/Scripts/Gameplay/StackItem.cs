@@ -19,6 +19,7 @@ namespace MatchPack.Gameplay
         [SerializeField] private Rigidbody _rigidbody;
 
         private float _boundingRadius;
+        private Vector3 _localBoundsCenter;
         private Bounds _baseBounds;
         private Vector3 _baseScale;
         private RigidbodyInterpolation _interpolation;
@@ -28,10 +29,13 @@ namespace MatchPack.Gameplay
         public ItemType Type { get; private set; }
 
         /// <summary>
-        /// Objenin herhangi bir dönüşte kaplayabileceği yarıçap. Doğma aralığı bundan hesaplanır;
-        /// bölüme özel boyut çarpanını içerir.
+        /// <see cref="BoundsCenter"/> etrafında, objenin herhangi bir dönüşte kaplayabileceği yarıçap.
+        /// Doğma aralığı bundan hesaplanır; bölüme özel boyut çarpanını içerir.
         /// </summary>
         public float BoundingRadius => _boundingRadius * _scaleMultiplier;
+
+        /// <summary>Collider'ın merkezi, dünya uzayında. Model pivotları çoğunlukla tabanda olduğu için pivotla aynı değildir.</summary>
+        public Vector3 BoundsCenter => transform.TransformPoint(_localBoundsCenter);
 
         /// <summary>
         /// Görselin, obje dönmemiş ve prefab ölçeğindeyken kapladığı hacim; objenin parent uzayında.
@@ -52,6 +56,7 @@ namespace MatchPack.Gameplay
         {
             // Collider prefab'ta açık ve obje dönmemişken ölçülür; sonradan rotasyon bounds'u bozar.
             _boundingRadius = _collider.bounds.extents.magnitude;
+            _localBoundsCenter = transform.InverseTransformPoint(_collider.bounds.center);
             _baseScale = transform.localScale;
             _baseBounds = CalculateBaseBounds();
             _interpolation = _rigidbody.interpolation;
@@ -131,6 +136,15 @@ namespace MatchPack.Gameplay
             _rigidbody.interpolation = isSimulated ? _interpolation : RigidbodyInterpolation.None;
             _rigidbody.isKinematic = !isSimulated;
             _collider.enabled = isSimulated;
+        }
+
+        /// <summary>
+        /// Collider merkezi verilen noktaya gelecek şekilde, verilen rotasyonda pivotun durması gereken
+        /// konum. Yığında yer <see cref="BoundsCenter"/> üzerinden ayrıldığı için obje buna göre konur.
+        /// </summary>
+        public Vector3 GetPivotForCenter(Vector3 center, Quaternion rotation)
+        {
+            return center - rotation * Vector3.Scale(_localBoundsCenter, transform.lossyScale);
         }
 
         /// <summary>

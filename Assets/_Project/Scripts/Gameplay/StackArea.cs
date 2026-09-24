@@ -20,6 +20,9 @@ namespace MatchPack.Gameplay
         // kaydırdığı için birden farklı ölçek uyarı ile bildirilir.
         private const float ScaleTolerance = 0.001f;
 
+        // Boşluk ne kadar negatif olursa olsun obje yarıçapının en az bu oranı kadar yer ayrılır.
+        private const float MinClearanceRatio = 0.5f;
+
         [Tooltip("Alanın bu transform'a göre merkezi.")]
         [SerializeField] private Vector3 _center = new Vector3(0f, 3f, 0f);
 
@@ -35,11 +38,17 @@ namespace MatchPack.Gameplay
         [Tooltip("Boş yer aranırken çakışma kontrolünün bakacağı layer'lar.")]
         [SerializeField] private LayerMask _occupantLayers = ~0;
 
-        [Tooltip("Bir obje için boş nokta ararken denenecek rastgele aday sayısı.")]
-        [SerializeField, Min(1)] private int _placementAttempts = 24;
+        [Tooltip("Bir obje için boş nokta ararken denenecek rastgele aday sayısı. Yüksek değer alan dolarken " +
+            "yer bulma şansını artırır; ilk dolumda bir aday bulunamazsa kalan objeler sırayla doğar.")]
+        [SerializeField, Min(1)] private int _placementAttempts = 300;
 
-        [Tooltip("Objeler arasında ve duvar diplerinde bırakılacak ek boşluk.")]
-        [SerializeField, Min(0f)] private float _placementPadding = 0.05f;
+        [Tooltip("Objelerin sınır küreleri arasında ve duvar diplerinde bırakılacak ek boşluk. Küre collider'ı tamamen " +
+            "sardığı için 0'da objeler değmeden en yakın durur. Negatif değer küreleri iç içe geçirir; objeler çarpışıp itişebilir.")]
+        [SerializeField] private float _placementPadding = 0f;
+
+        [Tooltip("Açıkken obje, denenen adaylar arasında boş olan en alçak noktaya konur; yığın tabandan başlayıp " +
+            "sıkı bir öbek halinde doğar. Kapalıyken ilk boş aday alınır ve objeler tüm alana dağılır.")]
+        [SerializeField] private bool _fillFromBottom = true;
 
         [Tooltip("Alanın Scene view'da çizileceği renk.")]
         [SerializeField] private Color _gizmoColor = new Color(0.2f, 0.8f, 1f, 0.5f);
@@ -69,27 +78,39 @@ namespace MatchPack.Gameplay
         {
             position = Vector3.zero;
 
-            float clearance = radius + _placementPadding;
+            float clearance = GetClearance(radius);
             Vector3 extents = _size * 0.5f - Vector3.one * clearance;
 
             if (extents.x < 0f || extents.y < 0f || extents.z < 0f) { return false; }
 
+            bool hasCandidate = false;
+            float bestHeight = float.MaxValue;
+
             for (int attempt = 0; attempt < _placementAttempts; attempt++)
             {
-                Vector3 candidate = transform.TransformPoint(_center + new Vector3(
+                Vector3 localCandidate = _center + new Vector3(
                     Random.Range(-extents.x, extents.x),
                     Random.Range(-extents.y, extents.y),
-                    Random.Range(-extents.z, extents.z)));
+                    Random.Range(-extents.z, extents.z));
 
+                // Bulunandan yüksek aday kontrole bile girmez; tabandan doldururken maliyeti bu düşürür.
+                if (hasCandidate && localCandidate.y >= bestHeight) { continue; }
+
+                Vector3 candidate = transform.TransformPoint(localCandidate);
                 if (IsReserved(candidate, clearance)) { continue; }
                 if (Physics.CheckSphere(candidate, clearance, _occupantLayers, QueryTriggerInteraction.Ignore)) { continue; }
 
-                _reservations.Add(new Reservation { Position = candidate, Radius = clearance });
+                hasCandidate = true;
+                bestHeight = localCandidate.y;
                 position = candidate;
-                return true;
+
+                if (!_fillFromBottom) { break; }
             }
 
-            return false;
+            if (!hasCandidate) { return false; }
+
+            _reservations.Add(new Reservation { Position = position, Radius = clearance });
+            return true;
         }
 
         /// <summary>
@@ -100,11 +121,18 @@ namespace MatchPack.Gameplay
         /// </summary>
         public bool TryReserveAt(Vector3 position, float radius)
         {
-            float clearance = radius + _placementPadding;
+            float clearance = GetClearance(radius);
             if (IsReserved(position, clearance)) { return false; }
 
             _reservations.Add(new Reservation { Position = position, Radius = clearance });
             return true;
+        }
+
+        // Negatif boşluk küçük objelerde mesafeyi sıfırın altına itebilir; o zaman obje duvarın içinde
+        // doğar ve CheckSphere negatif yarıçap alır. Mesafe bu yüzden objenin yarıçapının altına inse de pozitif kalır.
+        private float GetClearance(float radius)
+        {
+            return Mathf.Max(radius + _placementPadding, radius * MinClearanceRatio);
         }
 
         private bool IsReserved(Vector3 candidate, float clearance)

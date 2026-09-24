@@ -1265,15 +1265,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c050f6199f7a49aca292e6849fdc76c6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MatchPack.Gameplay.StackArea
-  _center: {x: 0, y: 3, z: 0}
-  _size: {x: 6, y: 6, z: 9}
+  _center: {x: 0, y: 4.5, z: 0}
+  _size: {x: 6, y: 9, z: 9}
   _wallThickness: 1
   _hasCeiling: 1
   _occupantLayers:
     serializedVersion: 2
     m_Bits: 64
-  _placementAttempts: 24
-  _placementPadding: 0.05
+  _placementAttempts: 300
+  _placementPadding: 0
+  _fillFromBottom: 1
   _gizmoColor: {r: 0.2, g: 0.8, b: 1, a: 0.5}
 --- !u!1 &1479627210
 GameObject:
