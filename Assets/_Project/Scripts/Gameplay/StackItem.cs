@@ -19,6 +19,7 @@ namespace MatchPack.Gameplay
         [SerializeField] private Rigidbody _rigidbody;
 
         private float _boundingRadius;
+        private Bounds _baseBounds;
         private Vector3 _baseScale;
         private RigidbodyInterpolation _interpolation;
         private Sequence _moveSequence;
@@ -32,6 +33,15 @@ namespace MatchPack.Gameplay
         /// </summary>
         public float BoundingRadius => _boundingRadius * _scaleMultiplier;
 
+        /// <summary>
+        /// Görselin, obje dönmemiş ve prefab ölçeğindeyken kapladığı hacim; objenin parent uzayında.
+        /// Kutu, objeyi yuvasına sığdırırken bunu kullanır. Bölüm çarpanını içermez.
+        /// </summary>
+        public Bounds BaseBounds => _baseBounds;
+
+        /// <summary>Prefab'taki yerel ölçek.</summary>
+        public Vector3 BaseScale => _baseScale;
+
         /// <summary>Obje fiziksel olarak durulmuş mu? Yığının oturduğunu anlamak için kullanılır.</summary>
         public bool IsResting => _rigidbody.IsSleeping();
 
@@ -43,7 +53,54 @@ namespace MatchPack.Gameplay
             // Collider prefab'ta açık ve obje dönmemişken ölçülür; sonradan rotasyon bounds'u bozar.
             _boundingRadius = _collider.bounds.extents.magnitude;
             _baseScale = transform.localScale;
+            _baseBounds = CalculateBaseBounds();
             _interpolation = _rigidbody.interpolation;
+        }
+
+        // Renderer'ların yerel bounds köşeleri objenin yerel uzayına taşınır, sonra prefab ölçeğiyle
+        // çarpılır; böylece sonuç objenin o anki konum ve rotasyonundan bağımsızdır.
+        private Bounds CalculateBaseBounds()
+        {
+            Matrix4x4 worldToLocal = transform.worldToLocalMatrix;
+            Renderer[] renderers = GetComponentsInChildren<Renderer>(true);
+            Bounds bounds = default;
+            bool hasBounds = false;
+
+            for (int i = 0; i < renderers.Length; i++)
+            {
+                Renderer meshRenderer = renderers[i];
+                if (!(meshRenderer is MeshRenderer) && !(meshRenderer is SkinnedMeshRenderer)) { continue; }
+
+                Matrix4x4 toLocal = worldToLocal * meshRenderer.transform.localToWorldMatrix;
+                Bounds local = meshRenderer.localBounds;
+
+                for (int corner = 0; corner < 8; corner++)
+                {
+                    Vector3 point = local.center + Vector3.Scale(local.extents, new Vector3(
+                        (corner & 1) == 0 ? -1f : 1f,
+                        (corner & 2) == 0 ? -1f : 1f,
+                        (corner & 4) == 0 ? -1f : 1f));
+                    point = Vector3.Scale(toLocal.MultiplyPoint3x4(point), _baseScale);
+
+                    if (hasBounds)
+                    {
+                        bounds.Encapsulate(point);
+                    }
+                    else
+                    {
+                        bounds = new Bounds(point, Vector3.zero);
+                        hasBounds = true;
+                    }
+                }
+            }
+
+            if (!hasBounds)
+            {
+                Debug.LogWarning($"{name} has no mesh renderer; box fitting falls back to a unit size.", this);
+                bounds = new Bounds(Vector3.zero, _baseScale);
+            }
+
+            return bounds;
         }
 
         /// <summary>

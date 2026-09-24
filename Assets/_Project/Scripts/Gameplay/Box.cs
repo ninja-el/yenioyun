@@ -32,6 +32,10 @@ namespace MatchPack.Gameplay
             public float Delay => _delay;
         }
 
+        // Döndürmenin sığmayı büyüttüğünü saymak için gereken en küçük fark; float gürültüsüyle simetrik objeler dönmesin.
+        private const float FitTolerance = 0.0001f;
+        private const float MinBoundsSize = 0.0001f;
+
         /// <summary>Ayrılan yuvaların tümü dolduğunda yayınlanır. Kutuyu havuza iade etmek Conveyor'ın işidir.</summary>
         public event Action<Box> OnBoxFilled;
 
@@ -52,6 +56,13 @@ namespace MatchPack.Gameplay
 
         [Tooltip("Boş yuvaları gösteren görseller. Her obje geldiğinde sırayla kapanır; adedi yuva sayısıyla aynı olmalı.")]
         [SerializeField] private Image[] _emptyIndicators;
+
+        [Tooltip("Her yuvanın objeye ayırdığı hacim, yuvanın yerel uzayında: X genişlik, Y yükseklik, Z derinlik. " +
+            "Yuva pivotu hacmin merkezindedir; obje hacmin tabanına oturur.")]
+        [SerializeField] private Vector3 _slotSize = new Vector3(0.454f, 0.526f, 1.22f);
+
+        [Tooltip("Objenin yuva hacmini ne kadar dolduracağı. 0.9 = en dar eksende %90; objeler birbirine ve duvara değmez.")]
+        [SerializeField, Range(0.5f, 1f)] private float _slotFill = 0.9f;
 
         [Tooltip("Kutu dolunca kapanan kapaklar.")]
         [SerializeField] private Lid[] _lids;
@@ -155,13 +166,45 @@ namespace MatchPack.Gameplay
             int index = _items.IndexOf(item);
             if (index < 0) { return; }
 
+            GetSlotPose(item, out Vector3 position, out Quaternion rotation, out Vector3 scale);
             item.transform.SetParent(_itemSlots[index], false);
-            item.transform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
+            item.transform.SetLocalPositionAndRotation(position, rotation);
+            item.transform.localScale = scale;
 
             _arrivedCount++;
             ShowFillIndicators(_arrivedCount);
 
             if (_arrivedCount >= _itemSlots.Length) { OnBoxFilled?.Invoke(this); }
+        }
+
+        /// <summary>
+        /// Objenin yuvasında duracağı yerel poz ve ölçek. Obje yuva hacmine oranı bozulmadan sığacak
+        /// kadar ölçeklenir, hacmin ortasına hizalanır ve tabanına oturtulur. Uzun eksenini hacmin
+        /// uzun eksenine çevirmek daha büyük görünmesini sağlıyorsa döndürülür.
+        /// </summary>
+        public void GetSlotPose(StackItem item, out Vector3 position, out Quaternion rotation, out Vector3 scale)
+        {
+            Bounds bounds = item.BaseBounds;
+
+            rotation = Quaternion.identity;
+            Vector3 size = bounds.size;
+            float fit = GetFitScale(size);
+
+            Quaternion aligned = GetAxisAlignment(bounds.size, _slotSize);
+            Vector3 alignedSize = Abs(aligned * bounds.size);
+            float alignedFit = GetFitScale(alignedSize);
+
+            // Yalnızca gerçekten büyütüyorsa döndürülür; simetrik objeler (top gibi) boşuna yan yatmaz.
+            if (alignedFit > fit + FitTolerance)
+            {
+                rotation = aligned;
+                size = alignedSize;
+                fit = alignedFit;
+            }
+
+            fit *= _slotFill;
+            scale = item.BaseScale * fit;
+            position = -(rotation * bounds.center) * fit + Vector3.up * ((size.y * fit - _slotSize.y) * 0.5f);
         }
 
         /// <summary>
@@ -254,6 +297,76 @@ namespace MatchPack.Gameplay
             {
                 if (_lids[i].Transform != null) { _lids[i].Transform.localRotation = _lidOpenRotations[i]; }
             }
+        }
+
+        private float GetFitScale(Vector3 size)
+        {
+            return Mathf.Min(
+                _slotSize.x / Mathf.Max(size.x, MinBoundsSize),
+                _slotSize.y / Mathf.Max(size.y, MinBoundsSize),
+                _slotSize.z / Mathf.Max(size.z, MinBoundsSize));
+        }
+
+        // Objenin eksenleri boylarına göre sıralanıp hacmin aynı sıradaki eksenine eşlenir: en uzun
+        // eksen hacmin en uzun eksenine gider. Dönen rotasyon bu eşlemeyi yapan 90°'lik dönüştür.
+        private static Quaternion GetAxisAlignment(Vector3 itemSize, Vector3 slotSize)
+        {
+            Vector3 forward = GetUnitAxis(GetAxisWithRank(itemSize, GetRank(slotSize, 2)));
+            Vector3 up = GetUnitAxis(GetAxisWithRank(itemSize, GetRank(slotSize, 1)));
+            return Quaternion.Inverse(Quaternion.LookRotation(forward, up));
+        }
+
+        // Eksenin boy sırası, 0 en uzun. Eşit boylarda küçük index önce gelir ki her eksen ayrı sıra alsın.
+        private static int GetRank(Vector3 size, int axis)
+        {
+            int rank = 0;
+
+            for (int i = 0; i < 3; i++)
+            {
+                if (i == axis) { continue; }
+                if (size[i] > size[axis] || (size[i] == size[axis] && i < axis)) { rank++; }
+            }
+
+            return rank;
+        }
+
+        private static int GetAxisWithRank(Vector3 size, int rank)
+        {
+            for (int i = 0; i < 3; i++)
+            {
+                if (GetRank(size, i) == rank) { return i; }
+            }
+
+            return 0;
+        }
+
+        private static Vector3 GetUnitAxis(int axis)
+        {
+            Vector3 unit = Vector3.zero;
+            unit[axis] = 1f;
+            return unit;
+        }
+
+        private static Vector3 Abs(Vector3 value)
+        {
+            return new Vector3(Mathf.Abs(value.x), Mathf.Abs(value.y), Mathf.Abs(value.z));
+        }
+
+        private void OnDrawGizmosSelected()
+        {
+            if (_itemSlots == null) { return; }
+
+            Gizmos.color = Color.cyan;
+
+            for (int i = 0; i < _itemSlots.Length; i++)
+            {
+                if (_itemSlots[i] == null) { continue; }
+
+                Gizmos.matrix = _itemSlots[i].localToWorldMatrix;
+                Gizmos.DrawWireCube(Vector3.zero, _slotSize);
+            }
+
+            Gizmos.matrix = Matrix4x4.identity;
         }
 
         private void RefreshIcon()

@@ -118,12 +118,16 @@ namespace MatchPack.Gameplay
             // yerel uzayda uçurulur, böylece uçuş boyunca kutuyla birlikte hareket eder.
             item.transform.SetParent(slot, true);
 
+            // Boyut uçuş boyunca yuva hacmine geçer; obje yuvaya vardığında zaten son boyutundadır.
+            box.GetSlotPose(item, out Vector3 position, out Quaternion rotation, out Vector3 scale);
+
             item.transform
-                .DOLocalJump(Vector3.zero, _flightArcHeight, 1, _config.ItemFlyDuration)
+                .DOLocalJump(position, _flightArcHeight, 1, _config.ItemFlyDuration)
                 .SetEase(Ease.InOutQuad)
                 .OnComplete(() => box.ConfirmItem(item));
 
-            item.transform.DOLocalRotateQuaternion(Quaternion.identity, _config.ItemFlyDuration);
+            item.transform.DOLocalRotateQuaternion(rotation, _config.ItemFlyDuration);
+            item.transform.DOScale(scale, _config.ItemFlyDuration).SetEase(Ease.InOutQuad);
 
             OnItemMatched?.Invoke(item);
         }
