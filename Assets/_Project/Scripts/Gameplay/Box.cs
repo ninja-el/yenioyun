@@ -129,6 +129,9 @@ namespace MatchPack.Gameplay
         /// <summary>Kutunun tipi belli mi? Joker kutu ilk objesini alana kadar false döner.</summary>
         public bool IsTypeLocked => Type != null;
 
+        /// <summary>Ayrılış animasyonu sürüyorsa true. Auto-Match UFO'su kutuyla birlikte kaybolmak için bunu izler.</summary>
+        public bool IsDeparting => _departureSequence != null;
+
         /// <summary>
         /// Kutuyu bir obje tipine hazırlar. Havuzdan alındıktan sonra çağrılır; joker kutu için
         /// Conveyor tipi belirlendiğinde ikinci kez çağırır. null verilince kutu tipsiz kalır.

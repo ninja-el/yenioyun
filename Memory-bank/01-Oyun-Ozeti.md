@@ -75,7 +75,7 @@ Bant **kapalı bir turdur**; kutular bant üzerinde sürekli hareket eder, sabit
 |---|---|---|
 | Ek Süre | Lvl 4 | Süreye belirli saniye ekler. Butondan "+X sn" yazısı süre göstergesine uçar, vardığında süre eklenir ve gösterge büyüyüp küçülür |
 | Shuffle | Lvl 6 | Yığındaki objeleri alan içinde yeniden dağıtır; objeler birbirine çarpmadan yeni yerlerine kayar |
-| Auto-Match | Lvl 8 | `BoosterData`'daki moda göre ya belirli sayıda objeyi kutulara gönderir (Items) ya da belirli sayıda kutuyu tamamen doldurur (Boxes). Aynı anda yalnızca bir mod çalışır |
+| Auto-Match | Lvl 8 | Bir UFO gelir, banttaki en boş kutunun eksik objelerini yığından çekim ışınıyla toplar, kutunun üstüne uçar; kutu kapanır ve UFO kutuyla birlikte yükselip kaybolur. Objeler kutuya girmez. Art arda kullanılabilir, iki kullanım arasında bekleme süresi vardır |
 | Joker Box | Lvl 10 | Banta tipsiz kutu girer; ilk objesini her türden kabul eder, o tipe kilitlenir ve kalan yuvalarını yalnızca aynı tipten doldurur |
 
 ## Terim sözlüğü (kod ve konuşmada aynı kelimeyi kullan)

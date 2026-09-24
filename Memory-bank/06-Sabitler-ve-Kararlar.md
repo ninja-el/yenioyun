@@ -145,9 +145,10 @@ Booster değerleri `GameConfig`'te değil, booster başına bir `BoosterData` as
 | Shuffle açılışı | Lvl 6 | `BoosterData` |
 | Shuffle'da objelerin yeni yerlerine kayma süresi | 0.5 sn | `BoosterData.ShuffleDuration` |
 | Auto-Match açılışı | Lvl 8 | `BoosterData` |
-| Auto-Match modu | Items (obje bazlı) | `BoosterData.AutoMatchMode` |
-| Auto-Match adedi | 1 (moda göre obje veya kutu) | `BoosterData.AutoMatchCount` |
-| Auto-Match hamleleri arası bekleme | 0.12 sn | `BoosterData.AutoMatchInterval` |
+| Auto-Match iki kullanım arası bekleme | 1 sn | `BoosterData.AutoMatchCooldown` |
+| Auto-Match UFO prefab'ı | `Prefabs/Gameplay/AutoMatchUfo` | `BoosterData.UfoPrefab` |
+| UFO giriş / obje çekme / objeler arası fark / kutuya uçuş süresi | 0.65 / 0.72 / 0.63 / 0.5 sn | `AutoMatchUfo` prefab'ı |
+| UFO ölçeği / objelerin üstündeki yükseklik / kutunun üstündeki yükseklik | 0.85 / 3 / 1.2 birim | `AutoMatchUfo` prefab'ı |
 | Joker Box açılışı / adedi | Lvl 10 / 1 kutu | `BoosterData` |
 | Joker kutunun alacağı obje adedi | Prefab'taki yuva sayısı (3) | Joker kutu prefab'ı |
 | Booster efektinin ekranda kalma süresi | 1 sn | `BoosterData.EffectDuration` |
@@ -158,7 +159,8 @@ Booster değerleri `GameConfig`'te değil, booster başına bir `BoosterData` as
 Oyun içi buton sırası (ikonlara göre): `Booster_1` Auto-Match, `Booster_2` Ek Süre,
 `Booster_3` Shuffle, `Booster_4` Joker Box.
 
-Boosterlar envanterden tüketilir, cooldown yoktur, level içinde kullanım limiti stok kadardır.
+Boosterlar envanterden tüketilir, level içinde kullanım limiti stok kadardır. Cooldown yalnızca
+Auto-Match'te vardır (`AutoMatchCooldown`); bekleme dolmadan basılırsa booster düşülmez.
 Envanter index'i `BoosterType` enum sırasıdır: 0 TimeBonus, 1 Shuffle, 2 AutoMatch, 3 JokerBox.
 
 ## Alınmış kararlar
@@ -248,6 +250,7 @@ Envanter index'i `BoosterType` enum sırasıdır: 0 TimeBonus, 1 Shuffle, 2 Auto
 | 57 | Obje kutuya yığın boyutuyla değil, yuva hacmine sığdırılarak girer (`Box.GetSlotPose`): renderer bounds'u oranı bozulmadan hacmin en dar ekseninin %90'ına ölçeklenir, hacmin ortasına hizalanıp tabanına oturtulur. Uzun ekseni hacmin uzun eksenine çevirmek daha büyük sığdırıyorsa obje döndürülür, yoksa düz kalır. Ölçek uçuş boyunca geçer, inişte ayrı animasyon yoktur. Kutudaki boyut bölüm çarpanından (karar 56) bağımsızdır. Yuvalar kutu iç hacmini üçe bölen hücrelerin merkezine taşındı; hacim `kutu` modelinin prefab'taki ölçeği (0.3 / 0.5 / 0.375) ve eğimi (−50°) üzerinden hesaplandı, model ölçeği değişirse yeniden hesaplanmalı | 50 objenin mesh boyutları çok farklı; yığın boyutuyla giren objeler kutudan taşıyor ya da içinde kayboluyordu. Eski yuva pivotları kutu kenarına çok yakın olduğu için objeler dışarıda duruyormuş gibi görünüyordu. Hücre tabanı ikon düzlemine alındı, yoksa tabandaki tip ikonu objelerin içinden geçerdi |
 | 58 | Yığın ilk dolumda tek turda doğar: `StackArea` boşluğu −0.15, aday sayısı 300. Negatif boşluk sınır kürelerinin iç içe geçmesine izin verir; mesafe objenin yarıçapının yarısının altına inmez | 0.05 boşluk ve 24 adayla 6 x 6 x 9 alanda ilk turda ortalama 33 (en kötü 20) obje doğuyordu; `ItemStack.Fill` ilk başarısız denemede durduğu için kalanlar 0.5 sn aralıkla sırayla geliyordu. 50 objenin collider yarıçapları (0.19–0.82, ort. 0.6) ile yapılan simülasyonda bu ayarlar 87 objenin tamamını 60 denemenin hepsinde tek turda yerleştirdi. Sınır küresi collider AABB'sinin köşegeni olduğu için gerçek şekilden büyüktür; negatif boşlukta objeler pratikte değmez, değerse fizik ayırır |
 | 59 | Karar 58'deki −0.15 boşluk geri alındı; yerine `StackArea` tabandan doldurur (`_fillFromBottom`) ve boşluk 0'dır. Yer ayırma küresi pivot yerine collider merkezine kurulur (`StackItem.BoundsCenter` / `GetPivotForCenter`); doğma ve Shuffle pivotu buna göre konumlar | Rastgele ve düzgün dağılımda 87 obje 6 x 9 x 9 alanın yalnızca ~%16'sını doldurup tüm alana seyrek yayılıyordu; boşluk ayarı bunu değiştiremez. Modellerin çoğunda pivot tabanda (kayma yarıçapın %80'ine kadar), yani pivot etrafındaki küre collider'ı sarmıyordu ve objeler yakınlaştırılınca çarpışabilirdi. Simülasyonda tabandan doldurma + 0 boşluk: 87 objenin tamamı tek turda, en yakın komşuya medyan 0.05 birim, yığın tepesi 9 birimlik alanın 6.8'inde |
+| 60 | Auto-Match'in Items/Boxes modları kaldırıldı; booster artık UFO ile çalışır (`AutoMatchUfo`). Banttaki en boş kutu seçilir (eksik objelerinin hepsi yığında değilse sıradaki), yuvaları UFO yola çıkmadan ayrılır, UFO objeleri çekip kutunun üstüne uçar ve kutuyu tamamlar. Objeler kutuya girmez, kutunun yuva listesinde gizli kalıp kutuyla birlikte havuza döner. Kutu normal ayrılış animasyonunu oynar, UFO onunla yükselip küçülür. Kullanımlar arası 1 sn bekleme var | Oyuncu isteği. Yuvaların baştan ayrılması oyuncunun ve ikinci bir UFO'nun aynı kutuya obje göndermesini engeller. Bekleme, aynı anda çok sayıda UFO uçup performansı zorlamasın diye; bekleme sırasında basılırsa booster düşülmez (karar #37) |
 
 ## Açık sorular
 

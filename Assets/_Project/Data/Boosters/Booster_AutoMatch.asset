@@ -24,8 +24,6 @@ MonoBehaviour:
   _bonusSeconds: 5
   _bonusFlyDuration: 0.5
   _shuffleDuration: 0.5
-  _autoMatchMode: 0
-  _autoMatchCount: 1
-  _autoMatchInterval: 0.12
-  _jokerBoxPrefab: {fileID: 0}
+  _ufoPrefab: {fileID: 1851743769739703232, guid: 60f04e09db14080478ce0b0bc1236eb2, type: 3}
+  _autoMatchCooldown: 1
   _jokerBoxCount: 1

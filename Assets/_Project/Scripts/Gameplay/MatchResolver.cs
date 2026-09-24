@@ -70,24 +70,12 @@ namespace MatchPack.Gameplay
         }
 
         /// <summary>
-        /// Objeyi bantta uygun bir kutuya gönderir. Dokunuşla aynı yolu işletir ama hatalı hamle
-        /// geri bildirimi vermez; boosterlar dokunuş olmadan bunu çağırır.
+        /// Objeyi bantta uygun bir kutuya gönderir. Hatalı hamle geri bildirimi vermez; dokunuşta
+        /// adaylar bununla sırayla denenir.
         /// </summary>
         public bool TryMatch(StackItem item)
         {
             if (item == null || !_conveyor.TryReserveBox(item, out Box box, out Transform slot)) { return false; }
-
-            Match(item, box, slot);
-            return true;
-        }
-
-        /// <summary>
-        /// Objeyi belirli bir kutuya gönderir. Auto-Match'in kutu modu hedefi kendisi seçtiği için
-        /// bunu kullanır; kutu doluysa veya tip uymuyorsa false döner.
-        /// </summary>
-        public bool TryMatchInto(StackItem item, Box box)
-        {
-            if (item == null || box == null || !box.TryAddItem(item, out Transform slot)) { return false; }
 
             Match(item, box, slot);
             return true;

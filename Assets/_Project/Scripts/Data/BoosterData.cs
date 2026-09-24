@@ -2,13 +2,6 @@
 
 namespace MatchPack.Data
 {
-    /// <summary>Auto-Match booster'ının çalışma biçimi. Aynı anda yalnızca biri geçerlidir.</summary>
-    public enum AutoMatchMode
-    {
-        Items,
-        Boxes
-    }
-
     /// <summary>
     /// Tek bir booster'ın tanımı ve sayısal değerleri. Etkiyi uygulayan taraf ilgili
     /// BoosterBehaviour'dır; bu asset yalnızca veri taşır.
@@ -59,14 +52,11 @@ namespace MatchPack.Data
         [SerializeField, Min(0f)] private float _shuffleDuration = 0.5f;
 
         [Header("Auto-Match")]
-        [Tooltip("Items: belirli sayıda obje kutulara gönderilir. Boxes: belirli sayıda kutu tamamen doldurulur.")]
-        [SerializeField] private AutoMatchMode _autoMatchMode = AutoMatchMode.Items;
+        [Tooltip("Kutunun eksik objelerini toplayıp kutuyu tamamlayan UFO prefab'ı. AutoMatchUfo bileşeni taşımalı.")]
+        [SerializeField] private GameObject _ufoPrefab;
 
-        [Tooltip("Seçilen moda göre gönderilecek obje veya doldurulacak kutu adedi.")]
-        [SerializeField, Min(1)] private int _autoMatchCount = 1;
-
-        [Tooltip("Art arda gönderilen objeler arasındaki bekleme (saniye). Hepsi aynı karede uçmasın diye.")]
-        [SerializeField, Min(0f)] private float _autoMatchInterval = 0.12f;
+        [Tooltip("İki Auto-Match kullanımı arasında geçmesi gereken en kısa süre (saniye). Aynı anda çok fazla UFO uçmasın diye.")]
+        [SerializeField, Min(0f)] private float _autoMatchCooldown = 1f;
 
         [Header("Joker Box")]
         [Tooltip("Tek kullanımda banta gönderilecek joker kutu adedi.")]
@@ -84,9 +74,8 @@ namespace MatchPack.Data
         public float BonusSeconds => _bonusSeconds;
         public float BonusFlyDuration => _bonusFlyDuration;
         public float ShuffleDuration => _shuffleDuration;
-        public AutoMatchMode AutoMatchMode => _autoMatchMode;
-        public int AutoMatchCount => _autoMatchCount;
-        public float AutoMatchInterval => _autoMatchInterval;
+        public GameObject UfoPrefab => _ufoPrefab;
+        public float AutoMatchCooldown => _autoMatchCooldown;
         public int JokerBoxCount => _jokerBoxCount;
     }
 }
