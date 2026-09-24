@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using DG.Tweening;
 using MatchPack.Core;
 using MatchPack.Data;
 using UnityEngine;
@@ -13,6 +14,24 @@ namespace MatchPack.Gameplay
     /// </summary>
     public class Box : MonoBehaviour, IPoolable
     {
+        [Serializable]
+        private class Lid
+        {
+            [Tooltip("Kapak objesi. Pivotu menteşe kenarında olmalı.")]
+            [SerializeField] private Transform _transform;
+
+            [Tooltip("Kapağın açık hâlinden kapalı hâline dönüşü, parent uzayında derece. Tek eksen kullanılır; " +
+                "180'i aşan değer kapağın aşağıdan değil yukarıdan dolanarak kapanmasını sağlar.")]
+            [SerializeField] private Vector3 _closingRotation;
+
+            [Tooltip("Kapanma başlamadan önceki bekleme. Kısa kapaklar önce kapanırsa uzunlar üstlerine oturur.")]
+            [SerializeField, Min(0f)] private float _delay;
+
+            public Transform Transform => _transform;
+            public Vector3 ClosingRotation => _closingRotation;
+            public float Delay => _delay;
+        }
+
         /// <summary>Ayrılan yuvaların tümü dolduğunda yayınlanır. Kutuyu havuza iade etmek Conveyor'ın işidir.</summary>
         public event Action<Box> OnBoxFilled;
 
@@ -34,11 +53,26 @@ namespace MatchPack.Gameplay
         [Tooltip("Boş yuvaları gösteren görseller. Her obje geldiğinde sırayla kapanır; adedi yuva sayısıyla aynı olmalı.")]
         [SerializeField] private Image[] _emptyIndicators;
 
+        [Tooltip("Kutu dolunca kapanan kapaklar.")]
+        [SerializeField] private Lid[] _lids;
+
+        [Tooltip("Tek bir kapağın kapanma süresi.")]
+        [SerializeField, Min(0f)] private float _lidCloseDuration = 0.25f;
+
+        [Tooltip("Kapaklar kapandıktan sonra kutunun yukarı yükseleceği mesafe (dünya birimi). Kutu bu mesafenin sonunda 0 ölçeğe ulaşır.")]
+        [SerializeField, Min(0f)] private float _riseDistance = 2.5f;
+
+        [Tooltip("Yükselip küçülerek kaybolmanın süresi.")]
+        [SerializeField, Min(0f)] private float _riseDuration = 0.6f;
+
         private readonly List<StackItem> _items = new List<StackItem>();
         private int _arrivedCount;
         private bool _isJokerByDefault;
         private Quaternion _baseRotation;
         private float _baseHeight;
+        private Vector3 _baseScale;
+        private Quaternion[] _lidOpenRotations;
+        private Sequence _departureSequence;
 
         public ItemType Type { get; private set; }
 
@@ -56,7 +90,14 @@ namespace MatchPack.Gameplay
             // Havuz instance'ı prefab'ın yerel değerleriyle üretilir; sonrasında transform'u bant yazar.
             _baseRotation = transform.localRotation;
             _baseHeight = transform.localPosition.y;
+            _baseScale = transform.localScale;
             _isJokerByDefault = _isJoker;
+
+            _lidOpenRotations = new Quaternion[_lids.Length];
+            for (int i = 0; i < _lids.Length; i++)
+            {
+                if (_lids[i].Transform != null) { _lidOpenRotations[i] = _lids[i].Transform.localRotation; }
+            }
         }
 
         /// <summary>Tüm yuvalar ayrıldıysa true. Uçuşu süren objeler de yuvayı işgal eder.</summary>
@@ -123,16 +164,68 @@ namespace MatchPack.Gameplay
             if (_arrivedCount >= _itemSlots.Length) { OnBoxFilled?.Invoke(this); }
         }
 
+        /// <summary>
+        /// Dolan kutunun ayrılış animasyonu: kapaklar kapanır, ardından kutu yukarı yükselirken
+        /// küçülüp kaybolur. Bitince <paramref name="onComplete"/> çağrılır; havuza iade çağıranın işidir.
+        /// </summary>
+        public void PlayDeparture(Action onComplete)
+        {
+            StopDeparture();
+
+            _departureSequence = DOTween.Sequence();
+            float lidsEnd = 0f;
+
+            for (int i = 0; i < _lids.Length; i++)
+            {
+                Transform lid = _lids[i].Transform;
+                if (lid == null) { continue; }
+
+                Quaternion openRotation = _lidOpenRotations[i];
+                Vector3 closingRotation = _lids[i].ClosingRotation;
+
+                // Quaternion ara değeri en kısa yolu seçip kapağı kutunun içinden geçirir; açı
+                // tek eksende ilerletilince kapak menteşesi etrafında yukarıdan dolanır.
+                _departureSequence.Insert(_lids[i].Delay, DOVirtual
+                    .Float(0f, 1f, _lidCloseDuration, t => lid.localRotation = Quaternion.Euler(closingRotation * t) * openRotation)
+                    .SetEase(Ease.InOutQuad));
+
+                lidsEnd = Mathf.Max(lidsEnd, _lids[i].Delay + _lidCloseDuration);
+            }
+
+            // Ölçek doğrudan katedilen yükseklikten hesaplanır: kutu yukarı çıktıkça küçülür ve tam
+            // yükselme mesafesinin sonunda 0 ölçeğe varır.
+            float startY = transform.position.y;
+            _departureSequence
+                .Insert(lidsEnd, DOVirtual
+                    .Float(0f, 1f, _riseDuration, progress =>
+                    {
+                        Vector3 position = transform.position;
+                        position.y = startY + _riseDistance * progress;
+                        transform.position = position;
+                        transform.localScale = _baseScale * (1f - progress);
+                    })
+                    .SetEase(Ease.InOutSine))
+                .OnComplete(() =>
+                {
+                    _departureSequence = null;
+                    onComplete?.Invoke();
+                });
+        }
+
         public void OnSpawned()
         {
             _items.Clear();
             _arrivedCount = 0;
             _isJoker = _isJokerByDefault;
             ShowFillIndicators(0);
+            ResetDepartureVisuals();
         }
 
         public void OnDespawned()
         {
+            StopDeparture();
+            ResetDepartureVisuals();
+
             for (int i = 0; i < _items.Count; i++)
             {
                 PoolManager.Instance.Release(_items[i].gameObject);
@@ -143,6 +236,24 @@ namespace MatchPack.Gameplay
             _isJoker = _isJokerByDefault;
             ShowFillIndicators(0);
             Setup(null);
+        }
+
+        private void StopDeparture()
+        {
+            _departureSequence?.Kill();
+            _departureSequence = null;
+        }
+
+        // Ayrılışı yarıda kesilen ya da tamamlayan kutu havuza küçülmüş ve kapağı kapalı döner;
+        // bir sonraki kullanımda banta açık ve tam boyutta girmesi için geri alınır.
+        private void ResetDepartureVisuals()
+        {
+            transform.localScale = _baseScale;
+
+            for (int i = 0; i < _lids.Length; i++)
+            {
+                if (_lids[i].Transform != null) { _lids[i].Transform.localRotation = _lidOpenRotations[i]; }
+            }
         }
 
         private void RefreshIcon()

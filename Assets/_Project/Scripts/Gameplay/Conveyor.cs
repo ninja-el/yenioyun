@@ -9,7 +9,8 @@ namespace MatchPack.Gameplay
     /// <summary>
     /// Bandın kutu karuseli. Tek bir offset değerini ilerletir; kutular tur üzerindeki sanal
     /// slotlara bağlıdır ve konumlarını slot belirler, kendileri hareket hesaplamaz. Kutu giriş
-    /// noktasından banta katılır; tamamlanınca banttan ayrılıp çıkış noktasına gider ve kaybolur.
+    /// noktasından banta katılır; tamamlanınca banttan ayrılıp kapağını kapatır ve yukarı uçup
+    /// kaybolur. Joker yüzünden iptal edilen boş kutu ise çıkış noktasına gidip orada kaybolur.
     /// </summary>
     public class Conveyor : MonoBehaviour
     {
@@ -40,6 +41,7 @@ namespace MatchPack.Gameplay
         private readonly List<ItemType> _queuedBoxTypes = new List<ItemType>();
         private readonly Dictionary<ItemType, int> _uncoveredItemCounts = new Dictionary<ItemType, int>();
         private readonly List<LeavingBox> _leavingBoxes = new List<LeavingBox>();
+        private readonly List<Box> _departingBoxes = new List<Box>();
 
         private ConveyorPath _path;
         private ItemStack _itemStack;
@@ -213,6 +215,14 @@ namespace MatchPack.Gameplay
             }
 
             _leavingBoxes.Clear();
+
+            // Havuza iade ayrılış animasyonunu keser; tamamlanma çağrısı gelmediği için liste burada boşaltılır.
+            for (int i = 0; i < _departingBoxes.Count; i++)
+            {
+                ReleaseBox(_departingBoxes[i]);
+            }
+
+            _departingBoxes.Clear();
             _queuedBoxTypes.Clear();
             _queuedJokerCount = 0;
             _path = null;
@@ -465,26 +475,45 @@ namespace MatchPack.Gameplay
         private void DetachBox(int slotIndex)
         {
             Box box = _slotBoxes[slotIndex];
-
-            _slotBoxes[slotIndex] = null;
-            _slotStates[slotIndex] = SlotState.Empty;
-            _slotProgress[slotIndex] = 0f;
+            FreeSlot(slotIndex);
 
             _leavingBoxes.Add(new LeavingBox { Box = box, From = box.transform.position, Progress = 0f });
         }
 
+        private void DepartBox(int slotIndex)
+        {
+            Box box = _slotBoxes[slotIndex];
+            FreeSlot(slotIndex);
+
+            _departingBoxes.Add(box);
+            box.PlayDeparture(() =>
+            {
+                _departingBoxes.Remove(box);
+                ReleaseBox(box);
+                CheckCompletion();
+            });
+        }
+
+        private void FreeSlot(int slotIndex)
+        {
+            _slotBoxes[slotIndex] = null;
+            _slotStates[slotIndex] = SlotState.Empty;
+            _slotProgress[slotIndex] = 0f;
+        }
+
         private void HandleBoxCompleted(Box box)
         {
-            // Tamamlanan kutu turu beklemez; anında banttan ayrılıp çıkış noktasına gider.
+            // Tamamlanan kutu turu beklemez; bulunduğu yerde banttan ayrılıp kapağını kapatır ve yukarı uçup kaybolur.
             int slotIndex = FindSlot(box);
-            if (slotIndex >= 0) { DetachBox(slotIndex); }
+            if (slotIndex >= 0) { DepartBox(slotIndex); }
 
             OnBoxFilled?.Invoke(box);
         }
 
         private void CheckCompletion()
         {
-            if (_queuedBoxTypes.Count > 0 || _queuedJokerCount > 0 || _leavingBoxes.Count > 0) { return; }
+            if (_queuedBoxTypes.Count > 0 || _queuedJokerCount > 0) { return; }
+            if (_leavingBoxes.Count > 0 || _departingBoxes.Count > 0) { return; }
 
             for (int i = 0; i < _slotBoxes.Length; i++)
             {

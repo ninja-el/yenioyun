@@ -106,50 +106,6 @@ namespace MatchPack.Gameplay
             _moveSequence = null;
         }
 
-        /// <summary>
-        /// Kutuya oturma yaylanması: dikey ve yatay eksen ayrı genlik ve sürelerle, sönümlenerek
-        /// büyüyüp küçülür. Yatay eksen dikeyin tersi yönde başlar; biri uzarken diğeri incelir.
-        /// Obje sonunda animasyon başındaki boyutuna döner.
-        /// </summary>
-        public void PlaySettleWobble(
-            float verticalAmount, float verticalDuration,
-            float horizontalAmount, float horizontalDuration,
-            int oscillations)
-        {
-            // Obje yuvaya dünya ölçeği korunarak parent edildiği için taban, prefab ölçeği değil
-            // o anki yerel ölçektir.
-            Vector3 baseScale = transform.localScale;
-
-            PlayScaleOscillation(verticalAmount, verticalDuration, oscillations, factor =>
-            {
-                Vector3 scale = transform.localScale;
-                scale.y = baseScale.y * factor;
-                transform.localScale = scale;
-            });
-
-            PlayScaleOscillation(-horizontalAmount, horizontalDuration, oscillations, factor =>
-            {
-                Vector3 scale = transform.localScale;
-                scale.x = baseScale.x * factor;
-                scale.z = baseScale.z * factor;
-                transform.localScale = scale;
-            });
-        }
-
-        private void PlayScaleOscillation(float amount, float duration, int oscillations, Action<float> applyFactor)
-        {
-            float angularSpeed = Mathf.PI * 2f * oscillations;
-
-            // Hedef transform olarak işaretlenir ki OnDespawned'daki DOKill yarım kalan yaylanmayı da kessin.
-            DOVirtual.Float(0f, 1f, duration, t =>
-                {
-                    float damping = (1f - t) * (1f - t);
-                    applyFactor(1f + amount * Mathf.Sin(t * angularSpeed) * damping);
-                })
-                .SetEase(Ease.Linear)
-                .SetTarget(transform);
-        }
-
         public void OnSpawned()
         {
             // Havuzdan çıkan obje havuz kökünün konumundadır; fizik ancak çağıran onu yerleştirdikten sonra açılır.
@@ -163,8 +119,8 @@ namespace MatchPack.Gameplay
             transform.DOKill();
             SetSimulated(false);
 
-            // Kutuya oturan obje yaylanmanın ortasında olabilir; havuza kendi ölçeğiyle dönmezse bir
-            // sonraki kullanımda yığına o boyutla doğar.
+            // Yuvaya dünya ölçeği korunarak parent edilen objenin yerel ölçeği değişir; havuza kendi
+            // ölçeğiyle dönmezse bir sonraki kullanımda yığına o boyutla doğar.
             transform.localScale = _baseScale;
             Type = null;
         }

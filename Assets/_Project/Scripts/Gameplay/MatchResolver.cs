@@ -29,21 +29,6 @@ namespace MatchPack.Gameplay
         [Tooltip("Objenin kutuya uçarken çizdiği kavisin yüksekliği.")]
         [SerializeField, Min(0f)] private float _flightArcHeight = 1.5f;
 
-        [Tooltip("Obje yuvasına oturunca dikeyde (Y) ne kadar esneyeceği. 0.25 = boyunun %25'i kadar uzayıp kısalır.")]
-        [SerializeField, Range(0f, 0.9f)] private float _settleVerticalAmount = 0.25f;
-
-        [Tooltip("Dikey yaylanmanın sönümlenip bitme süresi.")]
-        [SerializeField, Min(0f)] private float _settleVerticalDuration = 0.4f;
-
-        [Tooltip("Obje yuvasına oturunca yatayda (X ve Z) ne kadar esneyeceği. Dikeyin tersi yönde başlar: obje uzarken incelir.")]
-        [SerializeField, Range(0f, 0.9f)] private float _settleHorizontalAmount = 0.15f;
-
-        [Tooltip("Yatay yaylanmanın sönümlenip bitme süresi. Dikeyden farklı tutulursa iki eksen birbirinden kayarak jöle hissi verir.")]
-        [SerializeField, Min(0f)] private float _settleHorizontalDuration = 0.55f;
-
-        [Tooltip("Yaylanmanın sönümlenene kadar kaç kez büyüyüp küçüleceği.")]
-        [SerializeField, Min(1)] private int _settleOscillations = 2;
-
         [Tooltip("Hatalı hamlede kameranın sarsılma süresi.")]
         [SerializeField, Min(0f)] private float _shakeDuration = 0.2f;
 
@@ -133,24 +118,14 @@ namespace MatchPack.Gameplay
             // yerel uzayda uçurulur, böylece uçuş boyunca kutuyla birlikte hareket eder.
             item.transform.SetParent(slot, true);
 
-            // Ölçek uçuş boyunca değişmez; yaylanma ancak obje yuvasına oturduktan sonra oynar.
             item.transform
                 .DOLocalJump(Vector3.zero, _flightArcHeight, 1, _config.ItemFlyDuration)
                 .SetEase(Ease.InOutQuad)
-                .OnComplete(() => Land(item, box));
+                .OnComplete(() => box.ConfirmItem(item));
 
             item.transform.DOLocalRotateQuaternion(Quaternion.identity, _config.ItemFlyDuration);
 
             OnItemMatched?.Invoke(item);
-        }
-
-        private void Land(StackItem item, Box box)
-        {
-            box.ConfirmItem(item);
-            item.PlaySettleWobble(
-                _settleVerticalAmount, _settleVerticalDuration,
-                _settleHorizontalAmount, _settleHorizontalDuration,
-                _settleOscillations);
         }
 
         private void Miss(StackItem item)

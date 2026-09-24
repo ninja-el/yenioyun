@@ -21,7 +21,10 @@ Değer değişirse önce bu dosya güncellenir.
 | Bant hızı | 0.8 slot/sn (12 slotlu turda ~15 sn/tur) | `GameConfig` |
 | Kutu giriş gecikmesi | 0.5 sn | `GameConfig` |
 | Kutu giriş animasyonu süresi | 0.4 sn | `GameConfig` |
-| Kutu çıkış animasyonu süresi | 0.35 sn | `GameConfig` |
+| Kutu çıkış animasyonu süresi (yalnızca joker yüzünden iptal edilen boş kutu) | 0.35 sn | `GameConfig` |
+| Dolan kutunun kapak kapanma süresi | 0.25 sn (kısa kapaklar 0, uzun kapaklar 0.12 sn gecikmeyle) | `Box` prefab |
+| Dolan kutunun yükselme mesafesi (sonunda 0 ölçek) | 2.5 birim | `Box` prefab |
+| Dolan kutunun yükselip küçülme süresi | 0.6 sn (InOutSine; ölçek katedilen yükseklikten hesaplanır) | `Box` prefab |
 | Yığın alanı iç ölçüsü | 6 x 6 x 6, merkez (0, 3, 0) | `StackArea` |
 | Alan duvar kalınlığı | 1.0 birim (zemin + 4 duvar + tavan) | `StackArea` |
 | Doğma noktaları arası ek boşluk | 0.05 birim (objenin kendi yarıçapına eklenir) | `StackArea` |
@@ -31,9 +34,6 @@ Değer değişirse önce bu dosya güncellenir.
 | Dokunuş probu | Kutu (BoxCast), 0.3 birim kenar | `InputManager` |
 | Probun toplayacağı en fazla obje | 2 | `InputManager` |
 | Objenin uçuş kavisi yüksekliği | 1.5 birim | `MatchResolver` |
-| Kutuya oturma yaylanması, dikey (Y) | 0.25 genlik / 0.4 sn | `MatchResolver` |
-| Kutuya oturma yaylanması, yatay (X-Z, ters fazda) | 0.15 genlik / 0.55 sn | `MatchResolver` |
-| Yaylanmanın salınım sayısı | 2 | `MatchResolver` |
 | Hatalı hamlede kamera sarsıntısı | 0.2 sn / 0.15 şiddet | `MatchResolver` |
 | Hedef FPS | 60 | Proje ayarı |
 
@@ -238,6 +238,8 @@ Envanter index'i `BoosterType` enum sırasıdır: 0 TimeBonus, 1 Shuffle, 2 Auto
 | 52 | Bölümler `LevelBalanceConfig` eğrilerinden editör aracıyla (`LevelGenerator`) üretilir; üretici her kutuyu `Items` listesine ayrı ve karışık sırada yazar, bölümde yeni açılan tip her zaman yer alır | 50 bölümü elle dengelemek yerine tek bir tahmin modeli ayarlanıyor. Bant kutuları `Items` sırasıyla gönderdiği için tip başına tek satır, aynı tipin kutularını art arda getiriyordu |
 | 53 | Banta gelen kutunun tipi `Items` sırasından değil, yığında o an duran objelerden rastgele seçilir (`Conveyor.TakeNextBoxType`); banttaki kutuların boş yuvalarına düşen objeler sayılmaz. `Conveyor.Build` yığını `LevelManager`'dan parametre olarak alır | Oyuncu isteği. Parametre olarak alınması sahneye/prefab'a yeni referans bağlamayı gerektirmiyor. Karşılanmış objeler sayılmazsa yığında 3 elma varken ikinci elma kutusu gelip doldurulamadan dönmüyor. 52 numaralı karardaki üretici karıştırması artık kutu sırasını belirlemiyor, yalnızca zararsız kaldı |
 | 54 | Karar 49 geri alındı: kutuya iniş ezil-yaylan animasyonu ve `ItemType.SelectedScale` çarpanı kaldırıldı. Yerine obje yuvasına oturduktan sonra `StackItem.PlaySettleWobble` oynar; dikey (Y) ve yatay (X-Z) eksen farklı genlik ve sürelerle, ters fazda, sönümlenen sinüsle büyüyüp küçülür ve obje sonunda kendi boyutuna döner | İki eksenin birbirinden kayması tek eğrili ezilmeden daha canlı bir jöle hissi veriyor. Obje boyutu artık kutuda kalıcı olarak değişmediği için çarpana gerek kalmadı; tüm tiplerde değeri zaten 1 idi |
+| 54a | Karar 54'teki kutuya oturma yaylanması (`StackItem.PlaySettleWobble`) da kaldırıldı; obje yuvasına ölçek animasyonu olmadan oturur | Oyuncu isteği: kutuya yerleşmede hiçbir boyut animasyonu olmayacak |
+| 55 | Karar 10a güncellendi: dolan kutu çıkış noktasına gitmez; bulunduğu yerde banttan ayrılır, kapakları kapanır (`Box.PlayDeparture`), ardından Y ekseninde yükselirken küçülür (ölçek = 1 - katedilen yükseklik / yükselme mesafesi) ve 0 ölçeğe varınca havuza döner. Joker yüzünden iptal edilen boş kutu eski yoldan çıkışa gider. Kapaklar menteşe etrafında tek eksende açı ilerletilerek döner; kapalı açılar `kutu.fbx` geometrisinden hesaplanıp prefab'a yazıldı. Uzun kapaklar (kuzey/güney) 2° eksik kapanır ve 0.12 sn geç başlar ki kısa kapakların üstüne binsin | Quaternion ara değeri 180°'yi aşan dönüşte kısa yolu seçip kapağı kutunun içinden geçirir. Ölçek yükseklikten türetildiği için 0 ölçeğe tam yükselme mesafesinde varılır. İlk denemedeki InQuad eğrisi hareketi sona yığıp kutunun yerinde durup birden kaybolması gibi görünüyordu; InOutSine ve 0.6 sn ile küçülme baştan itibaren okunur |
 
 ## Açık sorular
 
