@@ -8,9 +8,10 @@ using UnityEngine.Purchasing.Security;
 [Serializable]
 public enum IAPProductKey
 {
-    StarterPack, BeginnerPack, GoldenBirdPack, SpaceBirdPack, 
-    ThousandGold, FiveThousandGold, TenThousandGold,
-    TwentyFiveThousandGold, FiftyThousandGold, HundredThousandGold,
+    
+    SupriseBox, BeginnerBox, MegaBox, GoldenBox, 
+    OneGold, TwoGold, ThreeGold,
+    FourGold, FiveGold, SixGold,
     RemoveAds
 }
 
@@ -50,17 +51,17 @@ public class IAPManager : MonoBehaviour
     
     private CrossPlatformValidator validator;
     
-    public string starterPack = "starter_pack";
-    public string beginnerPack = "beginnerpack";
-    public string goldenBirdPack = "goldenbirdpack";
-    public string spaceBirdPack = "spacebirdpack";
+    public string supriseBox = "suprisebox";
+    public string beginnerBox = "beginnerBox";
+    public string megaBox = "megaBox";
+    public string goldenBox = "goldenBox";
     
-    public string thousandgold = "1kgold";
-    public string fivethousandgold = "5kgold";
-    public string tenthousandgold = "10kgold";
-    public string twentyFivethousandgold = "25kgold";
-    public string fiftyThousandgold = "50kgold";
-    public string hundredThousandgold = "100kgold";
+    public string oneGold = "1000";
+    public string twoGold = "5000";
+    public string threeGold = "10000";
+    public string fourGold = "25000";
+    public string fiveGold = "50000";
+    public string sixGold = "100000";
     
     public string removeAds  = "removeads";
 
@@ -130,8 +131,17 @@ public class IAPManager : MonoBehaviour
                 bool isEntitled = status == EntitlementStatus.FullyEntitled;
                 if (isEntitled && product != null && product.definition != null)
                 {
-                    // Add consume transaction for consumable products like coins and one time buy for non-consumable products like remove ads.
-                    // if product.definition.id == starterPack
+                    if(product.definition.id == supriseBox){
+                        /// <summary>
+                        /// 
+                        /// </summary>
+                    }
+
+                    if(product.definition.id == removeAds){
+                        /// <summary>
+                        /// 
+                        /// </summary>
+                    }
                 }
             }
             catch (Exception e)
@@ -158,17 +168,17 @@ public class IAPManager : MonoBehaviour
     {
         var initialProductToFetch = new List<ProductDefinition>();
         
-        initialProductToFetch.Add(new ProductDefinition(starterPack, ProductType.NonConsumable));
-        initialProductToFetch.Add(new ProductDefinition(beginnerPack, ProductType.Consumable));
-        initialProductToFetch.Add(new ProductDefinition(goldenBirdPack, ProductType.Consumable));
-        initialProductToFetch.Add(new ProductDefinition(spaceBirdPack, ProductType.Consumable));
+        initialProductToFetch.Add(new ProductDefinition(supriseBox, ProductType.NonConsumable));
+        initialProductToFetch.Add(new ProductDefinition(beginnerBox, ProductType.Consumable));
+        initialProductToFetch.Add(new ProductDefinition(megaBox, ProductType.Consumable));
+        initialProductToFetch.Add(new ProductDefinition(goldenBox, ProductType.Consumable));
 
-        initialProductToFetch.Add(new ProductDefinition(thousandgold, ProductType.Consumable));
-        initialProductToFetch.Add(new ProductDefinition(fivethousandgold, ProductType.Consumable));
-        initialProductToFetch.Add(new ProductDefinition(tenthousandgold, ProductType.Consumable));
-        initialProductToFetch.Add(new ProductDefinition(twentyFivethousandgold, ProductType.Consumable));
-        initialProductToFetch.Add(new ProductDefinition(fiftyThousandgold, ProductType.Consumable));
-        initialProductToFetch.Add(new ProductDefinition(hundredThousandgold, ProductType.Consumable));
+        initialProductToFetch.Add(new ProductDefinition(oneGold, ProductType.Consumable));
+        initialProductToFetch.Add(new ProductDefinition(twoGold, ProductType.Consumable));
+        initialProductToFetch.Add(new ProductDefinition(threeGold, ProductType.Consumable));
+        initialProductToFetch.Add(new ProductDefinition(fourGold, ProductType.Consumable));
+        initialProductToFetch.Add(new ProductDefinition(fiveGold, ProductType.Consumable));
+        initialProductToFetch.Add(new ProductDefinition(sixGold, ProductType.Consumable));
 
         initialProductToFetch.Add(new ProductDefinition(removeAds, ProductType.NonConsumable));
 
@@ -219,16 +229,16 @@ public class IAPManager : MonoBehaviour
 
         switch (productKey)
         {
-            case IAPProductKey.StarterPack : _storeController.PurchaseProduct(starterPack); break;
-            case IAPProductKey.BeginnerPack : _storeController.PurchaseProduct(beginnerPack); break;
-            case IAPProductKey.GoldenBirdPack : _storeController.PurchaseProduct(goldenBirdPack); break;
-            case IAPProductKey.SpaceBirdPack : _storeController.PurchaseProduct(spaceBirdPack); break;
-            case IAPProductKey.ThousandGold : _storeController.PurchaseProduct(thousandgold); break;
-            case IAPProductKey.FiveThousandGold : _storeController.PurchaseProduct(fivethousandgold); break;
-            case IAPProductKey.TenThousandGold : _storeController.PurchaseProduct(tenthousandgold); break;
-            case IAPProductKey.TwentyFiveThousandGold : _storeController.PurchaseProduct(twentyFivethousandgold); break;
-            case IAPProductKey.FiftyThousandGold : _storeController.PurchaseProduct(fiftyThousandgold); break;
-            case IAPProductKey.HundredThousandGold : _storeController.PurchaseProduct(hundredThousandgold); break;
+            case IAPProductKey.SupriseBox : _storeController.PurchaseProduct(supriseBox); break;
+            case IAPProductKey.BeginnerBox : _storeController.PurchaseProduct(beginnerBox); break;
+            case IAPProductKey.MegaBox : _storeController.PurchaseProduct(megaBox); break;
+            case IAPProductKey.GoldenBox : _storeController.PurchaseProduct(goldenBox); break;
+            case IAPProductKey.OneGold : _storeController.PurchaseProduct(oneGold); break;
+            case IAPProductKey.TwoGold : _storeController.PurchaseProduct(twoGold); break;
+            case IAPProductKey.ThreeGold : _storeController.PurchaseProduct(threeGold); break;
+            case IAPProductKey.FourGold : _storeController.PurchaseProduct(fourGold); break;
+            case IAPProductKey.FiveGold : _storeController.PurchaseProduct(fiveGold); break;
+            case IAPProductKey.SixGold : _storeController.PurchaseProduct(sixGold); break;
             case IAPProductKey.RemoveAds : _storeController.PurchaseProduct(removeAds); break;
         }
     }
@@ -298,10 +308,43 @@ public class IAPManager : MonoBehaviour
                 int quantity = GetPurchaseQuantity(order);
                 string productId = order.Info.PurchasedProductInfo[0].productId;
                 
-                // if productıd == "id" make transaction for that product
-                // Then save transaction to cloud save
-            
-                
+                if(productId == supriseBox){
+                    //
+                }
+                else if(productId == beginnerBox){
+                    //
+                }
+                else if(productId == megaBox){
+                    //
+                }
+                else if(productId == goldenBox){
+                    //
+                }
+                else if(productId == oneGold){
+                    //
+                }
+                else if(productId == twoGold){
+                    //
+                }
+                else if(productId == threeGold){
+                    //
+                }
+                else if(productId == fourGold){
+                    //
+                }
+                else if(productId == fiveGold){
+                    //
+                }
+                else if(productId == sixGold){
+                    //
+                }
+                else if(productId == removeAds){
+                    //
+                }
+
+
+                //Save to Cloud
+
                 Product purchasedProduct = null;
                 if (_storeController != null)
                 {
