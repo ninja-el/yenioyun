@@ -791,23 +791,23 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MatchPack.Gameplay.ConveyorPath
   _waypoints:
-  - {fileID: 953882865}
-  - {fileID: 434998349}
-  - {fileID: 1307201106}
-  - {fileID: 1277939850}
-  - {fileID: 433526802}
-  - {fileID: 1108527145}
-  - {fileID: 1702659979}
-  - {fileID: 247165521}
-  - {fileID: 577715758}
-  - {fileID: 1247654536}
-  - {fileID: 472838230}
-  - {fileID: 1232908417}
   - {fileID: 1898131263}
+  - {fileID: 1232908417}
+  - {fileID: 472838230}
+  - {fileID: 1247654536}
+  - {fileID: 577715758}
+  - {fileID: 247165521}
+  - {fileID: 1702659979}
+  - {fileID: 1108527145}
+  - {fileID: 433526802}
+  - {fileID: 1277939850}
+  - {fileID: 1307201106}
+  - {fileID: 434998349}
+  - {fileID: 953882865}
   _slotCount: 13
   _smoothingSamples: 12
   _straightTolerance: 0.01
-  _entryStart: {fileID: 953882865}
+  _entryStart: {fileID: 1898131263}
   _entryPoint: {fileID: 1908735028}
   _exitPoint: {fileID: 953882865}
   _isGizmosEnabled: 1
@@ -1406,6 +1406,14 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!222 &1479627213
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1479627210}
+  m_CullTransparentMesh: 1
 --- !u!114 &1479627214
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1419,14 +1427,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MatchPack.UI.BoxCounterView
   _text: {fileID: 1479627212}
---- !u!222 &1479627213
-CanvasRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1479627210}
-  m_CullTransparentMesh: 1
 --- !u!1 &1651965476
 GameObject:
   m_ObjectHideFlags: 0
@@ -1514,7 +1514,7 @@ Transform:
   m_GameObject: {fileID: 1898131262}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -4.25, y: 0.4, z: -5.5}
+  m_LocalPosition: {x: -4.25, y: 0.4, z: -5.83}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

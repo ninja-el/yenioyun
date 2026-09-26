@@ -10,14 +10,24 @@ namespace MatchPack.Data
     public class AudioLibrary : ScriptableObject
     {
         [Header("Gameplay SFX")]
-        [Tooltip("Obje uygun kutuya gönderildiğinde.")]
+        [Tooltip("Doğru obje seçilip uygun kutuya gönderildiğinde.")]
         [SerializeField] private AudioClip _itemMatched;
 
-        [Tooltip("Hatalı hamlede.")]
+        [Tooltip("Yanlış obje seçildiğinde (hatalı hamle).")]
         [SerializeField] private AudioClip _itemMissed;
 
-        [Tooltip("Kutu üçüncü objesini alıp dolduğunda.")]
+        [Tooltip("Kutu dolup kapağı kapanırken.")]
         [SerializeField] private AudioClip _boxFilled;
+
+        [Tooltip("Makineden banta yeni kutu çıktığında.")]
+        [SerializeField] private AudioClip _boxSpawned;
+
+        [Header("Booster SFX")]
+        [Tooltip("Herhangi bir booster kullanıldığında.")]
+        [SerializeField] private AudioClip _boosterUsed;
+
+        [Tooltip("Auto-Match UFO'su gönderildiğinde.")]
+        [SerializeField] private AudioClip _ufo;
 
         [Header("Level SFX")]
         [Tooltip("Level kazanıldığında.")]
@@ -27,7 +37,7 @@ namespace MatchPack.Data
         [SerializeField] private AudioClip _levelFailed;
 
         [Header("UI SFX")]
-        [Tooltip("Her butona basıldığında.")]
+        [Tooltip("Her butona basıldığında (booster butonları hariç, onlar booster sesini çalar).")]
         [SerializeField] private AudioClip _buttonClick;
 
         [Tooltip("Satın alma başarıyla tamamlandığında.")]
@@ -46,6 +56,9 @@ namespace MatchPack.Data
         public AudioClip ItemMatched => _itemMatched;
         public AudioClip ItemMissed => _itemMissed;
         public AudioClip BoxFilled => _boxFilled;
+        public AudioClip BoxSpawned => _boxSpawned;
+        public AudioClip BoosterUsed => _boosterUsed;
+        public AudioClip Ufo => _ufo;
         public AudioClip LevelCompleted => _levelCompleted;
         public AudioClip LevelFailed => _levelFailed;
         public AudioClip ButtonClick => _buttonClick;

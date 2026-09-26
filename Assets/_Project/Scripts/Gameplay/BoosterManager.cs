@@ -111,8 +111,6 @@ namespace MatchPack.Gameplay
             if (!FindBooster(type).TryActivate(GetData(type))) { return false; }
             if (!EconomyManager.Instance.TryUseBooster((int)type)) { return false; }
 
-            if (AudioManager.Instance != null) { AudioManager.Instance.PlayButtonClick(); }
-
             OnBoosterUsed?.Invoke(type);
             return true;
         }

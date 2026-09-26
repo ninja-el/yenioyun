@@ -2,7 +2,9 @@ using System;
 using MatchPack.Core;
 using MatchPack.Data;
 using MatchPack.Gameplay;
+using MatchPack.UI;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace MatchPack.Meta
 {
@@ -73,8 +75,15 @@ namespace MatchPack.Meta
             if (_conveyor != null)
             {
                 _conveyor.OnBoxFilled += HandleBoxFilled;
+                _conveyor.OnBoxSpawned += HandleBoxSpawned;
             }
 
+            if (BoosterManager.Instance != null)
+            {
+                BoosterManager.Instance.OnBoosterUsed += HandleBoosterUsed;
+            }
+
+            HookButtonClicks();
             PlayMusic(_library != null ? _library.MenuMusic : null);
         }
 
@@ -96,6 +105,12 @@ namespace MatchPack.Meta
             if (_conveyor != null)
             {
                 _conveyor.OnBoxFilled -= HandleBoxFilled;
+                _conveyor.OnBoxSpawned -= HandleBoxSpawned;
+            }
+
+            if (BoosterManager.Instance != null)
+            {
+                BoosterManager.Instance.OnBoosterUsed -= HandleBoosterUsed;
             }
 
             if (Instance == this) { Instance = null; }
@@ -151,6 +166,20 @@ namespace MatchPack.Meta
             PlaySfx(_library.RewardGranted);
         }
 
+        // Tüm UI butonları MainScene'de ve açılışta hazır olduğu için tıklama sesi burada tek seferde
+        // bağlanır; her butona ayrı bileşen eklemek sahnede 50 butona dokunmayı gerektirirdi.
+        // Booster butonları tıklama yerine booster sesini çalar.
+        private void HookButtonClicks()
+        {
+            Button[] buttons = FindObjectsByType<Button>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+            for (int i = 0; i < buttons.Length; i++)
+            {
+                if (buttons[i].GetComponent<BoosterButton>() != null) { continue; }
+
+                buttons[i].onClick.AddListener(PlayButtonClick);
+            }
+        }
+
         private void PlayMusic(AudioClip clip)
         {
             if (_musicSource == null || clip == null || _musicSource.clip == clip) { return; }
@@ -187,6 +216,19 @@ namespace MatchPack.Meta
         private void HandleBoxFilled(Box box)
         {
             PlaySfx(_library != null ? _library.BoxFilled : null);
+        }
+
+        private void HandleBoxSpawned(Box box)
+        {
+            PlaySfx(_library != null ? _library.BoxSpawned : null);
+        }
+
+        private void HandleBoosterUsed(BoosterType type)
+        {
+            if (_library == null) { return; }
+
+            PlaySfx(_library.BoosterUsed);
+            if (type == BoosterType.AutoMatch) { PlaySfx(_library.Ufo); }
         }
 
         private void HandleLevelCompleted()

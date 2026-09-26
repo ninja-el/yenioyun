@@ -81,8 +81,6 @@ namespace MatchPack.UI
             BoosterData data = BoosterManager.Instance.GetData(_type);
             if (data == null) { return; }
 
-            if (AudioManager.Instance != null) { AudioManager.Instance.PlayButtonClick(); }
-
             if (!EconomyManager.Instance.TrySpendGold(data.GoldPrice))
             {
                 UIManager.Instance.ShowGoldPopup();

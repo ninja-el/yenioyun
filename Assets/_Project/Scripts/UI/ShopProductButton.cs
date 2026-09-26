@@ -55,8 +55,6 @@ namespace MatchPack.UI
         {
             if (ShopManager.Instance == null) { return; }
 
-            if (AudioManager.Instance != null) { AudioManager.Instance.PlayButtonClick(); }
-
             ShopManager.Instance.Purchase(_productId);
         }
 
