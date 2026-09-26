@@ -14,6 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MatchPack.Data.ItemType
   _id: teddy_bear
   _displayName: Teddy Bear
-  _prefab: {fileID: 9009377081401539309, guid: 791532ecd5ce9e14c8e1011022fbe561, type: 3}
-  _icon: {fileID: 0}
-  _selectedScale: 1
+  _prefab: {fileID: 9009377081401539309, guid: 2f7aeeb9bde3e7147ba194c0413ae9c9, type: 3}
+  _icon: {fileID: 21300000, guid: b439a9a23b231cd4c90c52490b1bfc95, type: 3}

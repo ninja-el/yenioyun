@@ -1,0 +1,18 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 57dae5e3582d41cb9f5a42b656805a13, type: 3}
+  m_Name: Item_Cheesecake
+  m_EditorClassIdentifier: Assembly-CSharp::MatchPack.Data.ItemType
+  _id: cheesecake
+  _displayName: Cheesecake
+  _prefab: {fileID: 8855692260116946450, guid: 84a6962b9ff6bd544877b80986c55501, type: 3}
+  _icon: {fileID: 21300000, guid: e1875b60ac6cddb498377f2306889ec8, type: 3}

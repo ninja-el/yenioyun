@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &6513898588211590536
+--- !u!1 &2446504815114908809
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,9 +8,9 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 8060131171948228991}
-  - component: {fileID: 6460597677122203795}
-  - component: {fileID: 4093728283697761088}
+  - component: {fileID: 1525099027945673852}
+  - component: {fileID: 8351956579189341706}
+  - component: {fileID: 6815109424612393843}
   m_Layer: 6
   m_Name: Chili_Item
   m_TagString: Untagged
@@ -18,29 +18,29 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &8060131171948228991
+--- !u!4 &1525099027945673852
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6513898588211590536}
+  m_GameObject: {fileID: 2446504815114908809}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1.25, y: 1.25, z: 1.25}
+  m_LocalScale: {x: 4.51, y: 4.51, z: 4.51}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 498081893233211211}
+  - {fileID: 3506289030798707441}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!54 &6460597677122203795
+--- !u!54 &8351956579189341706
 Rigidbody:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6513898588211590536}
+  m_GameObject: {fileID: 2446504815114908809}
   serializedVersion: 5
   m_Mass: 1
   m_LinearDamping: 0
@@ -61,88 +61,113 @@ Rigidbody:
   m_Interpolate: 1
   m_Constraints: 0
   m_CollisionDetection: 1
---- !u!114 &4093728283697761088
+--- !u!114 &6815109424612393843
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6513898588211590536}
+  m_GameObject: {fileID: 2446504815114908809}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: afc34139102945188afd3871f66c8e10, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MatchPack.Gameplay.StackItem
-  _collider: {fileID: 730054372185979449}
-  _rigidbody: {fileID: 6460597677122203795}
---- !u!1001 &6312245594182196798
+  _collider: {fileID: 5730770925785882872}
+  _rigidbody: {fileID: 8351956579189341706}
+--- !u!1001 &7948161089770760585
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
     serializedVersion: 3
-    m_TransformParent: {fileID: 8060131171948228991}
+    m_TransformParent: {fileID: 1525099027945673852}
     m_Modifications:
-    - target: {fileID: 5868211459988203893, guid: 21ce3fb94fb2f4e44bbe601f9b87af99, type: 3}
+    - target: {fileID: 6174027724889618882, guid: 692789a367327de4bafef88624a1f713, type: 3}
+      propertyPath: m_Name
+      value: Chili_002
+      objectReference: {fileID: 0}
+    - target: {fileID: 6174027724889618882, guid: 692789a367327de4bafef88624a1f713, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 6837974059331167096, guid: 692789a367327de4bafef88624a1f713, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 5868211459988203893, guid: 21ce3fb94fb2f4e44bbe601f9b87af99, type: 3}
+    - target: {fileID: 6837974059331167096, guid: 692789a367327de4bafef88624a1f713, type: 3}
       propertyPath: m_LocalPosition.y
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 5868211459988203893, guid: 21ce3fb94fb2f4e44bbe601f9b87af99, type: 3}
+    - target: {fileID: 6837974059331167096, guid: 692789a367327de4bafef88624a1f713, type: 3}
       propertyPath: m_LocalPosition.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 5868211459988203893, guid: 21ce3fb94fb2f4e44bbe601f9b87af99, type: 3}
+    - target: {fileID: 6837974059331167096, guid: 692789a367327de4bafef88624a1f713, type: 3}
       propertyPath: m_LocalRotation.w
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 5868211459988203893, guid: 21ce3fb94fb2f4e44bbe601f9b87af99, type: 3}
+    - target: {fileID: 6837974059331167096, guid: 692789a367327de4bafef88624a1f713, type: 3}
       propertyPath: m_LocalRotation.x
-      value: -0
+      value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 5868211459988203893, guid: 21ce3fb94fb2f4e44bbe601f9b87af99, type: 3}
+    - target: {fileID: 6837974059331167096, guid: 692789a367327de4bafef88624a1f713, type: 3}
       propertyPath: m_LocalRotation.y
-      value: -0
+      value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 5868211459988203893, guid: 21ce3fb94fb2f4e44bbe601f9b87af99, type: 3}
+    - target: {fileID: 6837974059331167096, guid: 692789a367327de4bafef88624a1f713, type: 3}
       propertyPath: m_LocalRotation.z
-      value: -0
+      value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 5868211459988203893, guid: 21ce3fb94fb2f4e44bbe601f9b87af99, type: 3}
+    - target: {fileID: 6837974059331167096, guid: 692789a367327de4bafef88624a1f713, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 5868211459988203893, guid: 21ce3fb94fb2f4e44bbe601f9b87af99, type: 3}
+    - target: {fileID: 6837974059331167096, guid: 692789a367327de4bafef88624a1f713, type: 3}
       propertyPath: m_LocalEulerAnglesHint.y
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 5868211459988203893, guid: 21ce3fb94fb2f4e44bbe601f9b87af99, type: 3}
+    - target: {fileID: 6837974059331167096, guid: 692789a367327de4bafef88624a1f713, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6502005543732343759, guid: 21ce3fb94fb2f4e44bbe601f9b87af99, type: 3}
-      propertyPath: m_Name
-      value: food_RedChili
-      objectReference: {fileID: 0}
-    - target: {fileID: 6502005543732343759, guid: 21ce3fb94fb2f4e44bbe601f9b87af99, type: 3}
-      propertyPath: m_Layer
-      value: 6
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 21ce3fb94fb2f4e44bbe601f9b87af99, type: 3}
---- !u!4 &498081893233211211 stripped
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 6174027724889618882, guid: 692789a367327de4bafef88624a1f713, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 5730770925785882872}
+  m_SourcePrefab: {fileID: 100100000, guid: 692789a367327de4bafef88624a1f713, type: 3}
+--- !u!4 &3506289030798707441 stripped
 Transform:
-  m_CorrespondingSourceObject: {fileID: 5868211459988203893, guid: 21ce3fb94fb2f4e44bbe601f9b87af99, type: 3}
-  m_PrefabInstance: {fileID: 6312245594182196798}
+  m_CorrespondingSourceObject: {fileID: 6837974059331167096, guid: 692789a367327de4bafef88624a1f713, type: 3}
+  m_PrefabInstance: {fileID: 7948161089770760585}
   m_PrefabAsset: {fileID: 0}
---- !u!64 &730054372185979449 stripped
+--- !u!1 &4315301558719565899 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6174027724889618882, guid: 692789a367327de4bafef88624a1f713, type: 3}
+  m_PrefabInstance: {fileID: 7948161089770760585}
+  m_PrefabAsset: {fileID: 0}
+--- !u!64 &5730770925785882872
 MeshCollider:
-  m_CorrespondingSourceObject: {fileID: 6753206439220388871, guid: 21ce3fb94fb2f4e44bbe601f9b87af99, type: 3}
-  m_PrefabInstance: {fileID: 6312245594182196798}
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4315301558719565899}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 5
+  m_Convex: 1
+  m_CookingOptions: 30
+  m_Mesh: {fileID: 956322740443497265, guid: 5764b6e1abe7f984bbf46619efffa809, type: 3}

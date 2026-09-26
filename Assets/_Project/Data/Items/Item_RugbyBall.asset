@@ -14,6 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MatchPack.Data.ItemType
   _id: rugby_ball
   _displayName: Rugby Ball
-  _prefab: {fileID: 1257528296502184145, guid: 11864943dc675e5498835ddfd0218b16, type: 3}
-  _icon: {fileID: 0}
-  _selectedScale: 1
+  _prefab: {fileID: 1257528296502184145, guid: 0974509885d3c854a970da1c7215eeae, type: 3}
+  _icon: {fileID: 21300000, guid: 93e73575e87fb0d46bf750350f563a87, type: 3}

@@ -14,6 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MatchPack.Data.ItemType
   _id: unicorn
   _displayName: Unicorn
-  _prefab: {fileID: 1035132977825072862, guid: d2c0b6ab60ca23449bb5ab87f814a11f, type: 3}
-  _icon: {fileID: 0}
-  _selectedScale: 1
+  _prefab: {fileID: 1035132977825072862, guid: 7831b732b0ced2043ba18c76a8c4631c, type: 3}
+  _icon: {fileID: 21300000, guid: 5ac52b05de7720d4f9ea3c5bc6cee966, type: 3}

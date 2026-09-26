@@ -17,15 +17,21 @@ MonoBehaviour:
   _targetBoxCount: 17
   _conveyorCapacity: 3
   _items:
-  - _type: {fileID: 11400000, guid: 03830ed8eb44c4b47980d6ad757d36d7, type: 2}
+  - _type: {fileID: 11400000, guid: c6ec24726c83b29469a2b50e1584d07d, type: 2}
     _count: 9
-  - _type: {fileID: 11400000, guid: a57afda733c44932a89376e9488e09df, type: 2}
+    _scaleMultiplier: 1
+  - _type: {fileID: 11400000, guid: b28aa67661f93a6449ca8696d396ea62, type: 2}
     _count: 9
-  - _type: {fileID: 11400000, guid: dbe2c9ea6a161db42929eb0449b103c1, type: 2}
+    _scaleMultiplier: 1
+  - _type: {fileID: 11400000, guid: 7baad724dc16aaf469a0a9609212c82d, type: 2}
     _count: 9
-  - _type: {fileID: 11400000, guid: fcae6bdcd544a8f44aacb17001917bbb, type: 2}
+    _scaleMultiplier: 1
+  - _type: {fileID: 11400000, guid: 393f5a1e48332c242b325ab644783d02, type: 2}
     _count: 9
-  - _type: {fileID: 11400000, guid: 0208f87a0700b7641ac8c60ac800c5b7, type: 2}
+    _scaleMultiplier: 1
+  - _type: {fileID: 11400000, guid: 4bf2c081bf1c7f04ba049fc024364866, type: 2}
     _count: 6
+    _scaleMultiplier: 1
   - _type: {fileID: 11400000, guid: 0002a1b69258de249baf9006c6f6afa6, type: 2}
     _count: 9
+    _scaleMultiplier: 1

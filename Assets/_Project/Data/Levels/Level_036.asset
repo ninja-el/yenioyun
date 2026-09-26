@@ -17,33 +17,48 @@ MonoBehaviour:
   _targetBoxCount: 25
   _conveyorCapacity: 3
   _items:
-  - _type: {fileID: 11400000, guid: 0208f87a0700b7641ac8c60ac800c5b7, type: 2}
+  - _type: {fileID: 11400000, guid: 4bf2c081bf1c7f04ba049fc024364866, type: 2}
     _count: 3
-  - _type: {fileID: 11400000, guid: b6ffd462a616862428620468d78f3ffd, type: 2}
+    _scaleMultiplier: 1
+  - _type: {fileID: 11400000, guid: 9e2b36f679560e0429ea1d080fb9af36, type: 2}
     _count: 6
-  - _type: {fileID: 11400000, guid: ef53bd5dbc2a7fd4e8d577209d498b4a, type: 2}
+    _scaleMultiplier: 1
+  - _type: {fileID: 11400000, guid: 987b5596456d90446a8646e81b16a559, type: 2}
     _count: 3
-  - _type: {fileID: 11400000, guid: ca57f716f475b174ea25a65e305be43c, type: 2}
+    _scaleMultiplier: 1
+  - _type: {fileID: 11400000, guid: 10b3a90916eaa7641bfbdd50ff1d8063, type: 2}
     _count: 3
-  - _type: {fileID: 11400000, guid: a57afda733c44932a89376e9488e09df, type: 2}
-    _count: 6
-  - _type: {fileID: 11400000, guid: 37f6a4d649c38c842b88e2fb5bb9e995, type: 2}
-    _count: 6
-  - _type: {fileID: 11400000, guid: 63fe2b265c054ce43847d96fd2a7702c, type: 2}
-    _count: 6
-  - _type: {fileID: 11400000, guid: 3441e4b679629b24f878e26888016af9, type: 2}
-    _count: 6
-  - _type: {fileID: 11400000, guid: a2bab7e09226ae7498c7a8750bfbc203, type: 2}
-    _count: 6
-  - _type: {fileID: 11400000, guid: 1a4dbb4d51b8b9041ba0a53725466b8f, type: 2}
-    _count: 6
-  - _type: {fileID: 11400000, guid: d8cfbdc6ae4c4fe468d35e45ca5a82b6, type: 2}
-    _count: 6
-  - _type: {fileID: 11400000, guid: 0ef5ea1dcf276f84180e1d586a70c436, type: 2}
-    _count: 3
-  - _type: {fileID: 11400000, guid: 6882cf707595f764b96d646af549892c, type: 2}
-    _count: 3
+    _scaleMultiplier: 1
   - _type: {fileID: 11400000, guid: b28aa67661f93a6449ca8696d396ea62, type: 2}
     _count: 6
-  - _type: {fileID: 11400000, guid: 60296ab3e1a5f60439072d583586d1f9, type: 2}
+    _scaleMultiplier: 1
+  - _type: {fileID: 11400000, guid: 6b9cfa483e62f364cb1fe99edad6e3fa, type: 2}
     _count: 6
+    _scaleMultiplier: 1
+  - _type: {fileID: 11400000, guid: b44c1c3b8698ba041970e2b41b2f929d, type: 2}
+    _count: 6
+    _scaleMultiplier: 1
+  - _type: {fileID: 11400000, guid: afd8870a29fe3f546911f4c13a99b27a, type: 2}
+    _count: 6
+    _scaleMultiplier: 1
+  - _type: {fileID: 11400000, guid: ff1301115ba57ba4f9ce04d08144e4dd, type: 2}
+    _count: 6
+    _scaleMultiplier: 1
+  - _type: {fileID: 11400000, guid: 03a78eca08315ae4e9d687bc91a0aedd, type: 2}
+    _count: 6
+    _scaleMultiplier: 1
+  - _type: {fileID: 11400000, guid: 65125f2e53dddaa45859f2debf9f21a8, type: 2}
+    _count: 6
+    _scaleMultiplier: 1
+  - _type: {fileID: 11400000, guid: 5d0898ac073e0f84bbe65a3f8dfcd194, type: 2}
+    _count: 3
+    _scaleMultiplier: 1
+  - _type: {fileID: 11400000, guid: 1ba3841b4de93cf4fa524b0f90eaf410, type: 2}
+    _count: 3
+    _scaleMultiplier: 1
+  - _type: {fileID: 11400000, guid: 4d48be1be80f5b648ad95fafec9bc9a0, type: 2}
+    _count: 6
+    _scaleMultiplier: 1
+  - _type: {fileID: 11400000, guid: 5f13a96b9cbd2ad4698e6f654ad71673, type: 2}
+    _count: 6
+    _scaleMultiplier: 1

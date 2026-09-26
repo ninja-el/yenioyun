@@ -1,0 +1,18 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 57dae5e3582d41cb9f5a42b656805a13, type: 3}
+  m_Name: Item_Bar
+  m_EditorClassIdentifier: Assembly-CSharp::MatchPack.Data.ItemType
+  _id: bar
+  _displayName: Bar
+  _prefab: {fileID: 4548135416160480049, guid: 784c4cb70e24df3498ff3e0a2ebf747c, type: 3}
+  _icon: {fileID: 21300000, guid: c4f4d5f201bfc61468b4006f4a596649, type: 3}

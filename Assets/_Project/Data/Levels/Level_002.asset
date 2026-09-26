@@ -14,15 +14,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MatchPack.Data.LevelData
   _levelIndex: 2
   _duration: 35
-  _targetBoxCount: 9
+  _targetBoxCount: 11
   _conveyorCapacity: 3
   _items:
-  - _type: {fileID: 11400000, guid: 80ed295338e848a080c673f93593a512, type: 2}
-    _count: 9
-    _scaleMultiplier: 1.5
   - _type: {fileID: 11400000, guid: a57afda733c44932a89376e9488e09df, type: 2}
     _count: 9
     _scaleMultiplier: 1.5
-  - _type: {fileID: 11400000, guid: dbe2c9ea6a161db42929eb0449b103c1, type: 2}
+  - _type: {fileID: 11400000, guid: b28aa67661f93a6449ca8696d396ea62, type: 2}
     _count: 9
-    _scaleMultiplier: 1.5
+    _scaleMultiplier: 1
+  - _type: {fileID: 11400000, guid: 7baad724dc16aaf469a0a9609212c82d, type: 2}
+    _count: 9
+    _scaleMultiplier: 1
+  - _type: {fileID: 11400000, guid: fcae6bdcd544a8f44aacb17001917bbb, type: 2}
+    _count: 6
+    _scaleMultiplier: 1

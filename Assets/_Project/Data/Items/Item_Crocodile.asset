@@ -1,0 +1,18 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 57dae5e3582d41cb9f5a42b656805a13, type: 3}
+  m_Name: Item_Crocodile
+  m_EditorClassIdentifier: Assembly-CSharp::MatchPack.Data.ItemType
+  _id: crocodile
+  _displayName: Crocodile
+  _prefab: {fileID: 8140567471797145324, guid: 0c11fb485e1c16044a81e79b943ea42f, type: 3}
+  _icon: {fileID: 21300000, guid: a3bbd99cc5f5f7c47825e1517b66751b, type: 3}

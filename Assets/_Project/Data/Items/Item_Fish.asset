@@ -1,0 +1,18 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 57dae5e3582d41cb9f5a42b656805a13, type: 3}
+  m_Name: Item_Fish
+  m_EditorClassIdentifier: Assembly-CSharp::MatchPack.Data.ItemType
+  _id: fish
+  _displayName: Fish
+  _prefab: {fileID: 7505256853305900277, guid: c1506eb0d9ac7da419a96f7475d99e19, type: 3}
+  _icon: {fileID: 21300000, guid: 7c9425ea790bed140a3fb4ff1c6759ed, type: 3}

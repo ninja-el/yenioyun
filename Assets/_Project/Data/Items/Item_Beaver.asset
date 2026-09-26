@@ -1,0 +1,18 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 57dae5e3582d41cb9f5a42b656805a13, type: 3}
+  m_Name: Item_Beaver
+  m_EditorClassIdentifier: Assembly-CSharp::MatchPack.Data.ItemType
+  _id: beaver
+  _displayName: Beaver
+  _prefab: {fileID: 8890044587793255888, guid: 9f3ecf632d8d07e40a3d74d1374a6255, type: 3}
+  _icon: {fileID: 21300000, guid: 21a06efeec1d53e42b979806397a80b2, type: 3}

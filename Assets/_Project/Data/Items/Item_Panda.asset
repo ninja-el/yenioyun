@@ -14,6 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MatchPack.Data.ItemType
   _id: panda
   _displayName: Panda
-  _prefab: {fileID: 3578380308370416438, guid: 2d0699edd266c144084bd4404e77a174, type: 3}
-  _icon: {fileID: 0}
-  _selectedScale: 1
+  _prefab: {fileID: 3578380308370416438, guid: d78a33d10a8112149b4d597638fdf41a, type: 3}
+  _icon: {fileID: 21300000, guid: 3f64027dc06161f4d920f3ce4fa3b781, type: 3}

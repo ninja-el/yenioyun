@@ -14,6 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MatchPack.Data.ItemType
   _id: burger
   _displayName: Burger
-  _prefab: {fileID: 238121068244669542, guid: 43dc19a78b8fe40428ab8d9d005b74ed, type: 3}
-  _icon: {fileID: 0}
-  _selectedScale: 1
+  _prefab: {fileID: 2026852596468261339, guid: 43dc19a78b8fe40428ab8d9d005b74ed, type: 3}
+  _icon: {fileID: 21300000, guid: 97c8ff3478d4e7542bab2a32d2fde180, type: 3}

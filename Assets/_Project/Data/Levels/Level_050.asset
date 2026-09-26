@@ -17,43 +17,63 @@ MonoBehaviour:
   _targetBoxCount: 29
   _conveyorCapacity: 3
   _items:
-  - _type: {fileID: 11400000, guid: 03830ed8eb44c4b47980d6ad757d36d7, type: 2}
+  - _type: {fileID: 11400000, guid: 6c32af12a286f424e95449cce692f418, type: 2}
     _count: 6
+    _scaleMultiplier: 1
+  - _type: {fileID: 11400000, guid: 6ae7af1d7f3619842b7819f6d4b6853b, type: 2}
+    _count: 6
+    _scaleMultiplier: 1
+  - _type: {fileID: 11400000, guid: 4eec69152472c2542b47fd50097b232f, type: 2}
+    _count: 3
+    _scaleMultiplier: 1
+  - _type: {fileID: 11400000, guid: b44c1c3b8698ba041970e2b41b2f929d, type: 2}
+    _count: 3
+    _scaleMultiplier: 1
+  - _type: {fileID: 11400000, guid: fcf12b19557776c4c873c37d5656e731, type: 2}
+    _count: 3
+    _scaleMultiplier: 1
+  - _type: {fileID: 11400000, guid: 1c755f6ff982f6044b27ead0d561e17d, type: 2}
+    _count: 3
+    _scaleMultiplier: 1
+  - _type: {fileID: 11400000, guid: 987b5596456d90446a8646e81b16a559, type: 2}
+    _count: 6
+    _scaleMultiplier: 1
+  - _type: {fileID: 11400000, guid: f8ab464c10aaf144c8fb37ade4f0e241, type: 2}
+    _count: 6
+    _scaleMultiplier: 1
+  - _type: {fileID: 11400000, guid: 1a1313fa83987ed42a7dde67c1e0a720, type: 2}
+    _count: 6
+    _scaleMultiplier: 1
   - _type: {fileID: 11400000, guid: c6ec24726c83b29469a2b50e1584d07d, type: 2}
     _count: 6
-  - _type: {fileID: 11400000, guid: ca57f716f475b174ea25a65e305be43c, type: 2}
+    _scaleMultiplier: 1
+  - _type: {fileID: 11400000, guid: 9efc18f4578aedc43bead681f4445e66, type: 2}
     _count: 3
-  - _type: {fileID: 11400000, guid: a57afda733c44932a89376e9488e09df, type: 2}
+    _scaleMultiplier: 1
+  - _type: {fileID: 11400000, guid: bb630a0f5db973f48a4182f5a92986aa, type: 2}
     _count: 3
-  - _type: {fileID: 11400000, guid: cb955473e0920184a9046041eba891c9, type: 2}
+    _scaleMultiplier: 1
+  - _type: {fileID: 11400000, guid: b28aa67661f93a6449ca8696d396ea62, type: 2}
     _count: 3
+    _scaleMultiplier: 1
+  - _type: {fileID: 11400000, guid: 40092a78e01ba5a45830f57283c577e4, type: 2}
+    _count: 6
+    _scaleMultiplier: 1
+  - _type: {fileID: 11400000, guid: 300dccbcf866b734c9fe2d72080128d3, type: 2}
+    _count: 6
+    _scaleMultiplier: 1
+  - _type: {fileID: 11400000, guid: afd8870a29fe3f546911f4c13a99b27a, type: 2}
+    _count: 3
+    _scaleMultiplier: 1
+  - _type: {fileID: 11400000, guid: 2ffccb36642615e4bbd28e9a5dbae6c1, type: 2}
+    _count: 6
+    _scaleMultiplier: 1
+  - _type: {fileID: 11400000, guid: ecda3d0e48a2eab4685a36cf48b7c047, type: 2}
+    _count: 3
+    _scaleMultiplier: 1
   - _type: {fileID: 11400000, guid: 2a72c319fd4625649b135f955bfe2942, type: 2}
-    _count: 6
-  - _type: {fileID: 11400000, guid: 2b99e602279207a4d9a932312d4ef00a, type: 2}
     _count: 3
-  - _type: {fileID: 11400000, guid: 60296ab3e1a5f60439072d583586d1f9, type: 2}
+    _scaleMultiplier: 1
+  - _type: {fileID: 11400000, guid: 5f13a96b9cbd2ad4698e6f654ad71673, type: 2}
     _count: 3
-  - _type: {fileID: 11400000, guid: b6ffd462a616862428620468d78f3ffd, type: 2}
-    _count: 3
-  - _type: {fileID: 11400000, guid: 6f37f2e61f59e7b48ad6f3620ef63388, type: 2}
-    _count: 6
-  - _type: {fileID: 11400000, guid: b993f340b74e59b4e86851718e28e8c0, type: 2}
-    _count: 6
-  - _type: {fileID: 11400000, guid: 6d9aa401ee9e24748935d81b945ac6f4, type: 2}
-    _count: 6
-  - _type: {fileID: 11400000, guid: 1a4dbb4d51b8b9041ba0a53725466b8f, type: 2}
-    _count: 3
-  - _type: {fileID: 11400000, guid: 3c42d403a477f1c459c53b4b52a296e4, type: 2}
-    _count: 6
-  - _type: {fileID: 11400000, guid: e9b0c108223f7234e83e6a4ba51e43ec, type: 2}
-    _count: 3
-  - _type: {fileID: 11400000, guid: b07f48bc656a15f4ea7b7fc989e30034, type: 2}
-    _count: 6
-  - _type: {fileID: 11400000, guid: 6b9cfa483e62f364cb1fe99edad6e3fa, type: 2}
-    _count: 6
-  - _type: {fileID: 11400000, guid: 393f5a1e48332c242b325ab644783d02, type: 2}
-    _count: 3
-  - _type: {fileID: 11400000, guid: 71940c2c0c5609149a065eb549b5f7ba, type: 2}
-    _count: 3
-  - _type: {fileID: 11400000, guid: 7a63375aa705008488bb83a5f95f747d, type: 2}
-    _count: 3
+    _scaleMultiplier: 1

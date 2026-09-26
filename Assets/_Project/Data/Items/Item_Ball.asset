@@ -14,6 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _id: ball
   _displayName: Ball
-  _prefab: {fileID: 3000010000000000, guid: 645f7afaa24c09447aa9ca0a3e9be715, type: 3}
-  _icon: {fileID: 0}
-  _selectedScale: 1
+  _prefab: {fileID: 3000010000000000, guid: 8c7fd12c694960847bb97c37da2c4dc3, type: 3}
+  _icon: {fileID: 21300000, guid: 77a6827af28ef4344a58341b8b40e1ea, type: 3}
