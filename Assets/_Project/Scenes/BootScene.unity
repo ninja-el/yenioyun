@@ -1547,16 +1547,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::IAPManager
   supriseBox: suprisebox
-  beginnerBox: beginnerBox
-  megaBox: megaBox
-  goldenBox: goldenBox
-  oneGold: 1kgold
-  twoGold: 2kgold
-  threeGold: 3kgold
-  fourGold: 4kgold
-  fiveGold: 5kgold
-  sixGold: 6kgold
-  removeAds: removeads
+  beginnerBox: beginnerbox
+  megaBox: megabox
+  goldenBox: goldenbox
+  box1k: box1k
+  box5k: box5k
+  box10k: box10k
+  box25k: box25k
+  box50k: box50k
+  box100k: box100k
+  boxremoveAds: boxremoveads
 --- !u!4 &2008919206
 Transform:
   m_ObjectHideFlags: 0

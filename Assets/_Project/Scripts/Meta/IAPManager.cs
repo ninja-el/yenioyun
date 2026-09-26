@@ -10,8 +10,8 @@ public enum IAPProductKey
 {
     
     SupriseBox, BeginnerBox, MegaBox, GoldenBox, 
-    OneGold, TwoGold, ThreeGold,
-    FourGold, FiveGold, SixGold,
+    Box1K, Box5K, Box10K,
+    Box25K, Box50K, Box100K,
     RemoveAds
 }
 
@@ -52,18 +52,18 @@ public class IAPManager : MonoBehaviour
     private CrossPlatformValidator validator;
     
     public string supriseBox = "suprisebox";
-    public string beginnerBox = "beginnerBox";
-    public string megaBox = "megaBox";
-    public string goldenBox = "goldenBox";
+    public string beginnerBox = "beginnerbox";
+    public string megaBox = "megabox";
+    public string goldenBox = "goldenbox";
     
-    public string oneGold = "1000";
-    public string twoGold = "5000";
-    public string threeGold = "10000";
-    public string fourGold = "25000";
-    public string fiveGold = "50000";
-    public string sixGold = "100000";
+    public string box1k = "box1k";
+    public string box5k = "box5k";
+    public string box10k = "box10k";
+    public string box25k = "box25k";
+    public string box50k = "box50k";
+    public string box100k = "box100k";
     
-    public string removeAds  = "removeads";
+    public string boxremoveAds  = "boxremoveads";
 
     public static bool IsInitialized { get; private set; } = false;
     private static StoreController _storeController;
@@ -137,7 +137,7 @@ public class IAPManager : MonoBehaviour
                         /// </summary>
                     }
 
-                    if(product.definition.id == removeAds){
+                    if(product.definition.id == boxremoveAds){
                         /// <summary>
                         /// 
                         /// </summary>
@@ -173,14 +173,14 @@ public class IAPManager : MonoBehaviour
         initialProductToFetch.Add(new ProductDefinition(megaBox, ProductType.Consumable));
         initialProductToFetch.Add(new ProductDefinition(goldenBox, ProductType.Consumable));
 
-        initialProductToFetch.Add(new ProductDefinition(oneGold, ProductType.Consumable));
-        initialProductToFetch.Add(new ProductDefinition(twoGold, ProductType.Consumable));
-        initialProductToFetch.Add(new ProductDefinition(threeGold, ProductType.Consumable));
-        initialProductToFetch.Add(new ProductDefinition(fourGold, ProductType.Consumable));
-        initialProductToFetch.Add(new ProductDefinition(fiveGold, ProductType.Consumable));
-        initialProductToFetch.Add(new ProductDefinition(sixGold, ProductType.Consumable));
+        initialProductToFetch.Add(new ProductDefinition(box1k, ProductType.Consumable));
+        initialProductToFetch.Add(new ProductDefinition(box5k, ProductType.Consumable));
+        initialProductToFetch.Add(new ProductDefinition(box10k, ProductType.Consumable));
+        initialProductToFetch.Add(new ProductDefinition(box25k, ProductType.Consumable));
+        initialProductToFetch.Add(new ProductDefinition(box50k, ProductType.Consumable));
+        initialProductToFetch.Add(new ProductDefinition(box100k, ProductType.Consumable));
 
-        initialProductToFetch.Add(new ProductDefinition(removeAds, ProductType.NonConsumable));
+        initialProductToFetch.Add(new ProductDefinition(boxremoveAds, ProductType.NonConsumable));
 
         return initialProductToFetch;
     }
@@ -233,13 +233,13 @@ public class IAPManager : MonoBehaviour
             case IAPProductKey.BeginnerBox : _storeController.PurchaseProduct(beginnerBox); break;
             case IAPProductKey.MegaBox : _storeController.PurchaseProduct(megaBox); break;
             case IAPProductKey.GoldenBox : _storeController.PurchaseProduct(goldenBox); break;
-            case IAPProductKey.OneGold : _storeController.PurchaseProduct(oneGold); break;
-            case IAPProductKey.TwoGold : _storeController.PurchaseProduct(twoGold); break;
-            case IAPProductKey.ThreeGold : _storeController.PurchaseProduct(threeGold); break;
-            case IAPProductKey.FourGold : _storeController.PurchaseProduct(fourGold); break;
-            case IAPProductKey.FiveGold : _storeController.PurchaseProduct(fiveGold); break;
-            case IAPProductKey.SixGold : _storeController.PurchaseProduct(sixGold); break;
-            case IAPProductKey.RemoveAds : _storeController.PurchaseProduct(removeAds); break;
+            case IAPProductKey.Box1K : _storeController.PurchaseProduct(box1k); break;
+            case IAPProductKey.Box5K : _storeController.PurchaseProduct(box5k); break;
+            case IAPProductKey.Box10K : _storeController.PurchaseProduct(box10k); break;
+            case IAPProductKey.Box25K : _storeController.PurchaseProduct(box25k); break;
+            case IAPProductKey.Box50K : _storeController.PurchaseProduct(box50k); break;
+            case IAPProductKey.Box100K : _storeController.PurchaseProduct(box100k); break;
+            case IAPProductKey.RemoveAds : _storeController.PurchaseProduct(boxremoveAds); break;
         }
     }
     
@@ -320,25 +320,25 @@ public class IAPManager : MonoBehaviour
                 else if(productId == goldenBox){
                     //
                 }
-                else if(productId == oneGold){
+                else if(productId == box1k){
                     //
                 }
-                else if(productId == twoGold){
+                else if(productId == box5k){
                     //
                 }
-                else if(productId == threeGold){
+                else if(productId == box10k){
                     //
                 }
-                else if(productId == fourGold){
+                else if(productId == box25k){
                     //
                 }
-                else if(productId == fiveGold){
+                else if(productId == box50k){
                     //
                 }
-                else if(productId == sixGold){
+                else if(productId == box100k){
                     //
                 }
-                else if(productId == removeAds){
+                else if(productId == boxremoveAds){
                     //
                 }
 
