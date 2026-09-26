@@ -2017,7 +2017,7 @@ MonoBehaviour:
   _winNextLevelButton: {fileID: 764704172}
   _winDoubleRewardButton: {fileID: 1054566309}
   _winCloseButton: {fileID: 1799151633}
-  _winRewardText: {fileID: 0}
+  _winRewardText: {fileID: 429469529}
   _loseContinueWithGoldButton: {fileID: 537112509}
   _loseContinueWithAdButton: {fileID: 990605593}
   _loseCloseButton: {fileID: 865271845}
@@ -6049,12 +6049,12 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 150
+  m_fontSize: 144
   m_fontSizeBase: 150
   m_fontWeight: 400
-  m_enableAutoSizing: 0
+  m_enableAutoSizing: 1
   m_fontSizeMin: 18
-  m_fontSizeMax: 70
+  m_fontSizeMax: 144
   m_fontStyle: 1
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512

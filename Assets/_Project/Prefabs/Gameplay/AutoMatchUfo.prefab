@@ -282,14 +282,15 @@ MonoBehaviour:
   - {fileID: 2943737747134603301}
   _bodyScale: 0.85
   _collectHeight: 3
+  _collectOffset: {x: 0, y: 0, z: 1}
   _boxHoverHeight: 1.2
   _intakeDepth: 0.73
   _entryOffset: {x: 5, y: 2, z: 0}
   _entryTilt: -15
   _enterDuration: 0.65
   _pullDuration: 0.72
-  _pullStagger: 0.63
-  _travelDuration: 0.5
+  _pullStaggerRange: {x: 0.1, y: 0.2}
+  _travelDuration: 1
   _bobAmplitude: 0.035
   _bobFrequency: 5
   _swayAngle: 2
@@ -298,6 +299,7 @@ MonoBehaviour:
   _pullSpin: {x: 25, y: 220, z: 15}
   _beamRadius: 1.5
   _ringRadius: {x: 1.45, y: 0.1}
+  _ringFlatness: 0.3
   _ringSpeed: 0.8
   _ringColor: {r: 0.2, g: 0.9, b: 1, a: 0.8}
 --- !u!1 &3342241231427172056

@@ -147,7 +147,9 @@ Booster değerleri `GameConfig`'te değil, booster başına bir `BoosterData` as
 | Auto-Match açılışı | Lvl 8 | `BoosterData` |
 | Auto-Match iki kullanım arası bekleme | 1 sn | `BoosterData.AutoMatchCooldown` |
 | Auto-Match UFO prefab'ı | `Prefabs/Gameplay/AutoMatchUfo` | `BoosterData.UfoPrefab` |
-| UFO giriş / obje çekme / objeler arası fark / kutuya uçuş süresi | 0.65 / 0.72 / 0.63 / 0.5 sn | `AutoMatchUfo` prefab'ı |
+| UFO giriş / obje çekme / objeler arası fark / kutuya uçuş süresi | 0.65 / 0.72 / 0.1–0.2 (her obje için rastgele) / 1 sn | `AutoMatchUfo` prefab'ı |
+| UFO çekim halkalarının ekrandaki basıklığı | 0.3 | `AutoMatchUfo` prefab'ı |
+| UFO'nun ekran ortasındaki duruş noktasına kayması | Z +1 birim | `AutoMatchUfo._collectOffset` |
 | UFO ölçeği / objelerin üstündeki yükseklik / kutunun üstündeki yükseklik | 0.85 / 3 / 1.2 birim | `AutoMatchUfo` prefab'ı |
 | Joker Box açılışı / adedi | Lvl 10 / 1 kutu | `BoosterData` |
 | Joker kutunun alacağı obje adedi | Prefab'taki yuva sayısı (3) | Joker kutu prefab'ı |
@@ -254,6 +256,7 @@ Envanter index'i `BoosterType` enum sırasıdır: 0 TimeBonus, 1 Shuffle, 2 Auto
 | 61 | Bant makinesinin panelindeki sayaç "hedef kutu / banta giren kutu" gösterir (`BoxCounterView`, sayı `LevelManager.SpawnedBoxCount`). Sol sayı levelin `TargetBoxCount`'udur ve değişmez; sağ sayı banta giren her kutuda (joker dahil) 1 artar | Oyuncu isteği. Joker kutu sıradaki bir kutunun yerine geçtiği için sağ sayı hedefi aşmaz. Sayaç GameScene'de, bant MainScene'de durduğu için sayı sahneler arası erişilebilen `LevelManager` üzerinden yayınlanır |
 | 62 | Obje prefab'ları `Prefabs/Gameplay/Item_Prefabs` içindeki modellerden `Items/<Ad>_Item` olarak üretilir: kök objede Rigidbody (interpolate, continuous) + `StackItem`, model iç içe prefab olarak çocukta, layer 6, collider convex (collider'ı olmayan modele convex MeshCollider eklenir). Kök ölçeği, modelin en uzun renderer ekseni 1 birim olacak şekilde ayarlanır (2 haneye yuvarlanır); hazır `*_Item` prefab'lar olduğu gibi kopyalanır. Karşılığı olmayan eski tipler silindi; `LevelBalanceConfig._itemPool` kalan 16 eski tip (eski sırasıyla) + 63 yeni tip (alfabetik) olarak 79 tipe çıktı ve level'lar `MatchPack/Generate Levels` ile yeniden üretildi | Eski obje seti de en uzun ekseni ~1 birim olacak şekilde elle ölçeklenmişti (ort. sınır yarıçapı 0.70; yeni set 0.67), yani yığın yoğunluğu ve kutu sığdırma (karar 57) değişmez. Hareketli Rigidbody concave MeshCollider'ı desteklemediği için convex zorunlu |
 | 63 | Kutu ikonları (`ItemType.Icon`) `Prefabs/Gameplay/Item_Icon/<model_adı>.png` dosyalarıdır: 512x512, şeffaf arka plan, ortografik, 25° yukarıdan ve 30° yandan bakış, obje karenin %78'ini kaplar. Sprite olarak import edilir: PPU 200 (2.56 birim), max boyut 256, mipmap kapalı. Modeli olan ama ikonu olmayan 50 item'ın ikonu Editor'de aynı kamera ayarıyla render edilerek üretildi | Kutudaki `SpriteRenderer` ikonu ölçeklemez, boyutu sprite belirler. Daha önce kullanılan geçici ikon 210x270 piksel ve PPU 100 ile yaklaşık 2.1x2.7 birimdi; PPU 200 bu boyuta yakın kalıyor |
+| 64 | Auto-Match UFO'su objelerin üstüne değil ekranın ortasına iner: kameranın merkez ışınının, objelerin ortasından `_collectHeight` yukarıdaki yüksekliği kestiği nokta. Objeler 0.1–0.2 sn arayla çekilmeye başlar, UFO kutuya 1 sn'de uçar. Çekim ışını, halkalar ve objelerin girdiği nokta dünyada dikey aşağıya değil, kameranın aşağı yönüne (`-camera.up`) uzanır; halkalar ekran düzleminde basık elipslerdir | Oyuncu isteği. Işın efekti 2D tasarlandı; izometrik kamerada dünyada dikey ışın UFO'nun altına kayıp görselden kopuk duruyordu |
 
 ## Açık sorular
 

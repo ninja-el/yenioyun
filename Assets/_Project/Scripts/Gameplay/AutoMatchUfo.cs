@@ -35,13 +35,16 @@ namespace MatchPack.Gameplay
         [Tooltip("UFO görselinin ölçeği.")]
         [SerializeField, Min(0.01f)] private float _bodyScale = 0.85f;
 
-        [Tooltip("Obje toplarken UFO'nun objelerin ortasından yüksekliği.")]
+        [Tooltip("Obje toplarken UFO'nun objelerin ortasından yüksekliği. UFO bu yükseklikte ekranın ortasına iner.")]
         [SerializeField, Min(0f)] private float _collectHeight = 3f;
+
+        [Tooltip("Obje toplarken ekranın ortasındaki duruş noktasına eklenen kayma (dünya ekseninde).")]
+        [SerializeField] private Vector3 _collectOffset = new Vector3(0f, 0f, 1f);
 
         [Tooltip("Kutunun üstünde dururken kutu pivotundan yüksekliği.")]
         [SerializeField, Min(0f)] private float _boxHoverHeight = 1.2f;
 
-        [Tooltip("Objelerin içine girdiği nokta; UFO merkezinin bu kadar altıdır.")]
+        [Tooltip("Objelerin içine girdiği nokta; kameradan bakınca UFO merkezinin bu kadar altıdır.")]
         [SerializeField, Min(0f)] private float _intakeDepth = 0.73f;
 
         [Tooltip("UFO'nun ekrana girdiği nokta, toplama noktasına göre.")]
@@ -57,11 +60,11 @@ namespace MatchPack.Gameplay
         [Tooltip("Tek bir objenin UFO'ya çekilme süresi.")]
         [SerializeField, Min(0.01f)] private float _pullDuration = 0.72f;
 
-        [Tooltip("Art arda çekilen objelerin başlangıçları arasındaki fark.")]
-        [SerializeField, Min(0f)] private float _pullStagger = 0.63f;
+        [Tooltip("Art arda çekilen objelerin başlangıçları arasındaki fark; her obje için bu aralıkta (en az, en çok) rastgele seçilir.")]
+        [SerializeField] private Vector2 _pullStaggerRange = new Vector2(0.1f, 0.2f);
 
         [Tooltip("Toplama noktasından kutunun üstüne uçma süresi.")]
-        [SerializeField, Min(0.01f)] private float _travelDuration = 0.5f;
+        [SerializeField, Min(0.01f)] private float _travelDuration = 1f;
 
         [Header("Hareket")]
         [Tooltip("Toplarken havada salınmanın yüksekliği.")]
@@ -89,6 +92,9 @@ namespace MatchPack.Gameplay
         [Tooltip("Halkanın tabandaki ve tepedeki yarıçapı.")]
         [SerializeField] private Vector2 _ringRadius = new Vector2(1.45f, 0.1f);
 
+        [Tooltip("Halkaların ekrandaki basıklığı (dikey yarıçap / yatay yarıçap).")]
+        [SerializeField, Range(0f, 1f)] private float _ringFlatness = 0.3f;
+
         [Tooltip("Halkaların yükselme hızı (saniyede tur).")]
         [SerializeField, Min(0f)] private float _ringSpeed = 0.8f;
 
@@ -98,6 +104,7 @@ namespace MatchPack.Gameplay
         private readonly List<StackItem> _items = new List<StackItem>();
         private readonly List<Pose> _startPoses = new List<Pose>();
         private readonly List<Vector3> _startScales = new List<Vector3>();
+        private readonly List<float> _pullStarts = new List<float>();
 
         private MaterialPropertyBlock _properties;
         private Transform _camera;
@@ -134,13 +141,17 @@ namespace MatchPack.Gameplay
             _items.Clear();
             _startPoses.Clear();
             _startScales.Clear();
+            _pullStarts.Clear();
 
+            float pullStart = 0f;
             for (int i = 0; i < items.Count; i++)
             {
                 Transform itemTransform = items[i].transform;
                 _items.Add(items[i]);
                 _startPoses.Add(new Pose(itemTransform.position, itemTransform.rotation));
                 _startScales.Add(itemTransform.localScale);
+                _pullStarts.Add(pullStart);
+                pullStart += UnityEngine.Random.Range(_pullStaggerRange.x, _pullStaggerRange.y);
             }
 
             // Kutuda zaten duran objelerin lambası baştan yanık gelir; UFO kalanları yakar.
@@ -166,13 +177,14 @@ namespace MatchPack.Gameplay
             _items.Clear();
             _startPoses.Clear();
             _startScales.Clear();
+            _pullStarts.Clear();
             SetBeamVisible(false);
         }
 
         private IEnumerator PlayRoutine()
         {
             Vector3 center = GetItemsCenter();
-            Vector3 hover = center + Vector3.up * _collectHeight;
+            Vector3 hover = GetScreenCenterPoint(center.y + _collectHeight, center) + _collectOffset;
 
             yield return EnterRoutine(hover);
             yield return CollectRoutine(hover, center.y);
@@ -215,7 +227,7 @@ namespace MatchPack.Gameplay
             {
                 transform.position = hover + Vector3.up * (Mathf.Sin(time * _bobFrequency) * _bobAmplitude);
                 _tilt = Mathf.Sin(time * _swayFrequency) * _swayAngle;
-                Vector3 intake = transform.position + Vector3.down * _intakeDepth;
+                Vector3 intake = transform.position + GetScreenDown() * _intakeDepth;
 
                 capturedCount = 0;
                 for (int i = 0; i < _items.Count; i++)
@@ -265,7 +277,7 @@ namespace MatchPack.Gameplay
             StackItem item = _items[index];
             if (!item.gameObject.activeSelf) { return true; }
 
-            float progress = Mathf.Clamp01((time - index * _pullStagger) / _pullDuration);
+            float progress = Mathf.Clamp01((time - _pullStarts[index]) / _pullDuration);
             float eased = Mathf.SmoothStep(0f, 1f, progress);
             float angle = progress * Mathf.PI * 2f;
             Vector3 spiral = new Vector3(Mathf.Sin(angle), 0f, Mathf.Cos(angle)) * (Mathf.Sin(progress * Mathf.PI) * _spiralRadius);
@@ -296,21 +308,26 @@ namespace MatchPack.Gameplay
             _onFinished?.Invoke(this);
         }
 
+        // Işın 2D tasarlandığı için dünyada dikey değil, ekranda UFO'nun altına doğru uzanır; tabanı
+        // bu doğrultunun obje yüksekliğine indiği yerdir.
         private void UpdateBeam(float time, float groundHeight, Vector3 intake)
         {
-            Vector3 ground = new Vector3(intake.x, groundHeight, intake.z);
-            float height = Mathf.Max(MinBeamHeight, intake.y - groundHeight);
+            Vector3 down = GetScreenDown();
+            float drop = intake.y - groundHeight;
+            float height = Mathf.Max(MinBeamHeight, down.y < -0.01f ? drop / -down.y : drop);
+            Vector3 ground = intake + down * height;
 
-            _beam.position = ground;
+            _beam.SetPositionAndRotation(ground, _camera != null ? _camera.rotation : Quaternion.identity);
             _beam.localScale = new Vector3(_beamRadius, height, _beamRadius);
 
             for (int i = 0; i < _rings.Length; i++)
             {
-                UpdateRing(_rings[i], Mathf.Repeat(time * _ringSpeed + (float)i / _rings.Length, 1f), ground, height);
+                UpdateRing(_rings[i], Mathf.Repeat(time * _ringSpeed + (float)i / _rings.Length, 1f), height);
             }
         }
 
-        private void UpdateRing(LineRenderer ring, float progress, Vector3 ground, float height)
+        // Halka ekran düzleminde basık bir elipstir; kameradan bakınca 2D ışının üzerinde durur.
+        private void UpdateRing(LineRenderer ring, float progress, float height)
         {
             float radius = Mathf.Lerp(_ringRadius.x, _ringRadius.y, progress);
             Color color = _ringColor;
@@ -322,7 +339,8 @@ namespace MatchPack.Gameplay
             for (int i = 0; i < pointCount; i++)
             {
                 float angle = i * Mathf.PI * 2f / pointCount;
-                ring.SetPosition(i, ground + new Vector3(Mathf.Cos(angle) * radius, progress * height, Mathf.Sin(angle) * radius));
+                var local = new Vector3(Mathf.Cos(angle) * radius, progress * height + Mathf.Sin(angle) * radius * _ringFlatness, 0f);
+                ring.SetPosition(i, _beam.position + _beam.rotation * local);
             }
         }
 
@@ -354,6 +372,20 @@ namespace MatchPack.Gameplay
             }
 
             return sum / Mathf.Max(1, _startPoses.Count);
+        }
+
+        private Vector3 GetScreenDown()
+        {
+            return _camera != null ? -_camera.up : Vector3.down;
+        }
+
+        // Ekranın ortasından geçen görüş ışınının verilen yükseklikteki noktası.
+        private Vector3 GetScreenCenterPoint(float height, Vector3 fallback)
+        {
+            if (_camera == null || _camera.forward.y > -0.01f) { return fallback + Vector3.up * _collectHeight; }
+
+            float distance = (height - _camera.position.y) / _camera.forward.y;
+            return _camera.position + _camera.forward * distance;
         }
 
         private Vector3 GetBoxHoverPoint(float scaleRatio)
