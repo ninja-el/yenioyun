@@ -19,4 +19,5 @@ MonoBehaviour:
   _missPenaltySeconds: 5
   _maxLives: 5
   _lifeRegenSeconds: 900
-  _levelCompleteGold: 50
+  _levelCompleteGoldMin: 40
+  _levelCompleteGoldMax: 60

@@ -73,10 +73,11 @@ namespace MatchPack.UI
 
         private void Start()
         {
-            GameManager.Instance.OnLevelCompleted += RefreshWinPanel;
+            // Ödül EconomyManager'da rastgele seçildiği için panel OnLevelCompleted'i değil, verilen miktarı dinler.
+            EconomyManager.Instance.OnLevelRewardGranted += RefreshWinPanel;
             GameManager.Instance.OnLevelFailed += RefreshLosePanel;
 
-            RefreshWinPanel();
+            RefreshWinPanel(EconomyManager.Instance.LastLevelReward);
             RefreshLosePanel();
         }
 
@@ -90,11 +91,8 @@ namespace MatchPack.UI
             _loseContinueWithAdButton.onClick.RemoveListener(ContinueWithAd);
             _loseCloseButton.onClick.RemoveListener(ReturnToMenu);
 
-            if (GameManager.Instance != null)
-            {
-                GameManager.Instance.OnLevelCompleted -= RefreshWinPanel;
-                GameManager.Instance.OnLevelFailed -= RefreshLosePanel;
-            }
+            if (EconomyManager.Instance != null) { EconomyManager.Instance.OnLevelRewardGranted -= RefreshWinPanel; }
+            if (GameManager.Instance != null) { GameManager.Instance.OnLevelFailed -= RefreshLosePanel; }
         }
 
         /// <summary>Kazanma panelini kapatıp menüye döner. Level ödülü kazanma anında zaten verilmiştir.</summary>
@@ -111,7 +109,7 @@ namespace MatchPack.UI
         {
             if (IsBusy || !_grantAdRewardsWithoutAds) { return; }
 
-            int bonus = _config.LevelCompleteGold * (_config.RewardedRewardMultiplier - 1);
+            int bonus = EconomyManager.Instance.LastLevelReward * (_config.RewardedRewardMultiplier - 1);
             EconomyManager.Instance.AddGold(bonus);
 
             if (AudioManager.Instance != null) { AudioManager.Instance.PlayRewardGranted(); }
@@ -213,9 +211,9 @@ namespace MatchPack.UI
             GameManager.Instance.ResumeLevel();
         }
 
-        private void RefreshWinPanel()
+        private void RefreshWinPanel(int reward)
         {
-            if (_winRewardText != null) { _winRewardText.text = _config.LevelCompleteGold.ToString(); }
+            if (_winRewardText != null) { _winRewardText.text = reward.ToString(); }
         }
 
         private void RefreshLosePanel()

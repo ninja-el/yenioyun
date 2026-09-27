@@ -83,6 +83,8 @@ model katsayıları (obje başı süre) gerçek hıza göre ayarlanmalı.
 | Yükleme yazısı | "Yükleniyor" | `LoadingScreen` |
 | Yazıdaki en fazla nokta | 3 | `LoadingScreen` |
 | Nokta ekleme aralığı | 0.35 sn | `LoadingScreen` |
+| Boot yükleme yazısı noktaları | 2 ↔ 3 nokta, 0.35 sn aralıkla | `LoadingDotsText` |
+| Boot'ta oyunun açılma şartı | GDPR paneli cevaplanmış olmalı (kabul veya ret); iOS'ta ATT de cevaplanmış olmalı | `AppBootstrap` + `PrivacyManager` |
 | Restart butonu gecikmesi | 3 sn | `LevelResultScreen` |
 | Sonraki level butonu gecikmesi | 3 sn | `LevelResultScreen` |
 | Kazanma şartı | Dolan kutu = `LevelData.targetBoxCount` | `LevelManager` |
@@ -99,7 +101,9 @@ varsayılanlardır; ilk oynanabilir sürümde Inspector'dan ayarlanıp bu tablo 
 | Maks. can | 5 |
 | Can yenilenme süresi | 15 dk |
 | Level girişi maliyeti | 1 can |
-| Level tamamlama ödülü | 50 gold (rewarded reklamla x2) |
+| Level tamamlama ödülü | 40–60 gold arası rastgele (iki uç dahil, `GameConfig.LevelCompleteGoldMin/Max`) x bölüm çarpanı |
+| Bölüm gold çarpanı | 1 (`LevelData.GoldRewardMultiplier`); sonuç en yakın tam sayıya yuvarlanır |
+| Rewarded reklamla ödül | Çarpan uygulanmış son değer x2 (`EconomyManager.LastLevelReward`) |
 | Interstitial aralığı | Her 2 level geçişinde 1 |
 | Kaybedilen levele gold ile devam | 800 gold (`GameConfig.ContinueCostGold`) |
 | Devam edince eklenen süre | 15 sn (`GameConfig.ContinueExtraSeconds`) |

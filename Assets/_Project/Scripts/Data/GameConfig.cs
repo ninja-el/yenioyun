@@ -46,8 +46,11 @@ namespace MatchPack.Data
         [Tooltip("Bir canın yenilenmesi için geçmesi gereken süre (saniye).")]
         [SerializeField, Min(1f)] private float _lifeRegenSeconds = 900f;
 
-        [Tooltip("Level tamamlandığında verilen gold.")]
-        [SerializeField, Min(0)] private int _levelCompleteGold = 50;
+        [Tooltip("Level tamamlandığında verilen gold aralığının alt sınırı (dahil).")]
+        [SerializeField, Min(0)] private int _levelCompleteGoldMin = 40;
+
+        [Tooltip("Level tamamlandığında verilen gold aralığının üst sınırı (dahil).")]
+        [SerializeField, Min(0)] private int _levelCompleteGoldMax = 60;
 
         [Tooltip("Kaybedilen levele gold ile devam etmenin maliyeti.")]
         [SerializeField, Min(0)] private int _continueCostGold = 800;
@@ -72,10 +75,24 @@ namespace MatchPack.Data
         public float MissPenaltySeconds => _missPenaltySeconds;
         public int MaxLives => _maxLives;
         public float LifeRegenSeconds => _lifeRegenSeconds;
-        public int LevelCompleteGold => _levelCompleteGold;
+        public int LevelCompleteGoldMin => _levelCompleteGoldMin;
+        public int LevelCompleteGoldMax => _levelCompleteGoldMax;
         public int ContinueCostGold => _continueCostGold;
         public int LifeRefillCostGold => _lifeRefillCostGold;
         public int RewardedRewardMultiplier => _rewardedRewardMultiplier;
         public float ContinueExtraSeconds => _continueExtraSeconds;
+
+        /// <summary>Level tamamlama gold aralığından (iki uç dahil) rastgele bir değer seçer.</summary>
+        public int RollLevelCompleteGold()
+        {
+            return Random.Range(_levelCompleteGoldMin, _levelCompleteGoldMax + 1);
+        }
+
+#if UNITY_EDITOR
+        private void OnValidate()
+        {
+            if (_levelCompleteGoldMax < _levelCompleteGoldMin) { _levelCompleteGoldMax = _levelCompleteGoldMin; }
+        }
+#endif
     }
 }

@@ -1,13 +1,33 @@
 using System.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.UI;
 #if UNITY_IOS
 using Unity.Advertisement.IosSupport;
 #endif
 
 public class PrivacyManager : MonoBehaviour
 {
-    public GameObject gdprPanel; 
+    public GameObject gdprPanel;
+
+    [Tooltip("GDPR onayını kabul eden buton (Agree).")]
+    [SerializeField] private Button _acceptButton;
+
+    [Tooltip("GDPR onayını reddeden buton (Disagree).")]
+    [SerializeField] private Button _declineButton;
+
     public bool IsConsentProcessCompleted { get; private set; } = false;
+
+    private void Awake()
+    {
+        if (_acceptButton != null) { _acceptButton.onClick.AddListener(OnAcceptGDPRClicked); }
+        if (_declineButton != null) { _declineButton.onClick.AddListener(OnDeclineGDPRClicked); }
+    }
+
+    private void OnDestroy()
+    {
+        if (_acceptButton != null) { _acceptButton.onClick.RemoveListener(OnAcceptGDPRClicked); }
+        if (_declineButton != null) { _declineButton.onClick.RemoveListener(OnDeclineGDPRClicked); }
+    }
 
     public async Task RequestConsentAsync()
     {

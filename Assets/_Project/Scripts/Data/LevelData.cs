@@ -43,10 +43,14 @@ namespace MatchPack.Data
         [Tooltip("Yığındaki objeler. Toplam adet, kutu hedefi x kutu kapasitesi olmak zorundadır.")]
         [SerializeField] private ItemEntry[] _items;
 
+        [Tooltip("GameConfig aralığından rastgele seçilen tamamlama gold'unun çarpanı. 1 = değişmez, 2 = iki katı.")]
+        [SerializeField, Min(0f)] private float _goldRewardMultiplier = 1f;
+
         public int LevelIndex => _levelIndex;
         public float Duration => _duration;
         public int TargetBoxCount => _targetBoxCount;
         public int ConveyorCapacity => _conveyorCapacity;
+        public float GoldRewardMultiplier => _goldRewardMultiplier;
         public IReadOnlyList<ItemEntry> Items => _items;
 
         /// <summary>Yığında oluşturulacak toplam obje adedi.</summary>

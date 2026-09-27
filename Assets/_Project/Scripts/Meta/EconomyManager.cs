@@ -28,6 +28,9 @@ namespace MatchPack.Meta
         /// <summary>Bir booster'ın adedi değiştiğinde yayınlanır. Değerler booster index'i ve yeni adet.</summary>
         public event Action<int, int> OnBoosterCountChanged;
 
+        /// <summary>Level tamamlama ödülü verildiğinde yayınlanır. Değer verilen gold miktarıdır.</summary>
+        public event Action<int> OnLevelRewardGranted;
+
         [Tooltip("Can ve gold değerlerinin okunduğu config.")]
         [SerializeField] private GameConfig _config;
 
@@ -37,6 +40,9 @@ namespace MatchPack.Meta
 
         public int Gold => SaveManager.Instance.Data.Gold;
         public int MaxLives => _config.MaxLives;
+
+        /// <summary>Son tamamlanan levelde verilen gold. Rewarded çarpanları bu değeri baz alır.</summary>
+        public int LastLevelReward { get; private set; }
 
         /// <summary>Sınırsız can aktifken MaxLives döner; can tüketimi de yapılmaz.</summary>
         public int Lives => HasInfiniteLives ? _config.MaxLives : SaveManager.Instance.Data.CurrentLives;
@@ -329,7 +335,12 @@ namespace MatchPack.Meta
 
         private void HandleLevelCompleted()
         {
-            AddGold(_config.LevelCompleteGold);
+            LevelData level = GameManager.Instance.CurrentLevel;
+            float multiplier = level != null ? level.GoldRewardMultiplier : 1f;
+
+            LastLevelReward = Mathf.RoundToInt(_config.RollLevelCompleteGold() * multiplier);
+            AddGold(LastLevelReward);
+            OnLevelRewardGranted?.Invoke(LastLevelReward);
         }
     }
 }

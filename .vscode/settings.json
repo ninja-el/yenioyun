@@ -1,12 +1,12 @@
 {
     "dotnet.defaultSolution": "yenioyun.sln",
     "dotnet.dotnetPath": "C:/Program Files/dotnet/dotnet.exe",
-    "dotrush.roslyn.dotnetSdkDirectory": "C:/Program Files/dotnet/sdk/10.0.401",
+    "dotrush.roslyn.dotnetSdkDirectory": "C:/Program Files/dotnet/sdk/7.0.401",
     "dotrush.msbuildProperties": {
         "DefineConstants": "UNITY_EDITOR"
     },
     "dotrush.roslyn.projectOrSolutionFiles": [
-        "D:/UNITY PROJECTS/yenioyun/yenioyun.sln"
+        "C:/Users/Ling-San/Desktop/UnityProjects/yenioyun/yenioyun.sln"
     ],
     "dotrush.roslyn.restoreProjectsBeforeLoading": false,
     "files.exclude": {
