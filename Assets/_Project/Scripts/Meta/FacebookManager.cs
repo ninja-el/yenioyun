@@ -1,22 +1,77 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using Facebook.Unity;
+using MatchPack.Core;
+using MatchPack.Data;
 
 public class FacebookManager : MonoBehaviour
 {
    public static FacebookManager Instance;
-   
+
+   private GameManager _boundGameManager;
+
    private void Awake()
    {
       if (Instance != null && Instance != this)
       {
-         Destroy(this.gameObject);  
+         Destroy(this.gameObject);
          return;
       }
 
       Instance = this;
       DontDestroyOnLoad(this.gameObject);
+   }
+
+   private void OnEnable()
+   {
+      SceneManager.sceneLoaded += HandleSceneLoaded;
+   }
+
+   private void OnDisable()
+   {
+      SceneManager.sceneLoaded -= HandleSceneLoaded;
+      UnbindGameManager();
+   }
+
+   // FacebookManager BootScene'de, GameManager MainScene'de doğar; bağlantı sahne yüklenince kurulur.
+   private void HandleSceneLoaded(Scene scene, LoadSceneMode mode)
+   {
+      if (Instance != this || GameManager.Instance == null || GameManager.Instance == _boundGameManager) return;
+
+      UnbindGameManager();
+      _boundGameManager = GameManager.Instance;
+      _boundGameManager.OnLevelStarted += HandleLevelStarted;
+      _boundGameManager.OnLevelCompleted += HandleLevelCompleted;
+      _boundGameManager.OnLevelFailed += HandleLevelFailed;
+   }
+
+   private void UnbindGameManager()
+   {
+      if (_boundGameManager == null) return;
+
+      _boundGameManager.OnLevelStarted -= HandleLevelStarted;
+      _boundGameManager.OnLevelCompleted -= HandleLevelCompleted;
+      _boundGameManager.OnLevelFailed -= HandleLevelFailed;
+      _boundGameManager = null;
+   }
+
+   private void HandleLevelStarted(LevelData level)
+   {
+      if (level != null) LogLevelStarted(level.LevelIndex);
+   }
+
+   private void HandleLevelCompleted()
+   {
+      LevelData level = GameManager.Instance.CurrentLevel;
+      if (level != null) LogLevelCompleted(level.LevelIndex);
+   }
+
+   private void HandleLevelFailed()
+   {
+      LevelData level = GameManager.Instance.CurrentLevel;
+      if (level != null) LogLevelFailed(level.LevelIndex);
    }
 
    public async Task InitializeFacebookAsync() 
@@ -70,7 +125,7 @@ public class FacebookManager : MonoBehaviour
       if(!FB.IsInitialized) return;
       
       var parameters = new Dictionary<string, object>();
-      parameters["level_name"] = "Level_" + levelnumber;
+      parameters[AppEventParameterName.Level] = levelnumber.ToString();
       FB.LogAppEvent("Level_Started", null, parameters);
    }
 

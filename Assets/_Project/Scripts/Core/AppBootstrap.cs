@@ -7,7 +7,7 @@ namespace MatchPack.Core
 {
     /// <summary>
     /// Boot sahnesinin tek görevi: açılış ayarlarını uygulamak, gizlilik onayını beklemek ve
-    /// ardından MainScene'i yüklemek. Onay süreci bitmeden MainScene yüklenmez.
+    /// ardından Facebook SDK'sını başlatıp MainScene'i yüklemek. Onay süreci bitmeden MainScene yüklenmez.
     /// </summary>
     public class AppBootstrap : MonoBehaviour
     {
@@ -32,6 +32,9 @@ namespace MatchPack.Core
             yield return new WaitUntil(() => consentTask.IsCompleted);
 
             if (consentTask.IsFaulted) { Debug.LogException(consentTask.Exception, this); }
+
+            // Beklenmez: Facebook init 4 sn'ye kadar sürebilir, oyunun açılışını geciktirmemeli.
+            if (FacebookManager.Instance != null) { _ = FacebookManager.Instance.InitializeFacebookAsync(); }
 
             yield return SceneManager.LoadSceneAsync(SceneIndices.Main, LoadSceneMode.Single);
         }
