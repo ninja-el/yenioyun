@@ -14,24 +14,25 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MatchPack.Data.LevelData
   _levelIndex: 6
   _duration: 60
-  _targetBoxCount: 15
+  _targetBoxCount: 14
   _conveyorCapacity: 3
   _items:
-  - _type: {fileID: 11400000, guid: 7baad724dc16aaf469a0a9609212c82d, type: 2}
-    _count: 9
-    _scaleMultiplier: 1
-  - _type: {fileID: 11400000, guid: fcae6bdcd544a8f44aacb17001917bbb, type: 2}
+  - _type: {fileID: 11400000, guid: ff1301115ba57ba4f9ce04d08144e4dd, type: 2}
     _count: 6
-    _scaleMultiplier: 1
-  - _type: {fileID: 11400000, guid: 393f5a1e48332c242b325ab644783d02, type: 2}
+    _scaleMultiplier: 2.5
+  - _type: {fileID: 11400000, guid: 300dccbcf866b734c9fe2d72080128d3, type: 2}
+    _count: 6
+    _scaleMultiplier: 2.2
+  - _type: {fileID: 11400000, guid: 8f3696e88b2aac347b41a568ba5b99da, type: 2}
     _count: 9
-    _scaleMultiplier: 1
+    _scaleMultiplier: 2
   - _type: {fileID: 11400000, guid: 4bf2c081bf1c7f04ba049fc024364866, type: 2}
+    _count: 6
+    _scaleMultiplier: 2
+  - _type: {fileID: 11400000, guid: 2a72c319fd4625649b135f955bfe2942, type: 2}
+    _count: 6
+    _scaleMultiplier: 2.3
+  - _type: {fileID: 11400000, guid: e2549c4e04ad3d1449d9b56c39392f65, type: 2}
     _count: 9
-    _scaleMultiplier: 1
-  - _type: {fileID: 11400000, guid: a57afda733c44932a89376e9488e09df, type: 2}
-    _count: 6
-    _scaleMultiplier: 1
-  - _type: {fileID: 11400000, guid: 0002a1b69258de249baf9006c6f6afa6, type: 2}
-    _count: 6
-    _scaleMultiplier: 1
+    _scaleMultiplier: 1.5
+  _goldRewardMultiplier: 1

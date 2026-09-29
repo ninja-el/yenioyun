@@ -14,21 +14,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MatchPack.Data.LevelData
   _levelIndex: 3
   _duration: 40
-  _targetBoxCount: 12
+  _targetBoxCount: 8
   _conveyorCapacity: 3
   _items:
-  - _type: {fileID: 11400000, guid: 4bf2c081bf1c7f04ba049fc024364866, type: 2}
-    _count: 9
-    _scaleMultiplier: 1
-  - _type: {fileID: 11400000, guid: b28aa67661f93a6449ca8696d396ea62, type: 2}
+  - _type: {fileID: 11400000, guid: 1b179ea5ec44cb142a3a8762d4c7973d, type: 2}
     _count: 6
-    _scaleMultiplier: 1
-  - _type: {fileID: 11400000, guid: fcae6bdcd544a8f44aacb17001917bbb, type: 2}
-    _count: 6
-    _scaleMultiplier: 1
+    _scaleMultiplier: 1.5
   - _type: {fileID: 11400000, guid: a57afda733c44932a89376e9488e09df, type: 2}
     _count: 6
-    _scaleMultiplier: 1
-  - _type: {fileID: 11400000, guid: 7baad724dc16aaf469a0a9609212c82d, type: 2}
-    _count: 9
-    _scaleMultiplier: 1
+    _scaleMultiplier: 1.5
+  - _type: {fileID: 11400000, guid: 1ba3841b4de93cf4fa524b0f90eaf410, type: 2}
+    _count: 6
+    _scaleMultiplier: 2
+  - _type: {fileID: 11400000, guid: 6ae7af1d7f3619842b7819f6d4b6853b, type: 2}
+    _count: 6
+    _scaleMultiplier: 2
+  _goldRewardMultiplier: 1

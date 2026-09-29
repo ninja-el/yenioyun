@@ -14,15 +14,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _levelIndex: 1
   _duration: 30
-  _targetBoxCount: 10
+  _targetBoxCount: 6
   _conveyorCapacity: 3
   _items:
   - _type: {fileID: 11400000, guid: 0002a1b69258de249baf9006c6f6afa6, type: 2}
-    _count: 9
+    _count: 6
     _scaleMultiplier: 2
   - _type: {fileID: 11400000, guid: a57afda733c44932a89376e9488e09df, type: 2}
-    _count: 9
-    _scaleMultiplier: 1
-  - _type: {fileID: 11400000, guid: fcae6bdcd544a8f44aacb17001917bbb, type: 2}
-    _count: 12
-    _scaleMultiplier: 1
+    _count: 6
+    _scaleMultiplier: 2
+  - _type: {fileID: 11400000, guid: 5f13a96b9cbd2ad4698e6f654ad71673, type: 2}
+    _count: 6
+    _scaleMultiplier: 2
+  _goldRewardMultiplier: 1
