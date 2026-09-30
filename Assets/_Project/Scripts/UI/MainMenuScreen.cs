@@ -61,7 +61,7 @@ namespace MatchPack.UI
                 return;
             }
 
-            GameManager.Instance.StartLevel(level);
+            GameManager.Instance.StartLevel(SaveManager.Instance.Data.CurrentLevel);
         }
 
         private void HandleGameStateChanged(GameState state)
@@ -71,13 +71,12 @@ namespace MatchPack.UI
             if (state == GameState.Menu) { RefreshLevelLabel(); }
         }
 
-        /// <summary>Bölüm yazısını kayıttaki bölüm numarasıyla günceller.</summary>
+        /// <summary>Bölüm yazısını kayıttaki bölüm numarasıyla günceller; döngüde de numara artmaya devam eder.</summary>
         private void RefreshLevelLabel()
         {
             if (_levelLabel == null) { return; }
 
-            LevelData level = GameManager.Instance.ProgressLevel;
-            _levelLabel.SetFormatArgs(level != null ? level.LevelIndex : SaveManager.Instance.Data.CurrentLevel);
+            _levelLabel.SetFormatArgs(SaveManager.Instance.Data.CurrentLevel);
         }
     }
 }

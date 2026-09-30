@@ -30,13 +30,19 @@ namespace MatchPack.Core
         public GameState State { get; private set; } = GameState.Menu;
         public LevelData CurrentLevel { get; private set; }
 
+        /// <summary>
+        /// Aktif bölümün oyuncuya gösterilen numarası. Katalog döngüye girdikten sonra aynı LevelData
+        /// farklı numaralarla oynanır; gösterge ve ilerleme bu numarayı kullanır. Bölüm yokken 0.
+        /// </summary>
+        public int CurrentLevelNumber { get; private set; }
+
         /// <summary>Oyuncunun kayıtlı ilerlemesine karşılık gelen bölüm; katalog boşsa null.</summary>
         public LevelData ProgressLevel => _catalog != null
             ? _catalog.GetByNumber(SaveManager.Instance.Data.CurrentLevel)
             : null;
 
-        /// <summary>Aktif bölümden sonra oynanacak bölüm var mı?</summary>
-        public bool HasNextLevel => _catalog != null && _catalog.TryGetNext(CurrentLevel, out _);
+        /// <summary>Aktif bölümden sonra oynanacak bölüm var mı? Katalog döngüye girdiği için bölüm varsa hep true.</summary>
+        public bool HasNextLevel => _catalog != null && _catalog.Count > 0 && CurrentLevelNumber > 0;
 
         private void Awake()
         {
@@ -60,19 +66,24 @@ namespace MatchPack.Core
             if (Instance == this) { Instance = null; }
         }
 
-        /// <summary>Verilen bölümü kurar. Yükleme ekranı açılır, hazırlık bitince durum Playing olur.</summary>
-        public void StartLevel(LevelData level)
+        /// <summary>
+        /// Gösterilen numaraya karşılık gelen bölümü kurar; katalogdan büyük numaralar döngüdeki bölüme
+        /// eşlenir. Yükleme ekranı açılır, hazırlık bitince durum Playing olur.
+        /// </summary>
+        public void StartLevel(int levelNumber)
         {
+            LevelData level = _catalog != null ? _catalog.GetByNumber(levelNumber) : null;
+
             if (level == null)
             {
-                Debug.LogError("GameManager.StartLevel was called with a null level.", this);
+                Debug.LogError($"GameManager.StartLevel found no level for number {levelNumber}.", this);
                 return;
             }
 
             // Açılıştaki GameScene yüklemesi de meşgul sayılır; o bitmeden level kurulamaz.
             if (_buildRoutine != null || SceneLoader.Instance.IsBusy) { return; }
 
-            _buildRoutine = StartCoroutine(BuildLevelRoutine(level));
+            _buildRoutine = StartCoroutine(BuildLevelRoutine(level, levelNumber));
         }
 
         /// <summary>Aktif bölümü baştan kurar. Sahne değişmez, içerik yeniden üretilir.</summary>
@@ -84,19 +95,19 @@ namespace MatchPack.Core
                 return;
             }
 
-            StartLevel(CurrentLevel);
+            StartLevel(CurrentLevelNumber);
         }
 
-        /// <summary>Sıradaki bölümü kurar. Katalogda sıradaki bölüm yoksa menüye döner.</summary>
+        /// <summary>Sıradaki bölümü kurar. Sıradaki bölüm yoksa menüye döner.</summary>
         public void StartNextLevel()
         {
-            if (_catalog == null || !_catalog.TryGetNext(CurrentLevel, out LevelData next))
+            if (!HasNextLevel)
             {
                 ReturnToMenu();
                 return;
             }
 
-            StartLevel(next);
+            StartLevel(CurrentLevelNumber + 1);
         }
 
         /// <summary>Hedef kutu sayısına ulaşıldığında çağrılır.</summary>
@@ -137,15 +148,17 @@ namespace MatchPack.Core
 
             SceneLoader.Instance.TeardownLevel();
             CurrentLevel = null;
+            CurrentLevelNumber = 0;
             SetState(GameState.Menu);
         }
 
-        private IEnumerator BuildLevelRoutine(LevelData level)
+        private IEnumerator BuildLevelRoutine(LevelData level, int levelNumber)
         {
             SetState(GameState.Loading);
             UIManager.Instance.ShowLoadingScreen();
 
             CurrentLevel = level;
+            CurrentLevelNumber = levelNumber;
 
             yield return SceneLoader.Instance.BuildLevelRoutine();
 
@@ -161,15 +174,14 @@ namespace MatchPack.Core
 
         private void AdvanceProgress()
         {
-            if (_catalog == null) { return; }
-
-            int completedNumber = _catalog.GetNumber(CurrentLevel);
+            int completedNumber = CurrentLevelNumber;
             if (completedNumber < 1) { return; }
 
             PlayerData data = SaveManager.Instance.Data;
             if (data.CurrentLevel > completedNumber) { return; }
 
-            data.CurrentLevel = Mathf.Min(completedNumber + 1, _catalog.Count);
+            // Numara katalogla sınırlanmaz; son bölümden sonra döngüdeki bölümler artan numarayla oynanır.
+            data.CurrentLevel = completedNumber + 1;
             SaveManager.Instance.Save();
         }
 

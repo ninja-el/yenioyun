@@ -59,7 +59,8 @@ namespace MatchPack.UI
         {
             if (_levelLabel == null || level == null) { return; }
 
-            _levelLabel.SetFormatArgs(level.LevelIndex);
+            // Döngüdeki bölümün kendi numarası değil, oyuncunun ulaştığı numara gösterilir.
+            _levelLabel.SetFormatArgs(GameManager.Instance.CurrentLevelNumber);
         }
 
         private void SetGold(int gold)
