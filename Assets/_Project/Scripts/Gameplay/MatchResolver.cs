@@ -26,6 +26,9 @@ namespace MatchPack.Gameplay
         [SerializeField] private Conveyor _conveyor;
         [SerializeField] private ItemStack _itemStack;
 
+        [Tooltip("Dokunulan bonus objeyi toplayan bileşen. Boşsa aynı objede aranır, yoksa eklenir.")]
+        [SerializeField] private BonusItemCollector _bonusCollector;
+
         [Tooltip("Objenin kutuya uçarken çizdiği kavisin yüksekliği.")]
         [SerializeField, Min(0f)] private float _flightArcHeight = 1.5f;
 
@@ -34,6 +37,13 @@ namespace MatchPack.Gameplay
 
         [Tooltip("Hatalı hamlede kameranın sarsılma şiddeti.")]
         [SerializeField, Min(0f)] private float _shakeStrength = 0.15f;
+
+        private void Awake()
+        {
+            // Sahne dosyasına dokunmadan çalışsın diye bileşen bağlanmamışsa çalışma anında eklenir.
+            if (_bonusCollector == null) { _bonusCollector = GetComponent<BonusItemCollector>(); }
+            if (_bonusCollector == null) { _bonusCollector = gameObject.AddComponent<BonusItemCollector>(); }
+        }
 
         private void Start()
         {
@@ -83,7 +93,7 @@ namespace MatchPack.Gameplay
 
         // Prob tek objede durmadığı için dokunuşa birden fazla aday gelir: en yakından başlanır,
         // ilk gidebilen oynanır. Tam isabetli dokunuş yine önce denendiği için bu kural yalnızca
-        // en öndeki objenin gidecek kutusu yokken devreye girer.
+        // en öndeki objenin gidecek kutusu yokken devreye girer. Sıradaki aday bonus ise kutu aranmadan toplanır.
         private void HandleItemsTapped(IReadOnlyList<StackItem> items)
         {
             if (GameManager.Instance.State != GameState.Playing || !_itemStack.IsSettled) { return; }
@@ -91,6 +101,7 @@ namespace MatchPack.Gameplay
 
             for (int i = 0; i < items.Count; i++)
             {
+                if (_bonusCollector.TryCollect(items[i], _itemStack)) { return; }
                 if (TryMatch(items[i])) { return; }
             }
 

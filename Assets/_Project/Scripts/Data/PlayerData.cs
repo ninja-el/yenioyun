@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace MatchPack.Data
@@ -10,6 +11,17 @@ namespace MatchPack.Data
     [Serializable]
     public class PlayerData
     {
+        /// <summary>Bir etkinlik için toplanan bonus obje adedi. JsonUtility sözlük yazamadığı için liste satırıdır.</summary>
+        [Serializable]
+        public class EventItemCount
+        {
+            [SerializeField] private string _eventId;
+            [SerializeField] private int _count;
+
+            public string EventId { get => _eventId; set => _eventId = value; }
+            public int Count { get => _count; set => _count = value; }
+        }
+
         [Tooltip("Oyuncunun oynayacağı sıradaki bölüm numarası.")]
         [SerializeField] private int _currentLevel = 1;
 
@@ -43,6 +55,9 @@ namespace MatchPack.Data
         [Tooltip("Titreşim (taptic) açık mı?")]
         [SerializeField] private bool _isHapticsEnabled = true;
 
+        [Tooltip("Etkinlik id'si başına toplanan bonus obje adetleri.")]
+        [SerializeField] private List<EventItemCount> _eventItemCounts = new List<EventItemCount>();
+
         public int CurrentLevel { get => _currentLevel; set => _currentLevel = value; }
         public int Gold { get => _gold; set => _gold = value; }
         public int CurrentLives { get => _currentLives; set => _currentLives = value; }
@@ -59,5 +74,6 @@ namespace MatchPack.Data
         public bool IsSoundEnabled { get => _isSoundEnabled; set => _isSoundEnabled = value; }
         public bool IsMusicEnabled { get => _isMusicEnabled; set => _isMusicEnabled = value; }
         public bool IsHapticsEnabled { get => _isHapticsEnabled; set => _isHapticsEnabled = value; }
+        public List<EventItemCount> EventItemCounts => _eventItemCounts;
     }
 }

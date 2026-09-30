@@ -28,6 +28,24 @@ namespace MatchPack.Data
             public float ScaleMultiplier => _scaleMultiplier;
         }
 
+        /// <summary>Yığına eklenecek bonus obje tipi ve adedi. Kutu hedefine ve obje toplamına sayılmaz.</summary>
+        [Serializable]
+        public class BonusEntry
+        {
+            [Tooltip("Yığına eklenecek bonus obje tipi.")]
+            [SerializeField] private BonusItemType _type;
+
+            [Tooltip("Bu bonustan kaç adet eklenecek.")]
+            [SerializeField, Min(0)] private int _count = 1;
+
+            [Tooltip("Bu bölümde bonusun boyut çarpanı. 1 = prefab boyutu.")]
+            [SerializeField, Min(0.01f)] private float _scaleMultiplier = 1f;
+
+            public BonusItemType Type => _type;
+            public int Count => _count;
+            public float ScaleMultiplier => _scaleMultiplier;
+        }
+
         [Tooltip("Bölüm numarası. Level_012 asset'i için 12.")]
         [SerializeField, Min(1)] private int _levelIndex = 1;
 
@@ -46,12 +64,17 @@ namespace MatchPack.Data
         [Tooltip("GameConfig aralığından rastgele seçilen tamamlama gold'unun çarpanı. 1 = değişmez, 2 = iki katı.")]
         [SerializeField, Min(0f)] private float _goldRewardMultiplier = 1f;
 
+        [Tooltip("Yığına karışan, dokununca toplanan bonus objeler. Kutuya gitmezler; kutu hedefi ve obje toplamı " +
+            "kuralına sayılmazlar. Boş bırakılabilir.")]
+        [SerializeField] private BonusEntry[] _bonusItems = Array.Empty<BonusEntry>();
+
         public int LevelIndex => _levelIndex;
         public float Duration => _duration;
         public int TargetBoxCount => _targetBoxCount;
         public int ConveyorCapacity => _conveyorCapacity;
         public float GoldRewardMultiplier => _goldRewardMultiplier;
         public IReadOnlyList<ItemEntry> Items => _items;
+        public IReadOnlyList<BonusEntry> BonusItems => _bonusItems ?? Array.Empty<BonusEntry>();
 
         /// <summary>Yığında oluşturulacak toplam obje adedi.</summary>
         public int TotalItemCount
@@ -87,6 +110,10 @@ namespace MatchPack.Data
                 if (_items[i].Type == null)
                 {
                     Debug.LogWarning($"{name}: Items listesinde {i}. satırın obje tipi boş.", this);
+                }
+                else if (_items[i].Type is BonusItemType)
+                {
+                    Debug.LogWarning($"{name}: Items listesinde {i}. satır bir bonus tipi; bonuslar Bonus Items listesine eklenmeli.", this);
                 }
             }
 

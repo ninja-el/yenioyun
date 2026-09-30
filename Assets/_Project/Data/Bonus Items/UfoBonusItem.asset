@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f2e5e5d3b172aac44ab97b332ddef778, type: 3}
+  m_Name: UfoBonusItem
+  m_EditorClassIdentifier: Assembly-CSharp::MatchPack.Data.BonusItemType
+  _id: ufobonus
+  _displayName: Ufo Bonus
+  _prefab: {fileID: 2553600882896591259, guid: 8ed5a6b8a9344664c9438d071621cba0, type: 3}
+  _icon: {fileID: 0}
+  _bonusSeconds: 0
+  _grantsBooster: 1
+  _boosterType: 2
+  _boosterAmount: 1
+  _useBoosterInstantly: 1
+  _eventId: 
+  _eventAmount: 1

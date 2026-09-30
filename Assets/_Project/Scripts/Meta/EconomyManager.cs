@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using MatchPack.Core;
 using MatchPack.Data;
 using UnityEngine;
@@ -30,6 +31,9 @@ namespace MatchPack.Meta
 
         /// <summary>Level tamamlama ödülü verildiğinde yayınlanır. Değer verilen gold miktarıdır.</summary>
         public event Action<int> OnLevelRewardGranted;
+
+        /// <summary>Bir etkinliğin bonus obje sayacı değiştiğinde yayınlanır. Değerler etkinlik id'si ve yeni adet.</summary>
+        public event Action<string, int> OnEventItemCountChanged;
 
         [Tooltip("Can ve gold değerlerinin okunduğu config.")]
         [SerializeField] private GameConfig _config;
@@ -206,6 +210,42 @@ namespace MatchPack.Meta
             SaveManager.Instance.Save();
             OnBoosterCountChanged?.Invoke(index, data.BoosterCounts[index]);
             return true;
+        }
+
+        /// <summary>Etkinlik sayacına bonus obje ekler ve kaydeder. Id boşsa veya adet pozitif değilse bir şey yapmaz.</summary>
+        public void AddEventItems(string eventId, int amount)
+        {
+            if (string.IsNullOrEmpty(eventId) || amount <= 0) { return; }
+
+            PlayerData.EventItemCount entry = FindEventEntry(eventId);
+            if (entry == null)
+            {
+                entry = new PlayerData.EventItemCount { EventId = eventId };
+                SaveManager.Instance.Data.EventItemCounts.Add(entry);
+            }
+
+            entry.Count += amount;
+            SaveManager.Instance.Save();
+            OnEventItemCountChanged?.Invoke(eventId, entry.Count);
+        }
+
+        /// <summary>Etkinlik için toplanan bonus obje adedi. Kayıt yoksa 0 döner.</summary>
+        public int GetEventItemCount(string eventId)
+        {
+            PlayerData.EventItemCount entry = FindEventEntry(eventId);
+            return entry != null ? entry.Count : 0;
+        }
+
+        private static PlayerData.EventItemCount FindEventEntry(string eventId)
+        {
+            List<PlayerData.EventItemCount> entries = SaveManager.Instance.Data.EventItemCounts;
+
+            for (int i = 0; i < entries.Count; i++)
+            {
+                if (entries[i].EventId == eventId) { return entries[i]; }
+            }
+
+            return null;
         }
 
         /// <summary>Verilen saat kadar sınırsız can verir. Süre birikir, üzerine yazılmaz.</summary>

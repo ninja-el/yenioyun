@@ -116,6 +116,21 @@ namespace MatchPack.Gameplay
         }
 
         /// <summary>
+        /// Booster'ı envanterden düşmeden kullanır; bonus obje ödülü için. Kilit ve stok kontrolü
+        /// yapılmaz. Oyun oynanmıyorsa veya etki o an uygulanamıyorsa false döner.
+        /// </summary>
+        public bool TryActivateFree(BoosterType type)
+        {
+            if (GameManager.Instance.State != GameState.Playing) { return false; }
+
+            BoosterBehaviour booster = FindBooster(type);
+            if (booster == null || !booster.TryActivate(GetData(type))) { return false; }
+
+            OnBoosterUsed?.Invoke(type);
+            return true;
+        }
+
+        /// <summary>
         /// Oyunu yerinde durdurur veya devam ettirir: sayaç, bant ve dokunuş kapanır. Booster
         /// satın alma paneli açıkken oyunun arkada işlememesi için kullanılır.
         /// </summary>
