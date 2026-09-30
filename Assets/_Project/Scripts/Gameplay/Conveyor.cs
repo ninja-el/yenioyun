@@ -39,12 +39,13 @@ namespace MatchPack.Gameplay
         [SerializeField] private GameObject[] _boxPrefabs;
 
         private readonly List<ItemType> _queuedBoxTypes = new List<ItemType>();
-        private readonly Dictionary<ItemType, int> _uncoveredItemCounts = new Dictionary<ItemType, int>();
+        private readonly Dictionary<ItemType, float> _typeWeights = new Dictionary<ItemType, float>();
         private readonly List<LeavingBox> _leavingBoxes = new List<LeavingBox>();
         private readonly List<Box> _departingBoxes = new List<Box>();
 
         private ConveyorPath _path;
-        private ItemStack _itemStack;
+        private ItemType _lastBoxType;
+        private int _lastBoxStreak;
         private Box[] _slotBoxes;
         private SlotState[] _slotStates;
         private float[] _slotProgress;
@@ -64,10 +65,10 @@ namespace MatchPack.Gameplay
         public bool IsRunning => _isRunning;
 
         /// <summary>
-        /// Level'in kutularını kurar ve bandı çalıştırır. Gelen her kutunun tipi, o an yığında
-        /// duran objelerden rastgele seçilir.
+        /// Level'in kutularını kurar ve bandı çalıştırır. Gelen her kutunun tipi kuyruktaki kutulardan
+        /// rastgele seçilir; aynı tipin art arda gelmesi <see cref="GameConfig"/> çarpanlarıyla seyreltilir.
         /// </summary>
-        public void Build(LevelData level, ConveyorPath path, ItemStack itemStack)
+        public void Build(LevelData level, ConveyorPath path)
         {
             Clear();
 
@@ -84,7 +85,6 @@ namespace MatchPack.Gameplay
             }
 
             _path = path;
-            _itemStack = itemStack;
             _capacity = Mathf.Min(level.ConveyorCapacity, _path.SlotCount);
 
             _slotBoxes = new Box[_path.SlotCount];
@@ -225,8 +225,9 @@ namespace MatchPack.Gameplay
             _departingBoxes.Clear();
             _queuedBoxTypes.Clear();
             _queuedJokerCount = 0;
+            _lastBoxType = null;
+            _lastBoxStreak = 0;
             _path = null;
-            _itemStack = null;
         }
 
         private void Update()
@@ -286,61 +287,66 @@ namespace MatchPack.Gameplay
             PlaceBox(slotIndex, box, TakeNextBoxType());
         }
 
-        // Kutu, yığında görünen ve banttaki kutulara henüz yuva bulamamış objelerden rastgele seçilir;
-        // tip başına kutu sayısı level verisindeki gibi kalır, yalnızca geliş sırası değişir.
+        // Kuyruktaki her kutu eşit ağırlıkla seçilir; tip başına kutu sayısı level verisindeki gibi kalır,
+        // yalnızca geliş sırası değişir. Art arda aynı tip tekrar çarpanıyla seyreltilir; çarpan yalnızca
+        // kuyrukta başka tip kalmadığında kalkar.
         private ItemType TakeNextBoxType()
         {
-            CountUncoveredStackItems();
-
-            int totalWeight = 0;
-            foreach (KeyValuePair<ItemType, int> pair in _uncoveredItemCounts)
-            {
-                if (pair.Value > 0 && _queuedBoxTypes.Contains(pair.Key)) { totalWeight += pair.Value; }
-            }
-
-            ItemType picked = totalWeight > 0
-                ? PickWeightedQueuedType(UnityEngine.Random.Range(0, totalWeight))
-                : _queuedBoxTypes[UnityEngine.Random.Range(0, _queuedBoxTypes.Count)];
+            ItemType picked = PickWeightedType(true) ?? PickWeightedType(false);
 
             _queuedBoxTypes.Remove(picked);
+            RecordBoxType(picked);
             return picked;
         }
 
-        private ItemType PickWeightedQueuedType(int roll)
+        private ItemType PickWeightedType(bool applyRepeatPenalty)
         {
-            ItemType last = null;
-            foreach (KeyValuePair<ItemType, int> pair in _uncoveredItemCounts)
-            {
-                if (pair.Value <= 0 || !_queuedBoxTypes.Contains(pair.Key)) { continue; }
+            _typeWeights.Clear();
+            float totalWeight = 0f;
 
+            for (int i = 0; i < _queuedBoxTypes.Count; i++)
+            {
+                ItemType type = _queuedBoxTypes[i];
+                float weight = applyRepeatPenalty ? GetRepeatWeight(type) : 1f;
+                if (weight <= 0f) { continue; }
+
+                _typeWeights.TryGetValue(type, out float current);
+                _typeWeights[type] = current + weight;
+                totalWeight += weight;
+            }
+
+            if (totalWeight <= 0f) { return null; }
+
+            float roll = UnityEngine.Random.Range(0f, totalWeight);
+            ItemType last = null;
+
+            foreach (KeyValuePair<ItemType, float> pair in _typeWeights)
+            {
                 last = pair.Key;
                 roll -= pair.Value;
-                if (roll < 0) { return pair.Key; }
+                if (roll < 0f) { return pair.Key; }
             }
 
             return last;
         }
 
-        private void CountUncoveredStackItems()
+        private float GetRepeatWeight(ItemType type)
         {
-            _uncoveredItemCounts.Clear();
-            if (_itemStack == null) { return; }
+            if (type != _lastBoxType) { return 1f; }
 
-            IReadOnlyList<StackItem> items = _itemStack.Items;
-            for (int i = 0; i < items.Count; i++)
+            return _lastBoxStreak >= 2 ? _config.ThirdInRowBoxWeight : _config.SecondInRowBoxWeight;
+        }
+
+        private void RecordBoxType(ItemType type)
+        {
+            if (type == _lastBoxType)
             {
-                ItemType type = items[i].Type;
-                _uncoveredItemCounts.TryGetValue(type, out int count);
-                _uncoveredItemCounts[type] = count + 1;
+                _lastBoxStreak++;
+                return;
             }
 
-            for (int i = 0; i < _slotBoxes.Length; i++)
-            {
-                Box box = _slotBoxes[i];
-                if (box == null || !box.IsTypeLocked || !_uncoveredItemCounts.ContainsKey(box.Type)) { continue; }
-
-                _uncoveredItemCounts[box.Type] -= box.FreeSlotCount;
-            }
+            _lastBoxType = type;
+            _lastBoxStreak = 1;
         }
 
         private void DispatchJokerBox(int slotIndex)

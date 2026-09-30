@@ -29,6 +29,14 @@ namespace MatchPack.Data
         [Tooltip("Dolan kutunun banttan ayrılıp kaybolma süresi (saniye).")]
         [SerializeField, Min(0.01f)] private float _boxExitDuration = 0.35f;
 
+        [Tooltip("Bir önceki kutuyla aynı tipte kutunun (art arda 2.) seçilme ağırlığının çarpanı. 1 = normal, " +
+            "0.5 = yarı yarıya daha düşük ihtimal, 0 = başka tip kaldıkça hiç gelmez.")]
+        [SerializeField, Range(0f, 1f)] private float _secondInRowBoxWeight = 0.5f;
+
+        [Tooltip("Son iki kutuyla aynı tipte kutunun (art arda 3. ve sonrası) seçilme ağırlığının çarpanı. " +
+            "0 = kuyrukta başka tip kaldıkça hiç gelmez; yalnızca başka tip kalmadığında gelir.")]
+        [SerializeField, Range(0f, 1f)] private float _thirdInRowBoxWeight = 0f;
+
         [Header("Hatalı hamle cezası")]
         [Tooltip("Hatalı hamlede süre cezası uygulansın mı? Varsayılan kapalı.")]
         [SerializeField] private bool _isMissPenaltyEnabled;
@@ -70,6 +78,8 @@ namespace MatchPack.Data
         public float BoxEntryDelay => _boxEntryDelay;
         public float BoxEntryDuration => _boxEntryDuration;
         public float BoxExitDuration => _boxExitDuration;
+        public float SecondInRowBoxWeight => _secondInRowBoxWeight;
+        public float ThirdInRowBoxWeight => _thirdInRowBoxWeight;
         public bool IsMissPenaltyEnabled => _isMissPenaltyEnabled;
         public int MissesBeforePenalty => _missesBeforePenalty;
         public float MissPenaltySeconds => _missPenaltySeconds;
