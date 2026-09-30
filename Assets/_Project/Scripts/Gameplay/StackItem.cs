@@ -18,7 +18,7 @@ namespace MatchPack.Gameplay
         [Tooltip("Yığındaki fiziksel davranışı sağlayan rigidbody.")]
         [SerializeField] private Rigidbody _rigidbody;
 
-        private float _boundingRadius;
+        private Vector3 _boundsExtents;
         private Vector3 _localBoundsCenter;
         private Bounds _baseBounds;
         private Vector3 _baseScale;
@@ -29,10 +29,11 @@ namespace MatchPack.Gameplay
         public ItemType Type { get; private set; }
 
         /// <summary>
-        /// <see cref="BoundsCenter"/> etrafında, objenin herhangi bir dönüşte kaplayabileceği yarıçap.
-        /// Doğma aralığı bundan hesaplanır; bölüme özel boyut çarpanını içerir.
+        /// Collider'ın, obje dönmemişken objenin kendi eksenlerinde kapladığı kutunun yarı ölçüsü.
+        /// <see cref="BoundsCenter"/> etrafında obje ile birlikte döner; yığında yer bundan ayrılır.
+        /// Bölüme özel boyut çarpanını içerir.
         /// </summary>
-        public float BoundingRadius => _boundingRadius * _scaleMultiplier;
+        public Vector3 BoundsExtents => _boundsExtents * _scaleMultiplier;
 
         /// <summary>Collider'ın merkezi, dünya uzayında. Model pivotları çoğunlukla tabanda olduğu için pivotla aynı değildir.</summary>
         public Vector3 BoundsCenter => transform.TransformPoint(_localBoundsCenter);
@@ -55,7 +56,7 @@ namespace MatchPack.Gameplay
         private void Awake()
         {
             // Collider prefab'ta açık ve obje dönmemişken ölçülür; sonradan rotasyon bounds'u bozar.
-            _boundingRadius = _collider.bounds.extents.magnitude;
+            _boundsExtents = _collider.bounds.extents;
             _localBoundsCenter = transform.InverseTransformPoint(_collider.bounds.center);
             _baseScale = transform.localScale;
             _baseBounds = CalculateBaseBounds();

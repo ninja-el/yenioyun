@@ -1247,7 +1247,7 @@ Transform:
   m_GameObject: {fileID: 1465718779}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 1.6}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1265,8 +1265,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c050f6199f7a49aca292e6849fdc76c6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MatchPack.Gameplay.StackArea
-  _center: {x: 0, y: 4.5, z: 0}
-  _size: {x: 6, y: 9, z: 9}
+  _center: {x: 0, y: 13.5, z: 0}
+  _size: {x: 7, y: 27, z: 12}
   _wallThickness: 1
   _hasCeiling: 1
   _occupantLayers:

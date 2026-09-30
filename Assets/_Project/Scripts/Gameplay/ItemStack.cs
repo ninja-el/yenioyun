@@ -114,9 +114,9 @@ namespace MatchPack.Gameplay
             {
                 StackItem item = _items[i];
 
-                if (_area.TryReserveSpot(item.BoundingRadius, out Vector3 position))
+                if (_area.TryReserveSpot(item.BoundsExtents, out Vector3 position, out Quaternion rotation))
                 {
-                    StartShuffleMove(item, position, duration, ease);
+                    StartShuffleMove(item, position, rotation, duration, ease);
                 }
                 else
                 {
@@ -199,30 +199,31 @@ namespace MatchPack.Gameplay
             for (int i = 0; i < _unplacedItems.Count; i++)
             {
                 StackItem item = _unplacedItems[i];
-                int spotIndex = FindVacatedSpot(item, true);
+                Quaternion rotation = _area.PickRotation();
+                int spotIndex = FindVacatedSpot(item, rotation, true);
 
                 // Ayrılabilen boş yer kalmadıysa yine de başka bir objenin eski yerine gider; olası
                 // küçük çakışmayı fizik açıldığında çözer. Obje yerinde kalmamalı.
-                if (spotIndex < 0) { spotIndex = FindVacatedSpot(item, false); }
+                if (spotIndex < 0) { spotIndex = FindVacatedSpot(item, rotation, false); }
                 if (spotIndex < 0) { continue; }
 
                 Vector3 spot = _vacatedSpots[spotIndex];
                 _vacatedSpots.RemoveAt(spotIndex);
-                StartShuffleMove(item, spot, duration, ease);
+                StartShuffleMove(item, spot, rotation, duration, ease);
             }
 
             _unplacedItems.Clear();
             _vacatedSpots.Clear();
         }
 
-        private int FindVacatedSpot(StackItem item, bool mustReserve)
+        private int FindVacatedSpot(StackItem item, Quaternion rotation, bool mustReserve)
         {
             Vector3 currentPosition = item.BoundsCenter;
 
             for (int i = 0; i < _vacatedSpots.Count; i++)
             {
                 if (_vacatedSpots[i] == currentPosition) { continue; }
-                if (mustReserve && !_area.TryReserveAt(_vacatedSpots[i], item.BoundingRadius)) { continue; }
+                if (mustReserve && !_area.TryReserveAt(_vacatedSpots[i], item.BoundsExtents, rotation)) { continue; }
 
                 return i;
             }
@@ -230,11 +231,10 @@ namespace MatchPack.Gameplay
             return -1;
         }
 
-        private void StartShuffleMove(StackItem item, Vector3 position, float duration, Ease ease)
+        private void StartShuffleMove(StackItem item, Vector3 position, Quaternion rotation, float duration, Ease ease)
         {
             _shufflingItemCount++;
             // Yer collider merkezine göre ayrıldı; pivot, seçilen rotasyonda merkezi oraya getirecek yere gider.
-            Quaternion rotation = UnityEngine.Random.rotation;
             item.MoveTo(item.GetPivotForCenter(position, rotation), rotation, duration, ease, _handleShuffleArrived);
         }
 
@@ -319,7 +319,7 @@ namespace MatchPack.Gameplay
                 StackItem item = instance.GetComponent<StackItem>();
                 item.Setup(type, GetScaleMultiplier(type));
 
-                if (!_area.TryReserveSpot(item.BoundingRadius, out Vector3 position))
+                if (!_area.TryReserveSpot(item.BoundsExtents, out Vector3 position, out Quaternion rotation))
                 {
                     // Alanda yer kalmadı; obje havuza geri döner ve boşluk açılınca yeniden denenir.
                     PoolManager.Instance.Release(instance);
@@ -328,7 +328,6 @@ namespace MatchPack.Gameplay
 
                 _pendingTypes.Dequeue();
                 item.SetSimulated(false);
-                Quaternion rotation = UnityEngine.Random.rotation;
                 item.Teleport(item.GetPivotForCenter(position, rotation), rotation);
 
                 _items.Add(item);
