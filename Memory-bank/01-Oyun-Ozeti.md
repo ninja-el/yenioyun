@@ -15,7 +15,7 @@ süre bitmeden doldurur.
 
 ## Core Loop
 
-1. 1 can harcanarak bölüme girilir.
+1. Bölüme girmek için en az 1 can gerekir; can yalnızca bölüm kaybedilince düşer.
 2. Bant döner, ilk kutular banta girer; yığındaki objeler ortaya dökülür ve oturur.
 3. Yığındaki 3D objeye dokunulur → obje, banttaki kendi resmini taşıyan dolmamış kutuya uçar.
 4. Kutu 3/3 dolunca banttan ayrılır, çıkış noktasına doğru hareket edip orada yok olur.
@@ -64,7 +64,7 @@ Bant **kapalı bir turdur**; kutular bant üzerinde sürekli hareket eder, sabit
 
 ## Meta
 
-- **Can:** Maks. 5, girişte 1 tüketilir, süreyle yenilenir. Oyun kapalıyken de işler
+- **Can:** Maks. 5, yalnızca kayıpta 1 tüketilir (oynarken menüye çıkmak da kayıptır), süreyle yenilenir. Oyun kapalıyken de işler
   (`lastLifeRegenTime` ile offline hesap).
 - **Para:** Gold (soft), IAP (hard).
 - **Reklam:** Level sonu x2 gold (rewarded), bölüm geçişlerinde interstitial.

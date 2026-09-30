@@ -149,15 +149,15 @@ namespace MatchPack.UI
         }
 
         /// <summary>
-        /// Kaybetme panelindeki restart butonuna bağlanır. Bir can tüketir, ayarlanan gecikme
-        /// kadar bekler (efektler bu sırada oynar) ve aynı leveli baştan kurar. Can yoksa can
-        /// popup'ı açılır ve beklenmez.
+        /// Kaybetme panelindeki restart butonuna bağlanır. Kayıbın canı zaten düşüldüğü için can
+        /// harcamaz; ayarlanan gecikme kadar bekler (efektler bu sırada oynar) ve aynı leveli baştan
+        /// kurar. Can kalmadıysa can popup'ı açılır ve beklenmez.
         /// </summary>
         public void Retry()
         {
             if (IsBusy) { return; }
 
-            if (!EconomyManager.Instance.TrySpendLife())
+            if (!EconomyManager.Instance.HasEnoughLives)
             {
                 UIManager.Instance.ShowHeartPopup();
                 return;
@@ -167,15 +167,15 @@ namespace MatchPack.UI
         }
 
         /// <summary>
-        /// Kazanma panelindeki sonraki level butonuna bağlanır. Bir can tüketir, ayarlanan gecikme
-        /// kadar bekler (efektler bu sırada oynar) ve sıradaki leveli kurar. Katalogda sıradaki
-        /// level yoksa menüye dönülür.
+        /// Kazanma panelindeki sonraki level butonuna bağlanır. Can harcamaz; ayarlanan gecikme
+        /// kadar bekler (efektler bu sırada oynar) ve sıradaki leveli kurar. Can kalmadıysa can
+        /// popup'ı açılır ve beklenmez.
         /// </summary>
         public void NextLevel()
         {
             if (IsBusy) { return; }
 
-            if (!EconomyManager.Instance.TrySpendLife())
+            if (!EconomyManager.Instance.HasEnoughLives)
             {
                 UIManager.Instance.ShowHeartPopup();
                 return;

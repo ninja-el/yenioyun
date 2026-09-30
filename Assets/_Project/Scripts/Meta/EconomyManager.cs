@@ -154,7 +154,7 @@ namespace MatchPack.Meta
             BroadcastLifeTimer();
         }
 
-        /// <summary>Level girişinde 1 can düşer. Can yoksa false döner ve level başlatılmaz.</summary>
+        /// <summary>Level kaybedilince 1 can düşer. Can yoksa false döner. Sınırsız canda düşmeden true döner.</summary>
         public bool TrySpendLife()
         {
             if (HasInfiniteLives) { return true; }

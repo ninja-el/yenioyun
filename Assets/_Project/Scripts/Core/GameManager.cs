@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using MatchPack.Data;
+using MatchPack.Meta;
 using UnityEngine;
 
 namespace MatchPack.Core
@@ -26,6 +27,9 @@ namespace MatchPack.Core
         [SerializeField] private LevelCatalog _catalog;
 
         private Coroutine _buildRoutine;
+
+        // Kayıpta gerçekten can düşüldüyse true; devam edilirse can geri verilir. Sınırsız canda düşülmez.
+        private bool _isLifeChargedForLoss;
 
         public GameState State { get; private set; } = GameState.Menu;
         public LevelData CurrentLevel { get; private set; }
@@ -126,25 +130,32 @@ namespace MatchPack.Core
             if (State != GameState.Playing) { return; }
 
             SetState(GameState.Lose);
+            ChargeLifeForLoss();
             OnLevelFailed?.Invoke();
         }
 
         /// <summary>
-        /// Kaybedilmiş leveli yerinde devam ettirir. Bedelin ödendiğini çağıran taraf doğrular;
-        /// GameManager yalnızca durumu geri alır.
+        /// Kaybedilmiş leveli yerinde devam ettirir. Bedelin (gold/reklam) ödendiğini çağıran taraf
+        /// doğrular. Level kaybedilmemiş sayıldığı için kayıpta düşülen can geri verilir.
         /// </summary>
         public void ResumeLevel()
         {
             if (State != GameState.Lose) { return; }
 
+            RefundLifeForLoss();
             SetState(GameState.Playing);
             OnLevelResumed?.Invoke();
         }
 
-        /// <summary>Aktif leveli söküp menüye döner. Game sahnesi yüklü kalır.</summary>
+        /// <summary>
+        /// Aktif leveli söküp menüye döner. Game sahnesi yüklü kalır. Oynanırken çıkılırsa level
+        /// kaybedilmiş sayılır ve can düşülür; aksi halde oyuncu kaybetmeden çıkıp cezadan kaçabilirdi.
+        /// </summary>
         public void ReturnToMenu()
         {
             if (_buildRoutine != null) { return; }
+
+            if (State == GameState.Playing) { ChargeLifeForLoss(); }
 
             SceneLoader.Instance.TeardownLevel();
             CurrentLevel = null;
@@ -183,6 +194,21 @@ namespace MatchPack.Core
             // Numara katalogla sınırlanmaz; son bölümden sonra döngüdeki bölümler artan numarayla oynanır.
             data.CurrentLevel = completedNumber + 1;
             SaveManager.Instance.Save();
+        }
+
+        private void ChargeLifeForLoss()
+        {
+            _isLifeChargedForLoss = EconomyManager.Instance != null
+                && !EconomyManager.Instance.HasInfiniteLives
+                && EconomyManager.Instance.TrySpendLife();
+        }
+
+        private void RefundLifeForLoss()
+        {
+            if (!_isLifeChargedForLoss) { return; }
+
+            _isLifeChargedForLoss = false;
+            EconomyManager.Instance.AddLives(1);
         }
 
         private void SetState(GameState state)

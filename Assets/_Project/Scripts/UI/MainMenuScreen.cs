@@ -41,21 +41,20 @@ namespace MatchPack.UI
             }
         }
 
-        /// <summary>Can varsa 1 can tüketip leveli başlatır; can yoksa can popup'ını açar.</summary>
+        /// <summary>Can varsa leveli başlatır; can yoksa can popup'ını açar. Can yalnızca kayıpta düşer.</summary>
         public void StartLevel()
         {
             if (GameManager.Instance.State != GameState.Menu || SceneLoader.Instance.IsBusy) { return; }
 
             LevelData level = GameManager.Instance.ProgressLevel;
 
-            // Can, level gerçekten başlatılabiliyorsa harcanır; aksi halde tüketilip boşa gidiyordu.
             if (level == null)
             {
                 Debug.LogError("LevelCatalog has no level for the saved progress number.", this);
                 return;
             }
 
-            if (!EconomyManager.Instance.TrySpendLife())
+            if (!EconomyManager.Instance.HasEnoughLives)
             {
                 UIManager.Instance.ShowHeartPopup();
                 return;

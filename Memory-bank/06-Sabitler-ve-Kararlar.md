@@ -101,7 +101,7 @@ model katsayıları (obje başı süre) gerçek hıza göre ayarlanmalı.
 | Sonraki level butonu gecikmesi | 3 sn | `LevelResultScreen` |
 | Kazanma şartı | Dolan kutu = `LevelData.targetBoxCount` | `LevelManager` |
 | Kaybetme şartı | Süre sıfıra iner | `LevelTimer` |
-| Restart / sonraki level maliyeti | 1 can | `LevelResultScreen` |
+| Restart / sonraki level maliyeti | 0 can (en az 1 can gerekir) | `LevelResultScreen` |
 
 Bant sayıları (slot sayısı hariç) sahnedeki modele bakılarak değil, oyun hissine göre konmuş
 varsayılanlardır; ilk oynanabilir sürümde Inspector'dan ayarlanıp bu tablo güncellenecek.
@@ -112,7 +112,7 @@ varsayılanlardır; ilk oynanabilir sürümde Inspector'dan ayarlanıp bu tablo 
 |---|---|
 | Maks. can | 5 |
 | Can yenilenme süresi | 15 dk |
-| Level girişi maliyeti | 1 can |
+| Level girişi maliyeti | 0 can (en az 1 can gerekir); kayıp 1 can |
 | Level tamamlama ödülü | 40–60 gold arası rastgele (iki uç dahil, `GameConfig.LevelCompleteGoldMin/Max`) x bölüm çarpanı |
 | Bölüm gold çarpanı | 1 (`LevelData.GoldRewardMultiplier`); sonuç en yakın tam sayıya yuvarlanır |
 | Rewarded reklamla ödül | Çarpan uygulanmış son değer x2 (`EconomyManager.LastLevelReward`) |
@@ -280,6 +280,7 @@ Envanter index'i `BoosterType` enum sırasıdır: 0 TimeBonus, 1 Shuffle, 2 Auto
 | 69 | Bonus obje: `BonusItemType` (`ItemType`'tan türer) asset'i ödülleri tanımlar: ek süre (saniye, 0 = yok), booster (açık/kapalı, tip, adet, "anında kullan" checkbox'ı), etkinlik id'si + adet (boş = yok). Level'da `LevelData.BonusItems` listesine tip/adet/boyut çarpanıyla eklenir; kutu hedefine ve obje toplamı kuralına sayılmaz, banta kutusu gelmez. Normal objelerle birlikte karıştırılıp yığına doğar. Dokununca `BonusItemCollector` toplar: kutu aranmaz, hatalı hamle sayılmaz, ödüller verilir, obje yükselip küçülerek havuza döner, `OnBonusCollected` yayınlanır. Anında kullanılan booster stoktan düşmez (`BoosterManager.TryActivateFree`), kalan adet envantere eklenir; booster o an kullanılamazsa o da envantere eklenir. Etkinlik sayacı `PlayerData.EventItemCounts` içinde id başına tutulur (`EconomyManager.AddEventItems`) | Oyuncu isteği. Elmas para birimi henüz yok; bonus objenin kendisi hiçbir şey vermez, para birimi netleşince `OnBonusCollected` dinlenerek eklenecek. Ayarlar prefab yerine datada tutulur ki aynı model farklı ödüllerle kullanılabilsin. `BonusItemCollector` `MatchResolver`'ın objesinde yoksa çalışma anında eklenir; sahne dosyasına dokunulmadı |
 | 70 | Yığındaki obje, altında zemin veya başka obje varken (temas normali yukarı bakan bir temas) hız sınırlarının altında 0.3 sn kalınca dondurulur: kinematic olur, collider açık kalır (`StackItem.EnableAutoFreeze`). Yığından obje alınınca (`ItemStack.Remove`) onun üstünde ve yanında kalan donmuş objeler, uyanan her objenin komşuları da dahil zincirleme uyandırılır; oturunca tekrar donarlar. Donmuş obje yığının oturmuş sayılmasında durulmuş kabul edilir | Oyuncu isteği: üstteki objelerin sürekli baskısı alttakileri itip yığını kaydırıyordu. Uyuyan rigidbody temas bildirmediği için uyuyan obje de destekli sayılır; yerçekimine rağmen uyuyabildiyse bir şeyin üstündedir |
 | 71 | `PlayerData.CurrentLevel` artık katalogla sınırlanmayan, oyuncuya gösterilen bölüm numarasıdır. Numara katalogdaki bölüm sayısını aşınca `LevelCatalog.GetByNumber` onu `_loopStartLevel`'dan son bölüme kadar dönen döngüye eşler (50 bölüm, döngü 21: 51 → 21, 80 → 50, 81 → 21). `GameManager.CurrentLevelNumber` oynanan bölümün gösterilen numarasını tutar; tekrar oyna, sonraki bölüm ve ilerleme bu numarayla çalışır. Menü ve oyun içi gösterge `LevelData.LevelIndex` yerine bu numarayı yazar. Döngü başlangıcı katalog asset'inde ayarlanır | Oyuncu isteği: son bölüm bitince oyun durmasın, gösterge artmaya devam etsin. Aynı LevelData döngüde farklı numaralarla oynandığı için numara LevelData'dan okunamaz. `FacebookManager` analitik olayları hâlâ `LevelIndex` gönderir; döngüde gösterilen numarayı değil bölümün kendi numarasını raporlar |
+| 72 | Can yalnızca level kaybedilince düşer (`GameManager.FailLevel`); level girişi, sonraki level ve tekrar dene can harcamaz ama en az 1 can ister (`EconomyManager.HasEnoughLives`), yoksa can popup'ı açılır. Gold veya reklamla devam edilirse kayıpta düşülen can geri verilir (`GameManager.ResumeLevel`). Level oynanırken menüye çıkmak kayıp sayılır ve 1 can düşer. Sınırsız canda hiç can düşmez. Can kararı UI'dan `GameManager`'a taşındı | Oyuncu isteği: kazanan oyuncu can kaybetmesin. Çıkış kayıp sayılmasaydı oyuncu süre bitmek üzereyken çıkıp cezadan kaçabilirdi. Devamda iade, bedeli ödenen levelin kaybedilmemiş sayılması içindir |
 
 ## Açık sorular
 
