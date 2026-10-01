@@ -49,6 +49,14 @@ public class AutoLoginManager : MonoBehaviour
             }
 
             // 5. Load cloud data after sign-in completes
+            /*
+            if (DataCloudManager.Instance.IsReady)
+            {
+                private bool IsAuthReady() { return UnityServices.State == ServicesInitializationState.Initialized && AuthenticationService.Instance.IsSignedIn;} //ORNEK LOGIN CHECK
+
+                await DataCloudManager.Instance.LoadCloudDataAsync();
+            }
+            */
            
         }
         catch (Exception e)

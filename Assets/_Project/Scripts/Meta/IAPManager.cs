@@ -159,7 +159,7 @@ public class IAPManager : MonoBehaviour
             foreach (var product in _storeController.GetProducts())
             {
                 string price = product.metadata.localizedPrice + " " + product.metadata.isoCurrencyCode;
-                // Update button price
+                // Update button price UpdateButtonPrice(product.definition.id, price);
             }
         }
     }
@@ -188,11 +188,7 @@ public class IAPManager : MonoBehaviour
     private void OnProductsFetched(List<Product> products)
     {
         _storeController.FetchPurchases();
-        foreach (var product in products)
-        {
-         string price = product.metadata.localizedPrice + " " + product.metadata.isoCurrencyCode;
-         // Update button price
-        } 
+        UpdateButtonPrices();
     }
 
     private void OnProductsFetchFailed(ProductFetchFailed reason)

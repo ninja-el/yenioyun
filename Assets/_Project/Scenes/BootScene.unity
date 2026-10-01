@@ -1288,7 +1288,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &1536469099
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1301,12 +1301,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7c9d932291ecae44c9b0b9b08b627c85, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AdsManager
-  androidAppKey: 
-  IOSAppKey: 
-  androidInterstitialAdUnitID: 
-  IOSInterstitialAdUnitID: 
-  androidRewardedAdUnitID: 
-  IOSRewardedAdUnitID: 
+  androidAppKey: 286834b1d
+  IOSAppKey: 28684a44d
+  androidInterstitialAdUnitID: eythp8uplg6ojysi
+  IOSInterstitialAdUnitID: 8m9wzj73gqlohblz
+  androidRewardedAdUnitID: vhyub6e2l9ina36v
+  IOSRewardedAdUnitID: vwho9kb8sjqgqk1g
 --- !u!4 &1536469100
 Transform:
   m_ObjectHideFlags: 0
@@ -1630,7 +1630,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &2008919205
 MonoBehaviour:
   m_ObjectHideFlags: 0

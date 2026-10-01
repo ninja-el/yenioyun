@@ -86,11 +86,11 @@ public class NotificationManager : MonoBehaviour
             ScheduleInactivityNotification();
 
             // 2. Can (Enerji) Bildirimini Kur
-            int secondsUntilFullHealth = 3600; 
+            int minutesUntilFullHealth = 200; 
             
-            if (secondsUntilFullHealth > 0)
+            if (minutesUntilFullHealth > 0)
             {
-                ScheduleHealthNotification(secondsUntilFullHealth);
+                ScheduleHealthNotification(minutesUntilFullHealth);
             }
         }
         else
@@ -100,11 +100,11 @@ public class NotificationManager : MonoBehaviour
         }
     }
 
-    private void ScheduleHealthNotification(int secondsUntilFull)
+    private void ScheduleHealthNotification(int minutesUntilFull)
     {
         string title = "Canın Tamamen Doldu! 💖";
         string text = "Maceraya kaldığın yerden devam etme vakti geldi.";
-        DateTime fireTime = DateTime.Now.AddSeconds(secondsUntilFull);
+        DateTime fireTime = DateTime.Now.AddMinutes(minutesUntilFull);
 
         SendNotification(title, text, fireTime, "health_id");
     }
