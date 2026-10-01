@@ -12,9 +12,6 @@ namespace MatchPack.Gameplay
     /// </summary>
     public class StackItem : MonoBehaviour, IPoolable
     {
-        // Temas normali bu değerden dik ise obje bir şeyin üstünde duruyor sayılır (~60° eğime kadar).
-        private const float SupportNormalMinY = 0.5f;
-
         [Tooltip("Dokunuş raycast'inin çarpacağı collider.")]
         [SerializeField] private Collider _collider;
 
@@ -29,18 +26,7 @@ namespace MatchPack.Gameplay
         private Sequence _moveSequence;
         private float _scaleMultiplier = 1f;
 
-        private bool _canAutoFreeze;
-        private bool _isFrozen;
-        private bool _hasSupport;
-        private float _restTime;
-        private float _freezeMaxSpeedSqr;
-        private float _freezeMaxAngularSpeedSqr;
-        private float _freezeDelay;
-
         public ItemType Type { get; private set; }
-
-        /// <summary>Obje yerine oturduğu için fiziği donduruldu mu? Donmuş obje itilmez ama collider'ı açıktır.</summary>
-        public bool IsFrozen => _isFrozen;
 
         /// <summary>
         /// Collider'ın, obje dönmemişken objenin kendi eksenlerinde kapladığı kutunun yarı ölçüsü.
@@ -62,7 +48,7 @@ namespace MatchPack.Gameplay
         public Vector3 BaseScale => _baseScale;
 
         /// <summary>Obje fiziksel olarak durulmuş mu? Yığının oturduğunu anlamak için kullanılır.</summary>
-        public bool IsResting => _isFrozen || _rigidbody.IsSleeping();
+        public bool IsResting => _rigidbody.IsSleeping();
 
         /// <summary><see cref="MoveTo"/> ile başlatılan taşıma sürüyor mu?</summary>
         public bool IsMoving => _moveSequence != null;
@@ -151,88 +137,6 @@ namespace MatchPack.Gameplay
             _rigidbody.interpolation = isSimulated ? _interpolation : RigidbodyInterpolation.None;
             _rigidbody.isKinematic = !isSimulated;
             _collider.enabled = isSimulated;
-
-            _isFrozen = false;
-            _hasSupport = false;
-            _restTime = 0f;
-            if (!isSimulated) { _canAutoFreeze = false; }
-        }
-
-        /// <summary>
-        /// Fizikteki obje, altında bir destekle verilen hızların altında <paramref name="delay"/> saniye
-        /// kalınca dondurulur (kinematic olur, collider açık kalır); böylece üstündeki objelerin baskısıyla
-        /// itilmez. <see cref="SetSimulated"/>(true) sonrası çağrılır; fizik kapanınca kural düşer.
-        /// </summary>
-        public void EnableAutoFreeze(float maxSpeed, float maxAngularSpeed, float delay)
-        {
-            _freezeMaxSpeedSqr = maxSpeed * maxSpeed;
-            _freezeMaxAngularSpeedSqr = maxAngularSpeed * maxAngularSpeed;
-            _freezeDelay = delay;
-            _restTime = 0f;
-            _canAutoFreeze = true;
-        }
-
-        /// <summary>Donmuş objeyi yeniden fiziğe bırakır; oturunca kural onu tekrar dondurur.</summary>
-        public void Unfreeze()
-        {
-            if (!_isFrozen) { return; }
-
-            _isFrozen = false;
-            _hasSupport = false;
-            _restTime = 0f;
-            _rigidbody.isKinematic = false;
-            _rigidbody.interpolation = _interpolation;
-            _rigidbody.WakeUp();
-        }
-
-        private void Freeze()
-        {
-            _rigidbody.linearVelocity = Vector3.zero;
-            _rigidbody.angularVelocity = Vector3.zero;
-            _rigidbody.interpolation = RigidbodyInterpolation.None;
-            _rigidbody.isKinematic = true;
-            _isFrozen = true;
-        }
-
-        // Temas bilgisi fizik adımından sonra gelir; burada bir önceki adımın teması okunup sıfırlanır.
-        private void FixedUpdate()
-        {
-            if (!_canAutoFreeze || _isFrozen || _rigidbody.isKinematic) { return; }
-
-            bool isSlow = _rigidbody.linearVelocity.sqrMagnitude <= _freezeMaxSpeedSqr
-                && _rigidbody.angularVelocity.sqrMagnitude <= _freezeMaxAngularSpeedSqr;
-
-            // Uyuyan rigidbody temas bildirmez; yerçekimine rağmen uyuyabildiyse bir şeyin üstündedir.
-            bool isSupported = _hasSupport || _rigidbody.IsSleeping();
-
-            _restTime = isSlow && isSupported ? _restTime + Time.fixedDeltaTime : 0f;
-            _hasSupport = false;
-
-            if (_restTime >= _freezeDelay) { Freeze(); }
-        }
-
-        private void OnCollisionEnter(Collision collision)
-        {
-            DetectSupport(collision);
-        }
-
-        private void OnCollisionStay(Collision collision)
-        {
-            DetectSupport(collision);
-        }
-
-        private void DetectSupport(Collision collision)
-        {
-            if (_hasSupport || !_canAutoFreeze) { return; }
-
-            for (int i = 0; i < collision.contactCount; i++)
-            {
-                if (collision.GetContact(i).normal.y >= SupportNormalMinY)
-                {
-                    _hasSupport = true;
-                    return;
-                }
-            }
         }
 
         /// <summary>

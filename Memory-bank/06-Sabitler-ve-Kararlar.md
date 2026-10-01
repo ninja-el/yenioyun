@@ -38,11 +38,6 @@ Değer değişirse önce bu dosya güncellenir.
 | Bekleyen objeler için tarama aralığı | 0.5 sn | `ItemStack` |
 | Yığının oturması için zaman aşımı | 1 sn | `ItemStack` |
 | Son bölümden sonra döngünün başladığı bölüm | 21 (katalog sırası; bölüm sayısına kırpılır) | `LevelCatalog._loopStartLevel` |
-| Oturan objeyi dondurma | Açık | `ItemStack._freezeSettledItems` |
-| Dondurma hız sınırı | 0.05 birim/sn doğrusal, 0.2 radyan/sn açısal | `ItemStack` |
-| Dondurma için sınırların altında kalma süresi | 0.3 sn (altında zemin veya obje varken) | `ItemStack` |
-| Destek sayılan temas eğimi | Temas normalinin y bileşeni ≥ 0.5 (~60°) | `StackItem` (sabit) |
-| Obje alınınca donmuşları uyandırma payı | 0.1 birim (iki sınır yarıçapı + pay) | `ItemStack` |
 | Bonus toplama animasyonu | 0.35 sn, 1 birim yükselip 0 ölçeğe küçülür | `BonusItemCollector` |
 | Dokunuş probu | Kutu (BoxCast), 0.3 birim kenar | `InputManager` |
 | Probun toplayacağı en fazla obje | 2 | `InputManager` |
@@ -281,6 +276,7 @@ Envanter index'i `BoosterType` enum sırasıdır: 0 TimeBonus, 1 Shuffle, 2 Auto
 | 70 | Yığındaki obje, altında zemin veya başka obje varken (temas normali yukarı bakan bir temas) hız sınırlarının altında 0.3 sn kalınca dondurulur: kinematic olur, collider açık kalır (`StackItem.EnableAutoFreeze`). Yığından obje alınınca (`ItemStack.Remove`) onun üstünde ve yanında kalan donmuş objeler, uyanan her objenin komşuları da dahil zincirleme uyandırılır; oturunca tekrar donarlar. Donmuş obje yığının oturmuş sayılmasında durulmuş kabul edilir | Oyuncu isteği: üstteki objelerin sürekli baskısı alttakileri itip yığını kaydırıyordu. Uyuyan rigidbody temas bildirmediği için uyuyan obje de destekli sayılır; yerçekimine rağmen uyuyabildiyse bir şeyin üstündedir |
 | 71 | `PlayerData.CurrentLevel` artık katalogla sınırlanmayan, oyuncuya gösterilen bölüm numarasıdır. Numara katalogdaki bölüm sayısını aşınca `LevelCatalog.GetByNumber` onu `_loopStartLevel`'dan son bölüme kadar dönen döngüye eşler (50 bölüm, döngü 21: 51 → 21, 80 → 50, 81 → 21). `GameManager.CurrentLevelNumber` oynanan bölümün gösterilen numarasını tutar; tekrar oyna, sonraki bölüm ve ilerleme bu numarayla çalışır. Menü ve oyun içi gösterge `LevelData.LevelIndex` yerine bu numarayı yazar. Döngü başlangıcı katalog asset'inde ayarlanır | Oyuncu isteği: son bölüm bitince oyun durmasın, gösterge artmaya devam etsin. Aynı LevelData döngüde farklı numaralarla oynandığı için numara LevelData'dan okunamaz. `FacebookManager` analitik olayları hâlâ `LevelIndex` gönderir; döngüde gösterilen numarayı değil bölümün kendi numarasını raporlar |
 | 72 | Can yalnızca level kaybedilince düşer (`GameManager.FailLevel`); level girişi, sonraki level ve tekrar dene can harcamaz ama en az 1 can ister (`EconomyManager.HasEnoughLives`), yoksa can popup'ı açılır. Gold veya reklamla devam edilirse kayıpta düşülen can geri verilir (`GameManager.ResumeLevel`). Level oynanırken menüye çıkmak kayıp sayılır ve 1 can düşer. Sınırsız canda hiç can düşmez. Can kararı UI'dan `GameManager`'a taşındı | Oyuncu isteği: kazanan oyuncu can kaybetmesin. Çıkış kayıp sayılmasaydı oyuncu süre bitmek üzereyken çıkıp cezadan kaçabilirdi. Devamda iade, bedeli ödenen levelin kaybedilmemiş sayılması içindir |
+| 73 | Karar 70 geri alındı: oturan objeyi dondurma, zemin/destek teması ve hız sınırı kontrolü tamamen kaldırıldı (`StackItem` freeze alanları, `FixedUpdate`/`OnCollision*`, `ItemStack` dondurma ayarları ve uyandırma zinciri silindi). Yığındaki objeler yeniden sürekli fiziktedir; yığının oturması yine rigidbody sleep ile anlaşılır | Oyuncu isteği |
 
 ## Açık sorular
 

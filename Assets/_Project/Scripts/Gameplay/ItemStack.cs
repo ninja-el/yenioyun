@@ -23,24 +23,6 @@ namespace MatchPack.Gameplay
         [Tooltip("Alana sığmayan objeler için boş yer taramasının tekrar aralığı (saniye).")]
         [SerializeField, Min(0.05f)] private float _refillInterval = 0.5f;
 
-        [Header("Oturan objeyi dondurma")]
-        [Tooltip("Açıksa yerine oturan obje kinematic olur; üstündeki objelerin baskısıyla itilmez. Altındaki obje " +
-            "alınınca yeniden fiziğe bırakılır.")]
-        [SerializeField] private bool _freezeSettledItems = true;
-
-        [Tooltip("Obje bu hızın (birim/sn) altındaysa oturmuş sayılabilir.")]
-        [SerializeField, Min(0f)] private float _freezeMaxSpeed = 0.05f;
-
-        [Tooltip("Obje bu açısal hızın (radyan/sn) altındaysa oturmuş sayılabilir.")]
-        [SerializeField, Min(0f)] private float _freezeMaxAngularSpeed = 0.2f;
-
-        [Tooltip("Obje, altında zemin veya başka obje varken hız sınırlarının altında bu kadar (sn) kalınca dondurulur.")]
-        [SerializeField, Min(0f)] private float _freezeDelay = 0.3f;
-
-        [Tooltip("Bir obje yığından alınınca, onun üstünde ve yanında kalan donmuş objeleri uyandırma payı (birim). " +
-            "Mesafe iki objenin sınır yarıçapları toplamı + bu paydır.")]
-        [SerializeField, Min(0f)] private float _wakePadding = 0.1f;
-
         private readonly List<StackItem> _items = new List<StackItem>();
         private readonly List<StackItem> _spawnBuffer = new List<StackItem>();
         private readonly List<ItemType> _typeBuffer = new List<ItemType>();
@@ -48,7 +30,6 @@ namespace MatchPack.Gameplay
         private readonly Queue<ItemType> _pendingTypes = new Queue<ItemType>();
         private readonly List<Vector3> _vacatedSpots = new List<Vector3>();
         private readonly List<StackItem> _unplacedItems = new List<StackItem>();
-        private readonly List<StackItem> _wakeQueue = new List<StackItem>();
 
         private StackArea _area;
         private float _settleTimer;
@@ -166,55 +147,11 @@ namespace MatchPack.Gameplay
         /// <summary>Objeyi yığından çıkarır. Kutuya uçan obje artık yığının parçası değildir.</summary>
         public void Remove(StackItem item)
         {
-            if (!_items.Remove(item)) { return; }
+            if (!_items.Remove(item) || !item.IsMoving) { return; }
 
-            if (item.IsMoving)
-            {
-                // Auto-Match kayan bir objeyi alabilir; kayma kesilip varmış sayılmazsa fizik hiç açılmaz.
-                item.StopMove();
-                HandleShuffleArrived();
-                return;
-            }
-
-            WakeItemsAbove(item);
-        }
-
-        // Alınan objeye yaslanan donmuş objeler havada kalmasın diye uyandırılır; uyanan her obje de
-        // kendisine yaslananları uyandırır, böylece çöken sütunun tamamı fiziğe döner.
-        private void WakeItemsAbove(StackItem removed)
-        {
-            _wakeQueue.Clear();
-            _wakeQueue.Add(removed);
-
-            for (int q = 0; q < _wakeQueue.Count; q++)
-            {
-                Vector3 supportCenter = _wakeQueue[q].BoundsCenter;
-                float supportRadius = _wakeQueue[q].BoundsExtents.magnitude;
-
-                for (int i = 0; i < _items.Count; i++)
-                {
-                    StackItem item = _items[i];
-                    if (!item.IsFrozen) { continue; }
-
-                    Vector3 offset = item.BoundsCenter - supportCenter;
-                    if (offset.y < -_wakePadding) { continue; }
-
-                    float reach = supportRadius + item.BoundsExtents.magnitude + _wakePadding;
-                    if (offset.x * offset.x + offset.z * offset.z > reach * reach) { continue; }
-
-                    item.Unfreeze();
-                    _wakeQueue.Add(item);
-                }
-            }
-
-            _wakeQueue.Clear();
-        }
-
-        private void Simulate(StackItem item)
-        {
-            item.SetSimulated(true);
-
-            if (_freezeSettledItems) { item.EnableAutoFreeze(_freezeMaxSpeed, _freezeMaxAngularSpeed, _freezeDelay); }
+            // Auto-Match kayan bir objeyi alabilir; kayma kesilip varmış sayılmazsa fizik hiç açılmaz.
+            item.StopMove();
+            HandleShuffleArrived();
         }
 
         /// <summary>Alandaki objeleri havuza iade eder ve bekleyenleri düşürür.</summary>
@@ -318,7 +255,7 @@ namespace MatchPack.Gameplay
 
             for (int i = 0; i < _items.Count; i++)
             {
-                Simulate(_items[i]);
+                _items[i].SetSimulated(true);
             }
         }
 
@@ -421,7 +358,7 @@ namespace MatchPack.Gameplay
             // Fizik ancak tüm objeler yerleştikten sonra açılır; aksi halde solver onları üst üste bulur.
             for (int i = 0; i < _spawnBuffer.Count; i++)
             {
-                Simulate(_spawnBuffer[i]);
+                _spawnBuffer[i].SetSimulated(true);
             }
 
             _spawnBuffer.Clear();
