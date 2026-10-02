@@ -111,7 +111,7 @@ varsayılanlardır; ilk oynanabilir sürümde Inspector'dan ayarlanıp bu tablo 
 | Level tamamlama ödülü | 40–60 gold arası rastgele (iki uç dahil, `GameConfig.LevelCompleteGoldMin/Max`) x bölüm çarpanı |
 | Bölüm gold çarpanı | 1 (`LevelData.GoldRewardMultiplier`); sonuç en yakın tam sayıya yuvarlanır |
 | Rewarded reklamla ödül | Çarpan uygulanmış son değer x2 (`EconomyManager.LastLevelReward`) |
-| Interstitial aralığı | Her 2 level geçişinde 1 |
+| Interstitial | Her bölüm sonunda (kazanma veya kaybetme paneli açılırken) %40 şansla (`GameConfig.InterstitialChance`); Remove Ads alınmışsa gösterilmez |
 | Kaybedilen levele gold ile devam | 800 gold (`GameConfig.ContinueCostGold`) |
 | Devam edince eklenen süre | 15 sn (`GameConfig.ContinueExtraSeconds`) |
 | Canları gold ile doldurma | 2000 gold (`GameConfig.LifeRefillCostGold`) |

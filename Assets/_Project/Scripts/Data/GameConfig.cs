@@ -72,6 +72,9 @@ namespace MatchPack.Data
         [Tooltip("Kaybedilen levele devam edildiğinde sayaca eklenecek süre (saniye).")]
         [SerializeField, Min(1f)] private float _continueExtraSeconds = 15f;
 
+        [Tooltip("Bölüm sonunda (kazanma veya kaybetme paneli açılırken) interstitial reklam gösterilme olasılığı (0-1).")]
+        [SerializeField, Range(0f, 1f)] private float _interstitialChance = 0.4f;
+
         public int BoxCapacity => _boxCapacity;
         public float ItemFlyDuration => _itemFlyDuration;
         public float BeltSpeed => _beltSpeed;
@@ -91,6 +94,7 @@ namespace MatchPack.Data
         public int LifeRefillCostGold => _lifeRefillCostGold;
         public int RewardedRewardMultiplier => _rewardedRewardMultiplier;
         public float ContinueExtraSeconds => _continueExtraSeconds;
+        public float InterstitialChance => _interstitialChance;
 
         /// <summary>Level tamamlama gold aralığından (iki uç dahil) rastgele bir değer seçer.</summary>
         public int RollLevelCompleteGold()

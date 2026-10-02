@@ -35,9 +35,6 @@ namespace MatchPack.UI
         [Tooltip("Gold maliyetinin yazıldığı alan.")]
         [SerializeField] private TMP_Text _goldCostText;
 
-        [Tooltip("Reklam SDK'sı eklenene kadar reklam ödülleri doğrudan verilir. SDK gelince kapatılır.")]
-        [SerializeField] private bool _grantAdRewardsWithoutAds = true;
-
         private void Awake()
         {
             _closeButton.onClick.AddListener(Close);
@@ -78,8 +75,11 @@ namespace MatchPack.UI
         /// <summary>Reklam izleyerek bir can verir ve popup'ı kapatır.</summary>
         public void GrantLifeWithAd()
         {
-            if (!_grantAdRewardsWithoutAds) { return; }
+            AdsManager.Instance.ShowRewardedAd(GrantLife);
+        }
 
+        private void GrantLife()
+        {
             EconomyManager.Instance.AddLives(1);
 
             if (AudioManager.Instance != null) { AudioManager.Instance.PlayRewardGranted(); }

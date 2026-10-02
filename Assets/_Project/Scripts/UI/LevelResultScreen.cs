@@ -45,9 +45,6 @@ namespace MatchPack.UI
         [Tooltip("Devam etme maliyetinin yazıldığı alan.")]
         [SerializeField] private TMP_Text _loseContinueCostText;
 
-        [Tooltip("Reklam SDK'sı eklenene kadar reklam ödülleri doğrudan verilir. SDK gelince kapatılır.")]
-        [SerializeField] private bool _grantAdRewardsWithoutAds = true;
-
         [Header("Buton gecikmeleri")]
         [Tooltip("Restart butonuna basıldıktan sonra level yeniden kurulmadan önce beklenecek süre (saniye). Efektler bu sırada oynar.")]
         [SerializeField, Min(0f)] private float _retryDelaySeconds = 3f;
@@ -107,8 +104,13 @@ namespace MatchPack.UI
         /// <summary>Reklam izleyerek level ödülünü katlar ve menüye döner.</summary>
         public void DoubleRewardWithAd()
         {
-            if (IsBusy || !_grantAdRewardsWithoutAds) { return; }
+            if (IsBusy) { return; }
 
+            AdsManager.Instance.ShowRewardedAd(GrantDoubleReward);
+        }
+
+        private void GrantDoubleReward()
+        {
             int bonus = EconomyManager.Instance.LastLevelReward * (_config.RewardedRewardMultiplier - 1);
             EconomyManager.Instance.AddGold(bonus);
 
@@ -134,9 +136,9 @@ namespace MatchPack.UI
         /// <summary>Reklam izleyerek kaybedilen levele devam eder.</summary>
         public void ContinueWithAd()
         {
-            if (IsBusy || !_grantAdRewardsWithoutAds) { return; }
+            if (IsBusy) { return; }
 
-            ResumeLevel();
+            AdsManager.Instance.ShowRewardedAd(ResumeLevel);
         }
 
         /// <summary>Paneli kapatıp menüye döner.</summary>

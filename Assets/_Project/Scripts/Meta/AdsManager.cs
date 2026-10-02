@@ -1,10 +1,16 @@
 using System;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using Unity.Services.LevelPlay;
+using MatchPack.Core;
+using MatchPack.Data;
 
 public class AdsManager : MonoBehaviour
 {
     public static AdsManager Instance;
+
+    [Tooltip("Bölüm sonu interstitial olasılığının okunduğu config.")]
+    [SerializeField] private GameConfig _config;
 
     [Header("App Key")]
     [SerializeField] private string androidAppKey;
@@ -22,6 +28,8 @@ public class AdsManager : MonoBehaviour
     private LevelPlayRewardedAd rewardedAd;
 
     private Action onRewardSuccessCallBack;
+
+    private GameManager _boundGameManager;
 
     private string appKey =>
 #if UNITY_ANDROID
@@ -61,6 +69,48 @@ public class AdsManager : MonoBehaviour
         {
             Destroy(gameObject);
         }
+    }
+
+    private void OnEnable()
+    {
+        SceneManager.sceneLoaded += HandleSceneLoaded;
+    }
+
+    private void OnDisable()
+    {
+        SceneManager.sceneLoaded -= HandleSceneLoaded;
+        UnbindGameManager();
+    }
+
+    // AdsManager BootScene'de, GameManager MainScene'de doğar; bağlantı sahne yüklenince kurulur.
+    private void HandleSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        if (Instance != this || GameManager.Instance == null || GameManager.Instance == _boundGameManager) return;
+
+        UnbindGameManager();
+        _boundGameManager = GameManager.Instance;
+        _boundGameManager.OnLevelCompleted += TryShowLevelEndInterstitial;
+        _boundGameManager.OnLevelFailed += TryShowLevelEndInterstitial;
+    }
+
+    private void UnbindGameManager()
+    {
+        if (_boundGameManager == null) return;
+
+        _boundGameManager.OnLevelCompleted -= TryShowLevelEndInterstitial;
+        _boundGameManager.OnLevelFailed -= TryShowLevelEndInterstitial;
+        _boundGameManager = null;
+    }
+
+    private void TryShowLevelEndInterstitial()
+    {
+        if (_config == null)
+        {
+            Debug.LogWarning("AdsManager: GameConfig is not assigned, level end interstitial skipped.");
+            return;
+        }
+
+        if (UnityEngine.Random.value < _config.InterstitialChance) ShowInterstitialAd();
     }
 
     public void Start()
@@ -104,7 +154,7 @@ public class AdsManager : MonoBehaviour
     {
         if (interstitialAd != null && interstitialAd.IsAdReady())
         {
-            //if("Check Remove Ads is on/off") interstitialAd.ShowAd(); 
+            if (!SaveManager.Instance.Data.HasRemovedAds) interstitialAd.ShowAd();
             return;
         }
         else
@@ -132,6 +182,10 @@ public class AdsManager : MonoBehaviour
     
     public void ShowRewardedAd(Action onSuccess)
     {
+#if UNITY_EDITOR
+        // Editor'de reklam yüklenmediği için ödül doğrudan verilir.
+        onSuccess?.Invoke();
+#else
         if (rewardedAd != null && rewardedAd.IsAdReady())
         {
             onRewardSuccessCallBack = onSuccess;
@@ -142,6 +196,7 @@ public class AdsManager : MonoBehaviour
             Debug.LogWarning("Rewarded Coin Ad is not ready!");
             LoadRewardedAd();
         }
+#endif
     }
 
     private void OnAdRewardedEvent(LevelPlayAdInfo adInfo, LevelPlayReward adReward)
