@@ -75,6 +75,12 @@ namespace MatchPack.UI
         /// <summary>Reklam izleyerek bir can verir ve popup'ı kapatır.</summary>
         public void GrantLifeWithAd()
         {
+            if (AdsManager.Instance == null)
+            {
+                Debug.LogWarning("AdsManager is not available, rewarded ad skipped.");
+                return;
+            }
+
             AdsManager.Instance.ShowRewardedAd(GrantLife);
         }
 

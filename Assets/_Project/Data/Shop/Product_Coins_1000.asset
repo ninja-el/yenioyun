@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6eb6632dbda5057449e49c0347f744d5, type: 3}
   m_Name: Product_Coins_1000
   m_EditorClassIdentifier: Assembly-CSharp::MatchPack.Meta.ShopProduct
-  _productId: coins_1000
+  _productId: box1k
   _productType: 0
   _fallbackPriceText: 99,99 TL
   _goldReward: 1000

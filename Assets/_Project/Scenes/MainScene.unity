@@ -1494,12 +1494,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 120608540}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8dcb365f61707df49866877c29e00733, type: 3}
+  m_Script: {fileID: 11500000, guid: 2531a5ecd30b1b04e9912b9c348b759d, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::MatchPack.UI.ShopProductButton
-  _productId: coins_1000
-  _button: {fileID: 120608544}
+  m_EditorClassIdentifier: Assembly-CSharp::IAPBuyButton
+  productKey: 4
   _priceText: {fileID: 1320799397}
+  _hideWhenOwned: {fileID: 0}
 --- !u!1 &122478546
 GameObject:
   m_ObjectHideFlags: 0
@@ -1984,7 +1984,6 @@ MonoBehaviour:
   _livesText: {fileID: 200459722}
   _timerText: {fileID: 1082169548}
   _goldCostText: {fileID: 900186726}
-  _grantAdRewardsWithoutAds: 1
 --- !u!114 &135012331
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2022,7 +2021,6 @@ MonoBehaviour:
   _loseContinueWithAdButton: {fileID: 990605593}
   _loseCloseButton: {fileID: 865271845}
   _loseContinueCostText: {fileID: 325853217}
-  _grantAdRewardsWithoutAds: 1
   _retryDelaySeconds: 3
   _nextLevelDelaySeconds: 3
 --- !u!114 &135012333
@@ -3884,12 +3882,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 296968458}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8dcb365f61707df49866877c29e00733, type: 3}
+  m_Script: {fileID: 11500000, guid: 2531a5ecd30b1b04e9912b9c348b759d, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::MatchPack.UI.ShopProductButton
-  _productId: coins_5000
-  _button: {fileID: 296968462}
+  m_EditorClassIdentifier: Assembly-CSharp::IAPBuyButton
+  productKey: 5
   _priceText: {fileID: 313327057}
+  _hideWhenOwned: {fileID: 0}
 --- !u!1 &299159370
 GameObject:
   m_ObjectHideFlags: 0
@@ -4962,12 +4960,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 341987337}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8dcb365f61707df49866877c29e00733, type: 3}
+  m_Script: {fileID: 11500000, guid: 2531a5ecd30b1b04e9912b9c348b759d, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::MatchPack.UI.ShopProductButton
-  _productId: coins_10000
-  _button: {fileID: 341987341}
+  m_EditorClassIdentifier: Assembly-CSharp::IAPBuyButton
+  productKey: 6
   _priceText: {fileID: 1711147147}
+  _hideWhenOwned: {fileID: 0}
 --- !u!1 &357685399
 GameObject:
   m_ObjectHideFlags: 0
@@ -6296,12 +6294,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 433349207}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8dcb365f61707df49866877c29e00733, type: 3}
+  m_Script: {fileID: 11500000, guid: 2531a5ecd30b1b04e9912b9c348b759d, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::MatchPack.UI.ShopProductButton
-  _productId: coins_100000
-  _button: {fileID: 433349210}
+  m_EditorClassIdentifier: Assembly-CSharp::IAPBuyButton
+  productKey: 9
   _priceText: {fileID: 1542886680}
+  _hideWhenOwned: {fileID: 0}
 --- !u!1 &440069240
 GameObject:
   m_ObjectHideFlags: 0
@@ -8471,12 +8469,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 592092361}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8dcb365f61707df49866877c29e00733, type: 3}
+  m_Script: {fileID: 11500000, guid: 2531a5ecd30b1b04e9912b9c348b759d, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::MatchPack.UI.ShopProductButton
-  _productId: coins_50000
-  _button: {fileID: 592092364}
+  m_EditorClassIdentifier: Assembly-CSharp::IAPBuyButton
+  productKey: 8
   _priceText: {fileID: 743319908}
+  _hideWhenOwned: {fileID: 0}
 --- !u!114 &596029371
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -9777,12 +9775,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 687861041}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8dcb365f61707df49866877c29e00733, type: 3}
+  m_Script: {fileID: 11500000, guid: 2531a5ecd30b1b04e9912b9c348b759d, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::MatchPack.UI.ShopProductButton
-  _productId: box_starter
-  _button: {fileID: 687861043}
+  m_EditorClassIdentifier: Assembly-CSharp::IAPBuyButton
+  productKey: 0
   _priceText: {fileID: 200737423}
+  _hideWhenOwned: {fileID: 0}
 --- !u!1 &689901314
 GameObject:
   m_ObjectHideFlags: 0
@@ -10212,6 +10210,7 @@ GameObject:
   - component: {fileID: 739017762}
   - component: {fileID: 739017761}
   - component: {fileID: 739017760}
+  - component: {fileID: 706222419}
   m_Layer: 0
   m_Name: RemoveADS_Btn
   m_TagString: Untagged
@@ -10219,6 +10218,19 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!114 &706222419
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 739017758}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 18636766fe3147719c3bb637ba8abc94, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MatchPack.UI.RemoveAdsButton
+  _button: {fileID: 739017760}
 --- !u!224 &739017759
 RectTransform:
   m_ObjectHideFlags: 0
@@ -11579,12 +11591,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 807693562}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8dcb365f61707df49866877c29e00733, type: 3}
+  m_Script: {fileID: 11500000, guid: 2531a5ecd30b1b04e9912b9c348b759d, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::MatchPack.UI.ShopProductButton
-  _productId: box_mega
-  _button: {fileID: 807693564}
+  m_EditorClassIdentifier: Assembly-CSharp::IAPBuyButton
+  productKey: 2
   _priceText: {fileID: 2051200859}
+  _hideWhenOwned: {fileID: 1472574060}
 --- !u!1 &816821521
 GameObject:
   m_ObjectHideFlags: 0
@@ -13131,12 +13143,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 884553306}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8dcb365f61707df49866877c29e00733, type: 3}
+  m_Script: {fileID: 11500000, guid: 2531a5ecd30b1b04e9912b9c348b759d, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::MatchPack.UI.ShopProductButton
-  _productId: coins_25000
-  _button: {fileID: 884553309}
+  m_EditorClassIdentifier: Assembly-CSharp::IAPBuyButton
+  productKey: 7
   _priceText: {fileID: 2088879099}
+  _hideWhenOwned: {fileID: 0}
 --- !u!1 &890929743
 GameObject:
   m_ObjectHideFlags: 0
@@ -14785,12 +14797,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 1017980950}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8dcb365f61707df49866877c29e00733, type: 3}
+  m_Script: {fileID: 11500000, guid: 2531a5ecd30b1b04e9912b9c348b759d, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::MatchPack.UI.ShopProductButton
-  _productId: coins_1000
-  _button: {fileID: 1017980953}
+  m_EditorClassIdentifier: Assembly-CSharp::IAPBuyButton
+  productKey: 4
   _priceText: {fileID: 31206498}
+  _hideWhenOwned: {fileID: 0}
 --- !u!114 &1019164305
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -18635,12 +18647,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 1242758437}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8dcb365f61707df49866877c29e00733, type: 3}
+  m_Script: {fileID: 11500000, guid: 2531a5ecd30b1b04e9912b9c348b759d, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::MatchPack.UI.ShopProductButton
-  _productId: coins_10000
-  _button: {fileID: 1242758440}
+  m_EditorClassIdentifier: Assembly-CSharp::IAPBuyButton
+  productKey: 6
   _priceText: {fileID: 573766451}
+  _hideWhenOwned: {fileID: 0}
 --- !u!1 &1245759888
 GameObject:
   m_ObjectHideFlags: 0
@@ -18772,12 +18784,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 1245759888}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8dcb365f61707df49866877c29e00733, type: 3}
+  m_Script: {fileID: 11500000, guid: 2531a5ecd30b1b04e9912b9c348b759d, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::MatchPack.UI.ShopProductButton
-  _productId: coins_5000
-  _button: {fileID: 1245759891}
+  m_EditorClassIdentifier: Assembly-CSharp::IAPBuyButton
+  productKey: 5
   _priceText: {fileID: 299159372}
+  _hideWhenOwned: {fileID: 0}
 --- !u!114 &1248215575
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -20367,12 +20379,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 1316443098}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8dcb365f61707df49866877c29e00733, type: 3}
+  m_Script: {fileID: 11500000, guid: 2531a5ecd30b1b04e9912b9c348b759d, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::MatchPack.UI.ShopProductButton
-  _productId: coins_100000
-  _button: {fileID: 1316443102}
+  m_EditorClassIdentifier: Assembly-CSharp::IAPBuyButton
+  productKey: 9
   _priceText: {fileID: 1089363216}
+  _hideWhenOwned: {fileID: 0}
 --- !u!1 &1318082488
 GameObject:
   m_ObjectHideFlags: 0
@@ -20564,7 +20576,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1323592775
 RectTransform:
   m_ObjectHideFlags: 0
@@ -25626,12 +25638,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 1644378299}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8dcb365f61707df49866877c29e00733, type: 3}
+  m_Script: {fileID: 11500000, guid: 2531a5ecd30b1b04e9912b9c348b759d, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::MatchPack.UI.ShopProductButton
-  _productId: coins_50000
-  _button: {fileID: 1644378303}
+  m_EditorClassIdentifier: Assembly-CSharp::IAPBuyButton
+  productKey: 8
   _priceText: {fileID: 61172760}
+  _hideWhenOwned: {fileID: 0}
 --- !u!1 &1645342229
 GameObject:
   m_ObjectHideFlags: 0
@@ -26989,12 +27001,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 1730303433}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8dcb365f61707df49866877c29e00733, type: 3}
+  m_Script: {fileID: 11500000, guid: 2531a5ecd30b1b04e9912b9c348b759d, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::MatchPack.UI.ShopProductButton
-  _productId: box_beginner
-  _button: {fileID: 1730303435}
+  m_EditorClassIdentifier: Assembly-CSharp::IAPBuyButton
+  productKey: 1
   _priceText: {fileID: 1779717850}
+  _hideWhenOwned: {fileID: 915762991}
 --- !u!1 &1741005928
 GameObject:
   m_ObjectHideFlags: 0
@@ -27126,12 +27138,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 1741005928}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8dcb365f61707df49866877c29e00733, type: 3}
+  m_Script: {fileID: 11500000, guid: 2531a5ecd30b1b04e9912b9c348b759d, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::MatchPack.UI.ShopProductButton
-  _productId: coins_25000
-  _button: {fileID: 1741005932}
+  m_EditorClassIdentifier: Assembly-CSharp::IAPBuyButton
+  productKey: 7
   _priceText: {fileID: 1289342190}
+  _hideWhenOwned: {fileID: 0}
 --- !u!114 &1745646949
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -27963,12 +27975,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 1803027356}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8dcb365f61707df49866877c29e00733, type: 3}
+  m_Script: {fileID: 11500000, guid: 2531a5ecd30b1b04e9912b9c348b759d, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::MatchPack.UI.ShopProductButton
-  _productId: box_golden
-  _button: {fileID: 1803027358}
+  m_EditorClassIdentifier: Assembly-CSharp::IAPBuyButton
+  productKey: 3
   _priceText: {fileID: 1152446969}
+  _hideWhenOwned: {fileID: 553330294}
 --- !u!1 &1810170681
 GameObject:
   m_ObjectHideFlags: 0

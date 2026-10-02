@@ -12,11 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6eb6632dbda5057449e49c0347f744d5, type: 3}
   m_Name: Product_Box_Beginner
   m_EditorClassIdentifier: Assembly-CSharp::MatchPack.Meta.ShopProduct
-  _productId: box_beginner
+  _productId: beginnerbox
   _productType: 0
   _fallbackPriceText: 249,99 TL
   _goldReward: 1000
   _livesReward: 0
   _infiniteLivesHours: 3
   _boosterRewards: 01000000010000000100000001000000
-  _removesAds: 0
+  _removesAds: 1

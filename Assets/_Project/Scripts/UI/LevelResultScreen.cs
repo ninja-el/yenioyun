@@ -104,7 +104,7 @@ namespace MatchPack.UI
         /// <summary>Reklam izleyerek level ödülünü katlar ve menüye döner.</summary>
         public void DoubleRewardWithAd()
         {
-            if (IsBusy) { return; }
+            if (IsBusy || !IsAdsAvailable()) { return; }
 
             AdsManager.Instance.ShowRewardedAd(GrantDoubleReward);
         }
@@ -136,7 +136,7 @@ namespace MatchPack.UI
         /// <summary>Reklam izleyerek kaybedilen levele devam eder.</summary>
         public void ContinueWithAd()
         {
-            if (IsBusy) { return; }
+            if (IsBusy || !IsAdsAvailable()) { return; }
 
             AdsManager.Instance.ShowRewardedAd(ResumeLevel);
         }
@@ -211,6 +211,14 @@ namespace MatchPack.UI
         {
             UIManager.Instance.HideLevelResultPanels();
             GameManager.Instance.ResumeLevel();
+        }
+
+        private static bool IsAdsAvailable()
+        {
+            if (AdsManager.Instance != null) { return true; }
+
+            Debug.LogWarning("AdsManager is not available, rewarded ad skipped.");
+            return false;
         }
 
         private void RefreshWinPanel(int reward)

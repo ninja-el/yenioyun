@@ -24,6 +24,9 @@ namespace MatchPack.Meta
         /// <summary>Store hazır olduğunda yayınlanır; fiyat etiketleri bu event'te tazelenir.</summary>
         public event Action OnStoreReady;
 
+        /// <summary>Tek alımlık ürün sahipliği veya reklamsız durum değiştiğinde yayınlanır. Market butonları bunu dinler.</summary>
+        public event Action OnOwnershipChanged;
+
         [Tooltip("Store'a bildirilecek ürün kataloğu.")]
         [SerializeField] private ShopCatalog _catalog;
 
@@ -48,6 +51,9 @@ namespace MatchPack.Meta
         {
             // Unity IAP eklenene kadar sahte servis kullanılır; gerçek servis yazılınca burası değişir.
             SetService(new StubPurchaseService());
+
+            // IAP burada başlar: açılışta onaylanan bir satın almanın ödülü katalog, kayıt ve ekonomi hazır olmadan gelmemeli.
+            if (IAPManager.Instance != null) { _ = IAPManager.Instance.InitializeIAPAsync(); }
         }
 
         private void OnDestroy()
@@ -142,17 +148,43 @@ namespace MatchPack.Meta
             if (AudioManager.Instance != null) { AudioManager.Instance.PlayPurchaseSucceeded(); }
 
             OnProductGranted?.Invoke(product);
+
+            if (product.RemovesAds || product.ProductType != ShopProductType.Consumable) { OnOwnershipChanged?.Invoke(); }
         }
 
-        private void RememberOwnedProduct(string productId)
+        /// <summary>
+        /// Store'un geri yüklediği tek alımlık ürünü "alındı" olarak kaydeder. İçerik (gold, can,
+        /// booster) tekrar verilmez; yalnızca sahiplik ve reklamsız durum yazılır.
+        /// </summary>
+        public void RestoreOwnership(ShopProduct product)
+        {
+            if (product == null || product.ProductType == ShopProductType.Consumable) { return; }
+
+            PlayerData data = SaveManager.Instance.Data;
+            bool changed = RememberOwnedProduct(product.ProductId);
+
+            if (product.RemovesAds && !data.HasRemovedAds)
+            {
+                data.HasRemovedAds = true;
+                changed = true;
+            }
+
+            if (!changed) { return; }
+
+            SaveManager.Instance.Save();
+            OnOwnershipChanged?.Invoke();
+        }
+
+        private bool RememberOwnedProduct(string productId)
         {
             PlayerData data = SaveManager.Instance.Data;
             List<string> owned = new List<string>(data.OwnedProductIds);
 
-            if (owned.Contains(productId)) { return; }
+            if (owned.Contains(productId)) { return false; }
 
             owned.Add(productId);
             data.OwnedProductIds = owned.ToArray();
+            return true;
         }
 
         private void DetachService()

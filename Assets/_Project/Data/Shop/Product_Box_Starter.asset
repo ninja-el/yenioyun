@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6eb6632dbda5057449e49c0347f744d5, type: 3}
   m_Name: Product_Box_Starter
   m_EditorClassIdentifier: Assembly-CSharp::MatchPack.Meta.ShopProduct
-  _productId: box_starter
-  _productType: 0
+  _productId: suprisebox
+  _productType: 1
   _fallbackPriceText: 49,99 TL
   _goldReward: 0
   _livesReward: 0

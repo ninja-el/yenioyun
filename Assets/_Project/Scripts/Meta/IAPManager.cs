@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Purchasing;
-using UnityEngine.Purchasing.Security; 
+using UnityEngine.Purchasing.Security;
+using MatchPack.Meta;
 
 [Serializable]
 public enum IAPProductKey
@@ -68,6 +69,11 @@ public class IAPManager : MonoBehaviour
     public static bool IsInitialized { get; private set; } = false;
     private static StoreController _storeController;
 
+    /// <summary>Store'dan fiyatlar geldiğinde yayınlanır; satın alma butonları fiyat yazılarını bu event'te tazeler.</summary>
+    public event Action OnPricesUpdated;
+
+    private readonly Dictionary<string, string> _localizedPrices = new Dictionary<string, string>();
+
     private void Awake()
     {
         if (Instance != null && Instance != this)
@@ -131,10 +137,10 @@ public class IAPManager : MonoBehaviour
                 bool isEntitled = status == EntitlementStatus.FullyEntitled;
                 if (isEntitled && product != null && product.definition != null)
                 {
-                    if(product.definition.id == supriseBox){
-                        /// <summary>
-                        /// 
-                        /// </summary>
+                    ShopProduct shopProduct = FindShopProduct(product.definition.id);
+                    if (shopProduct != null && shopProduct.ProductType != ShopProductType.Consumable)
+                    {
+                        ShopManager.Instance.RestoreOwnership(shopProduct);
                     }
 
                     if(product.definition.id == boxremoveAds){
@@ -151,7 +157,6 @@ public class IAPManager : MonoBehaviour
         };
     }
 
-    //make function to update button prices
     private void UpdateButtonPrices()
     {
         if (_storeController != null)
@@ -159,30 +164,87 @@ public class IAPManager : MonoBehaviour
             foreach (var product in _storeController.GetProducts())
             {
                 string price = product.metadata.localizedPrice + " " + product.metadata.isoCurrencyCode;
-                // Update button price UpdateButtonPrice(product.definition.id, price);
+                _localizedPrices[product.definition.id] = price;
             }
         }
+
+        OnPricesUpdated?.Invoke();
     }
-    
+
+    /// <summary>Store'dan gelen fiyat metni. Fiyat henüz gelmediyse boş döner.</summary>
+    public string GetLocalizedPrice(string productId)
+    {
+        return _localizedPrices.TryGetValue(productId, out string price) ? price : string.Empty;
+    }
+
+    /// <summary>Paket anahtarının store'daki ürün kimliği.</summary>
+    public string GetProductId(IAPProductKey productKey)
+    {
+        switch (productKey)
+        {
+            case IAPProductKey.SupriseBox : return supriseBox;
+            case IAPProductKey.BeginnerBox : return beginnerBox;
+            case IAPProductKey.MegaBox : return megaBox;
+            case IAPProductKey.GoldenBox : return goldenBox;
+            case IAPProductKey.Box1K : return box1k;
+            case IAPProductKey.Box5K : return box5k;
+            case IAPProductKey.Box10K : return box10k;
+            case IAPProductKey.Box25K : return box25k;
+            case IAPProductKey.Box50K : return box50k;
+            case IAPProductKey.Box100K : return box100k;
+            case IAPProductKey.RemoveAds : return boxremoveAds;
+            default : return string.Empty;
+        }
+    }
+
+    private static ShopProduct FindShopProduct(string productId)
+    {
+        if (ShopManager.Instance == null || ShopManager.Instance.Catalog == null) { return null; }
+
+        return ShopManager.Instance.Catalog.Find(productId);
+    }
+
     private List<ProductDefinition> BuildProductDefinitios()
     {
         var initialProductToFetch = new List<ProductDefinition>();
-        
-        initialProductToFetch.Add(new ProductDefinition(supriseBox, ProductType.NonConsumable));
-        initialProductToFetch.Add(new ProductDefinition(beginnerBox, ProductType.Consumable));
-        initialProductToFetch.Add(new ProductDefinition(megaBox, ProductType.Consumable));
-        initialProductToFetch.Add(new ProductDefinition(goldenBox, ProductType.Consumable));
 
-        initialProductToFetch.Add(new ProductDefinition(box1k, ProductType.Consumable));
-        initialProductToFetch.Add(new ProductDefinition(box5k, ProductType.Consumable));
-        initialProductToFetch.Add(new ProductDefinition(box10k, ProductType.Consumable));
-        initialProductToFetch.Add(new ProductDefinition(box25k, ProductType.Consumable));
-        initialProductToFetch.Add(new ProductDefinition(box50k, ProductType.Consumable));
-        initialProductToFetch.Add(new ProductDefinition(box100k, ProductType.Consumable));
+        AddProductDefinition(initialProductToFetch, supriseBox);
+        AddProductDefinition(initialProductToFetch, beginnerBox);
+        AddProductDefinition(initialProductToFetch, megaBox);
+        AddProductDefinition(initialProductToFetch, goldenBox);
+
+        AddProductDefinition(initialProductToFetch, box1k);
+        AddProductDefinition(initialProductToFetch, box5k);
+        AddProductDefinition(initialProductToFetch, box10k);
+        AddProductDefinition(initialProductToFetch, box25k);
+        AddProductDefinition(initialProductToFetch, box50k);
+        AddProductDefinition(initialProductToFetch, box100k);
 
         initialProductToFetch.Add(new ProductDefinition(boxremoveAds, ProductType.NonConsumable));
 
         return initialProductToFetch;
+    }
+
+    private void AddProductDefinition(List<ProductDefinition> definitions, string productId)
+    {
+        ShopProduct shopProduct = FindShopProduct(productId);
+        if (shopProduct == null)
+        {
+            Debug.LogError($"No ShopProduct in the catalog for store product id: {productId}");
+            return;
+        }
+
+        definitions.Add(new ProductDefinition(productId, ToStoreProductType(shopProduct.ProductType)));
+    }
+
+    private static ProductType ToStoreProductType(ShopProductType type)
+    {
+        switch (type)
+        {
+            case ShopProductType.NonConsumable : return ProductType.NonConsumable;
+            case ShopProductType.Subscription : return ProductType.Subscription;
+            default : return ProductType.Consumable;
+        }
     }
 
     private void OnProductsFetched(List<Product> products)
@@ -223,20 +285,7 @@ public class IAPManager : MonoBehaviour
             return;
         }
 
-        switch (productKey)
-        {
-            case IAPProductKey.SupriseBox : _storeController.PurchaseProduct(supriseBox); break;
-            case IAPProductKey.BeginnerBox : _storeController.PurchaseProduct(beginnerBox); break;
-            case IAPProductKey.MegaBox : _storeController.PurchaseProduct(megaBox); break;
-            case IAPProductKey.GoldenBox : _storeController.PurchaseProduct(goldenBox); break;
-            case IAPProductKey.Box1K : _storeController.PurchaseProduct(box1k); break;
-            case IAPProductKey.Box5K : _storeController.PurchaseProduct(box5k); break;
-            case IAPProductKey.Box10K : _storeController.PurchaseProduct(box10k); break;
-            case IAPProductKey.Box25K : _storeController.PurchaseProduct(box25k); break;
-            case IAPProductKey.Box50K : _storeController.PurchaseProduct(box50k); break;
-            case IAPProductKey.Box100K : _storeController.PurchaseProduct(box100k); break;
-            case IAPProductKey.RemoveAds : _storeController.PurchaseProduct(boxremoveAds); break;
-        }
+        _storeController.PurchaseProduct(GetProductId(productKey));
     }
     
     private void OnPurchasesPending(PendingOrder order)
@@ -304,42 +353,15 @@ public class IAPManager : MonoBehaviour
                 int quantity = GetPurchaseQuantity(order);
                 string productId = order.Info.PurchasedProductInfo[0].productId;
                 
-                if(productId == supriseBox){
+                if(productId == boxremoveAds){
                     //
                 }
-                else if(productId == beginnerBox){
-                    //
-                }
-                else if(productId == megaBox){
-                    //
-                }
-                else if(productId == goldenBox){
-                    //
-                }
-                else if(productId == box1k){
-                    //
-                }
-                else if(productId == box5k){
-                    //
-                }
-                else if(productId == box10k){
-                    //
-                }
-                else if(productId == box25k){
-                    //
-                }
-                else if(productId == box50k){
-                    //
-                }
-                else if(productId == box100k){
-                    //
-                }
-                else if(productId == boxremoveAds){
-                    //
+                else
+                {
+                    GrantPurchasedProduct(productId, quantity);
                 }
 
-
-                //Save to Cloud
+                // GrantProduct kaydı SaveManager ile yerelde yapar; cloud eşlemesi SaveManager'a bağlanınca bu satın alma da oraya gider.
 
                 Product purchasedProduct = null;
                 if (_storeController != null)
@@ -363,6 +385,23 @@ public class IAPManager : MonoBehaviour
         catch (Exception e)
         {
             Debug.LogError($"Error in OnPurchaseConfirmed: {e}");
+        }
+    }
+
+    private void GrantPurchasedProduct(string productId, int quantity)
+    {
+        ShopProduct shopProduct = FindShopProduct(productId);
+        if (shopProduct == null)
+        {
+            Debug.LogError($"Purchase confirmed but no ShopProduct found for id: {productId}");
+            return;
+        }
+
+        // Çoklu adet yalnızca tekrar alınabilen paketlerde olur; tek alımlık paket bir kez verilir.
+        int grantCount = shopProduct.ProductType == ShopProductType.Consumable ? quantity : 1;
+        for (int i = 0; i < grantCount; i++)
+        {
+            ShopManager.Instance.GrantProduct(shopProduct);
         }
     }
 
