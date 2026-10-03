@@ -37,7 +37,7 @@ namespace MatchPack.UI
         private void Awake()
         {
             _goldAddButton.onClick.AddListener(OpenMarket);
-            _heartAddButton.onClick.AddListener(OpenMarket);
+            _heartAddButton.onClick.AddListener(OpenHeartPopup);
         }
 
         private void Start()
@@ -55,7 +55,7 @@ namespace MatchPack.UI
         private void OnDestroy()
         {
             _goldAddButton.onClick.RemoveListener(OpenMarket);
-            _heartAddButton.onClick.RemoveListener(OpenMarket);
+            _heartAddButton.onClick.RemoveListener(OpenHeartPopup);
 
             Loc.OnLanguageChanged -= HandleLanguageChanged;
 
@@ -71,6 +71,12 @@ namespace MatchPack.UI
         public void OpenMarket()
         {
             UIManager.Instance.ShowMarket();
+        }
+
+        /// <summary>Can popup'ını açar.</summary>
+        public void OpenHeartPopup()
+        {
+            UIManager.Instance.ShowHeartPopup();
         }
 
         private void SetGold(int gold)

@@ -1,4 +1,5 @@
 using System.Collections;
+using MatchPack.Gameplay;
 using MatchPack.UI;
 using UnityEngine;
 
@@ -11,6 +12,8 @@ namespace MatchPack.Core
     public class UIManager : MonoBehaviour
     {
         public static UIManager Instance { get; private set; }
+
+        private bool _isGameplayPausedByPurchasePanel;
 
         [Header("Menü")]
         [Tooltip("Ana menü kökü. Level oynanırken kapanır.")]
@@ -178,6 +181,25 @@ namespace MatchPack.Core
             HideLevelResultPanels();
         }
 
+        // Duraklatma kararı tek yerde: level kaybedilmişken veya oynarken bir satın alma paneli
+        // ekranda göründüğü sürece oyun (sayaç, bant, kutular, dokunma) durur.
+        private void RefreshGameplayPause()
+        {
+            if (BoosterManager.Instance == null || GameManager.Instance == null) { return; }
+
+            GameState state = GameManager.Instance.State;
+            bool shouldPause = state == GameState.Lose || (state == GameState.Playing && IsPurchasePanelShown());
+            if (shouldPause == _isGameplayPausedByPurchasePanel) { return; }
+
+            _isGameplayPausedByPurchasePanel = shouldPause;
+            BoosterManager.Instance.SetGameplayPaused(shouldPause);
+        }
+
+        private bool IsPurchasePanelShown()
+        {
+            return IsShown(_marketPanel) || IsShown(_heartPopup) || IsShown(_goldPopup) || IsShown(_boosterPanel);
+        }
+
         private void HandleGameStateChanged(GameState state)
         {
             bool isInMenu = state == GameState.Menu;
@@ -188,18 +210,26 @@ namespace MatchPack.Core
 
             if (state == GameState.Playing || isInMenu) { HideLevelResultPanels(); }
             if (isInMenu) { SetOpen(_boosterPanel, false); }
+
+            RefreshGameplayPause();
         }
 
-        private static void SetOpen(GameObject panel, bool isOpen)
+        private void SetOpen(GameObject panel, bool isOpen)
         {
             if (panel == null || panel.activeSelf == isOpen) { return; }
 
             panel.SetActive(isOpen);
+            RefreshGameplayPause();
         }
 
         private static bool IsOpen(GameObject panel)
         {
             return panel != null && panel.activeSelf;
+        }
+
+        private static bool IsShown(GameObject panel)
+        {
+            return panel != null && panel.activeInHierarchy;
         }
     }
 }

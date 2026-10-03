@@ -45,16 +45,6 @@ namespace MatchPack.UI
             _buyButton.onClick.AddListener(Buy);
         }
 
-        private void OnEnable()
-        {
-            if (BoosterManager.Instance != null) { BoosterManager.Instance.SetGameplayPaused(true); }
-        }
-
-        private void OnDisable()
-        {
-            if (BoosterManager.Instance != null) { BoosterManager.Instance.SetGameplayPaused(false); }
-        }
-
         private void OnDestroy()
         {
             _buyButton.onClick.RemoveListener(Buy);

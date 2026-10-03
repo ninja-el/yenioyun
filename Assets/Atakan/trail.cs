@@ -1,3 +1,4 @@
+using MatchPack.Gameplay;
 using UnityEngine;
 
 public class trail : MonoBehaviour
@@ -17,6 +18,9 @@ public class trail : MonoBehaviour
 
     void Update()
     {
+        // Oyun durduğunda (kaybetme, satın alma paneli) bant görsel olarak da durur.
+        if (BoosterManager.Instance != null && BoosterManager.Instance.IsGameplayPaused) { return; }
+
         _material.mainTextureOffset -= new Vector2(Time.deltaTime * _speed, 0);
     }
 
