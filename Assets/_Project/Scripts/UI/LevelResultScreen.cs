@@ -52,6 +52,9 @@ namespace MatchPack.UI
         [Tooltip("Sonraki level butonuna basıldıktan sonra beklenecek süre (saniye). Efektler bu sırada oynar.")]
         [SerializeField, Min(0f)] private float _nextLevelDelaySeconds = 3f;
 
+        [Tooltip("Reklamla katlanan ödül verildikten sonra sıradaki level kurulmadan önce beklenecek süre (saniye). Gold animasyonu bu sırada oynar.")]
+        [SerializeField, Min(0f)] private float _doubleRewardDelaySeconds = 3f;
+
         private Coroutine _delayRoutine;
 
         /// <summary>Bir buton gecikmesi işliyor mu? İşlerken diğer butonlar cevap vermez.</summary>
@@ -101,7 +104,10 @@ namespace MatchPack.UI
             GameManager.Instance.ReturnToMenu();
         }
 
-        /// <summary>Reklam izleyerek level ödülünü katlar ve menüye döner.</summary>
+        /// <summary>
+        /// Reklam izleyerek level ödülünü katlar. Ödül yazısı katlanmış değere güncellenir, ayarlanan
+        /// gecikme kadar beklenir (gold animasyonu bu sırada oynar) ve sıradaki level kurulur.
+        /// </summary>
         public void DoubleRewardWithAd()
         {
             if (IsBusy || !IsAdsAvailable()) { return; }
@@ -111,12 +117,22 @@ namespace MatchPack.UI
 
         private void GrantDoubleReward()
         {
-            int bonus = EconomyManager.Instance.LastLevelReward * (_config.RewardedRewardMultiplier - 1);
-            EconomyManager.Instance.AddGold(bonus);
+            int baseReward = EconomyManager.Instance.LastLevelReward;
+            EconomyManager.Instance.AddGold(baseReward * (_config.RewardedRewardMultiplier - 1));
+            RefreshWinPanel(baseReward * _config.RewardedRewardMultiplier);
 
             if (AudioManager.Instance != null) { AudioManager.Instance.PlayRewardGranted(); }
 
-            ClaimAndReturnToMenu();
+            // Reklam açıkken başka bir butonun gecikmesi başladıysa ödül verilir ama ikinci geçiş başlatılmaz.
+            if (IsBusy) { return; }
+
+            if (!EconomyManager.Instance.HasEnoughLives)
+            {
+                UIManager.Instance.ShowHeartPopup();
+                return;
+            }
+
+            _delayRoutine = StartCoroutine(DelayedActionRoutine(_doubleRewardDelaySeconds, GoToNextLevel));
         }
 
         /// <summary>Gold ödeyerek kaybedilen levele devam eder. Gold yetmezse gold popup'ı açılır.</summary>
@@ -206,7 +222,6 @@ namespace MatchPack.UI
         {
             GameManager.Instance.StartNextLevel();
         }
-
         private void ResumeLevel()
         {
             UIManager.Instance.HideLevelResultPanels();

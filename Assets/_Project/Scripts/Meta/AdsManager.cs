@@ -173,27 +173,44 @@ public class AdsManager : MonoBehaviour
         rewardedAd = new LevelPlayRewardedAd(RewardedAdUnitID);
         rewardedAd.OnAdLoadFailed += (error) => Invoke(nameof(LoadRewardedAd), 5f);
         rewardedAd.OnAdRewarded += OnAdRewardedEvent;
-        rewardedAd.OnAdClosed += (info) => LoadRewardedAd();
+        rewardedAd.OnAdClosed += (info) => HandleRewardedAdFinished();
+        rewardedAd.OnAdDisplayFailed += (info, error) => HandleRewardedAdFinished();
 
         LoadRewardedAd();
     }
 
     public void LoadRewardedAd() => rewardedAd?.LoadAd();
-    
+
+    /// <summary>Rewarded reklam şu an ekranda mı? Açıkken yeni gösterim isteği yok sayılır.</summary>
+    public bool IsRewardedAdShowing { get; private set; }
+
+    private void HandleRewardedAdFinished()
+    {
+        IsRewardedAdShowing = false;
+        LoadRewardedAd();
+    }
+
+    /// <summary>
+    /// Rewarded reklamı açar; onSuccess yalnızca reklam sonuna kadar izlenip ödül olayı gelince çalışır.
+    /// Editor'de build target Android/iOS ise LevelPlay'in sahte reklam paneli açılır.
+    /// </summary>
     public void ShowRewardedAd(Action onSuccess)
     {
-#if UNITY_EDITOR
-        // Editor'de reklam yüklenmediği için ödül doğrudan verilir.
+#if UNITY_EDITOR && !(UNITY_ANDROID || UNITY_IOS)
+        // LevelPlay sahte paneli yalnızca mobil build target'ta var; Standalone'da ödül doğrudan verilir.
         onSuccess?.Invoke();
 #else
+        if (IsRewardedAdShowing) return;
+
         if (rewardedAd != null && rewardedAd.IsAdReady())
         {
             onRewardSuccessCallBack = onSuccess;
+            IsRewardedAdShowing = true;
             rewardedAd.ShowAd();
         }
         else
         {
-            Debug.LogWarning("Rewarded Coin Ad is not ready!");
+            Debug.LogWarning("Rewarded Ad is not ready!");
             LoadRewardedAd();
         }
 #endif

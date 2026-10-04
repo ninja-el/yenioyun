@@ -1303,6 +1303,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7c9d932291ecae44c9b0b9b08b627c85, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AdsManager
+  _config: {fileID: 11400000, guid: 8de2ebc82b4c4471a195fc3b3b9a154c, type: 2}
   androidAppKey: 286834b1d
   IOSAppKey: 28684a44d
   androidInterstitialAdUnitID: eythp8uplg6ojysi

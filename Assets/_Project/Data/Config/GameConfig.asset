@@ -21,3 +21,4 @@ MonoBehaviour:
   _lifeRegenSeconds: 900
   _levelCompleteGoldMin: 40
   _levelCompleteGoldMax: 60
+  _continueExtraSeconds: 30

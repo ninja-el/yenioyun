@@ -70,7 +70,7 @@ namespace MatchPack.Data
         [SerializeField, Min(1)] private int _rewardedRewardMultiplier = 2;
 
         [Tooltip("Kaybedilen levele devam edildiğinde sayaca eklenecek süre (saniye).")]
-        [SerializeField, Min(1f)] private float _continueExtraSeconds = 15f;
+        [SerializeField, Min(1f)] private float _continueExtraSeconds = 30f;
 
         [Tooltip("Bölüm sonunda (kazanma veya kaybetme paneli açılırken) interstitial reklam gösterilme olasılığı (0-1).")]
         [SerializeField, Range(0f, 1f)] private float _interstitialChance = 0.4f;

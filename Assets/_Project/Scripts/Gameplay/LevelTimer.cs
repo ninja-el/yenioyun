@@ -60,10 +60,10 @@ namespace MatchPack.Gameplay
             OnTimerTicked?.Invoke(Remaining);
         }
 
-        /// <summary>Durmuş sayacı verilen süreyle yeniden başlatır. Kaybedilen levele devam etmek için.</summary>
+        /// <summary>Durmuş sayacı kalan süreye verilen süreyi ekleyerek yeniden başlatır. Kaybedilen levele devam etmek için.</summary>
         public void Resume(float extraSeconds)
         {
-            Remaining = Mathf.Max(Remaining, extraSeconds);
+            Remaining = Mathf.Max(0f, Remaining) + extraSeconds;
             _lastTickedSecond = Mathf.CeilToInt(Remaining);
             IsRunning = true;
             OnTimerTicked?.Invoke(Remaining);
