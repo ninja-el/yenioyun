@@ -91,7 +91,7 @@ değişir; sahne dosyasını yeniden adlandırmak kodu etkilemez.
 | `SceneLoader` | `GameScene`'i bir kez yükler, level içeriğini kurar/söker, geçiş sırası |
 | `InputManager` | Kutu prob (BoxCast) ile dokunuş algılar, `StackItem` bildirir |
 | `PoolManager` | Tüm runtime instance'ları |
-| `SaveManager` | `PlayerData` yükle/kaydet |
+| `SaveManager` | `PlayerData` ve `SettingsData` yükle/kaydet |
 | `EconomyManager` | Gold, can, booster envanteri |
 | `AudioManager` | SFX / BGM |
 | `UIManager` | Panel aç/kapa |
@@ -213,6 +213,9 @@ yığın oturduğu**nda ve** level gerçekten başladığında başlatır.
 - Kayıt: Local JSON dosyası (`persistentDataPath/playerdata.json`) + Unity Cloud Save (`playerdata` anahtarı).
   Boot'ta giriş ve cloud okuma en fazla `AppBootstrap._cloudLoadTimeout` kadar beklenir; eşleme
   `SaveManager.Awake`'te yapılır. Cloud'a yükleme yalnızca bölüm geçilince ve satın alma sonrası (karar 77).
+  `lastLifeRegenTime`, `infiniteLivesUntilTime` ve `eventItemCounts` yalnızca lokalde tutulur, cloud ile eşlenmez (karar 79).
+- `SettingsData` (ses, müzik, titreşim) ayrı dosyada tutulur (`persistentDataPath/settings.json`),
+  sahibi yine `SaveManager`'dır (`Settings`, `SaveSettings()`). Cloud'a gönderilmez (karar 78).
 - `LevelData` (ScriptableObject): `levelIndex`, `duration`, `targetBoxCount`,
   `conveyorCapacity`, `items[]` (`ItemType` + adet).
 - Level'ler `Assets/_Project/Data/Levels/` altında, In-House Level Editor penceresi ile üretilir.

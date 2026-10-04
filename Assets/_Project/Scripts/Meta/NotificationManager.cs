@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using MatchPack.Localization;
 using UnityEngine;
 
 #if UNITY_ANDROID
@@ -102,8 +103,8 @@ public class NotificationManager : MonoBehaviour
 
     private void ScheduleHealthNotification(int minutesUntilFull)
     {
-        string title = "Canın Tamamen Doldu! 💖";
-        string text = "Maceraya kaldığın yerden devam etme vakti geldi.";
+        string title = Loc.Get("notification.lives_full.title");
+        string text = Loc.Get("notification.lives_full.body");
         DateTime fireTime = DateTime.Now.AddMinutes(minutesUntilFull);
 
         SendNotification(title, text, fireTime, "health_id");
@@ -111,8 +112,8 @@ public class NotificationManager : MonoBehaviour
 
     private void ScheduleInactivityNotification()
     {
-        string title = "Seni Özledik! 🗡️";
-        string text = "2 gündür yoksun. Deponun sana ihtiyacı var, hemen dön!";
+        string title = Loc.Get("notification.inactivity.title");
+        string text = Loc.Get("notification.inactivity.body");
         DateTime fireTime = DateTime.Now.AddDays(2); // 48 saat sonrası
 
         SendNotification(title, text, fireTime, "inactivity_id");

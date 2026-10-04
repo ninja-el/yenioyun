@@ -46,15 +46,6 @@ namespace MatchPack.Data
         [Tooltip("Satın alınmış kalıcı (non-consumable) ürünlerin id listesi.")]
         [SerializeField] private string[] _ownedProductIds = Array.Empty<string>();
 
-        [Tooltip("Ses efektleri açık mı?")]
-        [SerializeField] private bool _isSoundEnabled = true;
-
-        [Tooltip("Müzik açık mı?")]
-        [SerializeField] private bool _isMusicEnabled = true;
-
-        [Tooltip("Titreşim (taptic) açık mı?")]
-        [SerializeField] private bool _isHapticsEnabled = true;
-
         [Tooltip("Etkinlik id'si başına toplanan bonus obje adetleri.")]
         [SerializeField] private List<EventItemCount> _eventItemCounts = new List<EventItemCount>();
 
@@ -71,9 +62,6 @@ namespace MatchPack.Data
         public int[] BoosterCounts { get => _boosterCounts; set => _boosterCounts = value; }
         public bool HasRemovedAds { get => _hasRemovedAds; set => _hasRemovedAds = value; }
         public string[] OwnedProductIds { get => _ownedProductIds; set => _ownedProductIds = value; }
-        public bool IsSoundEnabled { get => _isSoundEnabled; set => _isSoundEnabled = value; }
-        public bool IsMusicEnabled { get => _isMusicEnabled; set => _isMusicEnabled = value; }
-        public bool IsHapticsEnabled { get => _isHapticsEnabled; set => _isHapticsEnabled = value; }
         public List<EventItemCount> EventItemCounts => _eventItemCounts;
     }
 }

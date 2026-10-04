@@ -43,8 +43,8 @@ namespace MatchPack.Meta
         [Tooltip("Müziğin açıkken çalacağı ses düzeyi.")]
         [SerializeField, Range(0f, 1f)] private float _musicVolume = 0.4f;
 
-        public bool IsSoundEnabled => SaveManager.Instance.Data.IsSoundEnabled;
-        public bool IsMusicEnabled => SaveManager.Instance.Data.IsMusicEnabled;
+        public bool IsSoundEnabled => SaveManager.Instance.Settings.IsSoundEnabled;
+        public bool IsMusicEnabled => SaveManager.Instance.Settings.IsMusicEnabled;
 
         private void Awake()
         {
@@ -119,8 +119,8 @@ namespace MatchPack.Meta
         /// <summary>Ses efekti tercihini değiştirir ve kaydeder.</summary>
         public void SetSoundEnabled(bool isEnabled)
         {
-            SaveManager.Instance.Data.IsSoundEnabled = isEnabled;
-            SaveManager.Instance.Save();
+            SaveManager.Instance.Settings.IsSoundEnabled = isEnabled;
+            SaveManager.Instance.SaveSettings();
             ApplyVolumes();
             OnSoundEnabledChanged?.Invoke(isEnabled);
         }
@@ -128,8 +128,8 @@ namespace MatchPack.Meta
         /// <summary>Müzik tercihini değiştirir ve kaydeder.</summary>
         public void SetMusicEnabled(bool isEnabled)
         {
-            SaveManager.Instance.Data.IsMusicEnabled = isEnabled;
-            SaveManager.Instance.Save();
+            SaveManager.Instance.Settings.IsMusicEnabled = isEnabled;
+            SaveManager.Instance.SaveSettings();
             ApplyVolumes();
             OnMusicEnabledChanged?.Invoke(isEnabled);
         }

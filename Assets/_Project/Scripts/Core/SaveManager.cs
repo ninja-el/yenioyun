@@ -15,31 +15,51 @@ namespace MatchPack.Core
     /// <summary>
     /// PlayerData'nın tek sahibi. Veri, persistentDataPath altındaki tek bir JSON dosyasına yazılır
     /// ve Cloud Save ile eşlenir: açılışta bölümü ileride olan kayıt kazanır, satın alınan ürünler birleştirilir.
+    /// Cihaza özgü ayarlar (SettingsData) ayrı bir JSON dosyasında tutulur ve cloud'a gönderilmez.
     /// </summary>
     public class SaveManager : MonoBehaviour
     {
         public static SaveManager Instance { get; private set; }
 
         private const string SaveFileName = "playerdata.json";
+        private const string SettingsFileName = "settings.json";
+        private const string TempSuffix = ".tmp";
         private const string LegacyPrefsKey = "MatchPack.PlayerData";
         private const string LegacyCloudKey = "playerdata";
         private const char FieldPrefix = '_';
         private const int UnknownCloudLevel = -1;
 
+        // Can zamanlayıcıları ve etkinlik sayaçları yalnızca lokal kayıtta tutulur; cloud'a gönderilmez, cloud'dan okunmaz.
+        private static readonly HashSet<string> LocalOnlyCloudKeys = new HashSet<string>
+        {
+            "lastLifeRegenTime", "infiniteLivesUntilTime", "eventItemCounts"
+        };
+
+        // Eski sürümlerin cloud'a yazdığı ve artık kullanılmayan anahtarlar; ilk başarılı yüklemede silinir.
+        private static readonly HashSet<string> RetiredCloudKeys = new HashSet<string>
+        {
+            LegacyCloudKey, "isSoundEnabled", "isMusicEnabled", "isHapticsEnabled"
+        };
+
         // Boot'ta okunan cloud kaydı, MainScene'deki SaveManager ayağa kalkana kadar burada bekler.
         private static string _pendingCloudJson;
         private static int _knownCloudLevel = UnknownCloudLevel;
-        private static bool _hasLegacyCloudKey;
+        private static readonly List<string> _staleCloudKeys = new List<string>();
 
         [Tooltip("Aktif oyuncu verisi. Play Mode'da buradan değiştirilen değerler kayda yansır.")]
         [SerializeField] private PlayerData _data = new PlayerData();
 
+        [Tooltip("Aktif ayarlar (ses, müzik, titreşim). Play Mode'da buradan değiştirilen değerler kayda yansır.")]
+        [SerializeField] private SettingsData _settings = new SettingsData();
+
         private string _savePath;
         private string _tempPath;
+        private string _settingsPath;
         private bool _isUploading;
         private bool _hasQueuedUpload;
 
         public PlayerData Data => _data;
+        public SettingsData Settings => _settings;
 
         /// <summary>Cihazda daha önce yazılmış bir kayıt var mı? İlk açılış varsayılanlarını kurmak için kullanılır.</summary>
         public bool HasSave => File.Exists(_savePath) || File.Exists(_tempPath);
@@ -60,9 +80,11 @@ namespace MatchPack.Core
             DontDestroyOnLoad(gameObject);
 
             _savePath = Path.Combine(Application.persistentDataPath, SaveFileName);
-            _tempPath = _savePath + ".tmp";
+            _tempPath = _savePath + TempSuffix;
+            _settingsPath = Path.Combine(Application.persistentDataPath, SettingsFileName);
 
             MigrateFromPlayerPrefs();
+            LoadSettings();
             Load();
             ApplyPendingCloudSave();
         }
@@ -74,12 +96,17 @@ namespace MatchPack.Core
 
         private void OnApplicationPause(bool isPaused)
         {
-            if (isPaused) { Save(); }
+            if (isPaused)
+            {
+                Save();
+                SaveSettings();
+            }
         }
 
         private void OnApplicationQuit()
         {
             Save();
+            SaveSettings();
         }
 
         /// <summary>
@@ -93,7 +120,11 @@ namespace MatchPack.Core
             try
             {
                 Dictionary<string, Item> items = await CloudSaveService.Instance.Data.Player.LoadAllAsync();
-                _hasLegacyCloudKey = items.ContainsKey(LegacyCloudKey);
+                _staleCloudKeys.Clear();
+                foreach (string key in items.Keys)
+                {
+                    if (LocalOnlyCloudKeys.Contains(key) || RetiredCloudKeys.Contains(key)) { _staleCloudKeys.Add(key); }
+                }
 
                 string json = ToPlayerDataJson(items);
                 if (json == null)
@@ -118,34 +149,19 @@ namespace MatchPack.Core
         /// <summary>Kaydı okur. Kayıt yoksa veya bozuksa veri varsayılan değerlerinde kalır.</summary>
         public void Load()
         {
-            // Yazma, silme ile taşıma arasında kesilirse elde yalnızca .tmp kalır; o da geçerli tam kayıttır.
-            string path = File.Exists(_savePath) ? _savePath : _tempPath;
-            if (!File.Exists(path)) { return; }
-
-            try
-            {
-                JsonUtility.FromJsonOverwrite(File.ReadAllText(path), _data);
-            }
-            catch (Exception exception) when (exception is ArgumentException || exception is IOException)
-            {
-                Debug.LogError($"Save data could not be read, falling back to defaults: {exception.Message}", this);
-            }
+            ReadInto(_savePath, _data);
         }
 
         /// <summary>Aktif veriyi diske yazar.</summary>
         public void Save()
         {
-            try
-            {
-                // Önce geçici dosyaya yazılır ki yazma yarıda kesilirse eski kayıt bozulmasın.
-                File.WriteAllText(_tempPath, JsonUtility.ToJson(_data));
-                if (File.Exists(_savePath)) { File.Delete(_savePath); }
-                File.Move(_tempPath, _savePath);
-            }
-            catch (IOException exception)
-            {
-                Debug.LogError($"Save data could not be written: {exception.Message}", this);
-            }
+            WriteAtomically(_savePath, JsonUtility.ToJson(_data));
+        }
+
+        /// <summary>Aktif ayarları diske yazar. Cloud'a gönderilmez.</summary>
+        public void SaveSettings()
+        {
+            WriteAtomically(_settingsPath, JsonUtility.ToJson(_settings));
         }
 
         /// <summary>
@@ -173,6 +189,48 @@ namespace MatchPack.Core
             JsonUtility.FromJsonOverwrite(JsonUtility.ToJson(new PlayerData()), _data);
         }
 
+        // Ayar dosyası yoksa ayarlar eski playerdata.json'dan okunur; alan adları aynı olduğu için doğrudan eşleşir.
+        private void LoadSettings()
+        {
+            if (ReadInto(_settingsPath, _settings)) { return; }
+            if (ReadInto(_savePath, _settings)) { SaveSettings(); }
+        }
+
+        // Yazma, silme ile taşıma arasında kesilirse elde yalnızca .tmp kalır; o da geçerli tam kayıttır.
+        private bool ReadInto(string path, object target)
+        {
+            string tempPath = path + TempSuffix;
+            string readPath = File.Exists(path) ? path : tempPath;
+            if (!File.Exists(readPath)) { return false; }
+
+            try
+            {
+                JsonUtility.FromJsonOverwrite(File.ReadAllText(readPath), target);
+                return true;
+            }
+            catch (Exception exception) when (exception is ArgumentException || exception is IOException)
+            {
+                Debug.LogError($"{Path.GetFileName(path)} could not be read, falling back to defaults: {exception.Message}", this);
+                return false;
+            }
+        }
+
+        // Önce geçici dosyaya yazılır ki yazma yarıda kesilirse eski kayıt bozulmasın.
+        private void WriteAtomically(string path, string json)
+        {
+            string tempPath = path + TempSuffix;
+            try
+            {
+                File.WriteAllText(tempPath, json);
+                if (File.Exists(path)) { File.Delete(path); }
+                File.Move(tempPath, path);
+            }
+            catch (IOException exception)
+            {
+                Debug.LogError($"{Path.GetFileName(path)} could not be written: {exception.Message}", this);
+            }
+        }
+
         private async Task UploadToCloudAsync()
         {
             _isUploading = true;
@@ -190,11 +248,11 @@ namespace MatchPack.Core
                     await CloudSaveService.Instance.Data.Player.SaveAsync(ToCloudFields(_data));
                     _knownCloudLevel = uploadedLevel;
 
-                    if (_hasLegacyCloudKey)
+                    while (_staleCloudKeys.Count > 0)
                     {
                         await CloudSaveService.Instance.Data.Player.DeleteAsync(
-                            LegacyCloudKey, new Unity.Services.CloudSave.Models.Data.Player.DeleteOptions());
-                        _hasLegacyCloudKey = false;
+                            _staleCloudKeys[0], new Unity.Services.CloudSave.Models.Data.Player.DeleteOptions());
+                        _staleCloudKeys.RemoveAt(0);
                     }
                 }
                 catch (RequestFailedException exception)
@@ -213,7 +271,10 @@ namespace MatchPack.Core
             Dictionary<string, object> fields = new Dictionary<string, object>();
             foreach (JProperty field in JObject.Parse(JsonUtility.ToJson(data)).Properties())
             {
-                fields[field.Name.TrimStart(FieldPrefix)] = field.Value;
+                string key = field.Name.TrimStart(FieldPrefix);
+                if (LocalOnlyCloudKeys.Contains(key)) { continue; }
+
+                fields[key] = field.Value;
             }
 
             return fields;
@@ -225,14 +286,18 @@ namespace MatchPack.Core
             JObject fields = new JObject();
             foreach (Item item in items.Values)
             {
-                if (item.Key == LegacyCloudKey) { continue; }
+                if (LocalOnlyCloudKeys.Contains(item.Key) || RetiredCloudKeys.Contains(item.Key)) { continue; }
 
                 fields[FieldPrefix + item.Key] = item.Value.GetAs<JToken>();
             }
 
             if (fields.Count > 0) { return fields.ToString(); }
+            if (!items.TryGetValue(LegacyCloudKey, out Item legacy)) { return null; }
 
-            return items.TryGetValue(LegacyCloudKey, out Item legacy) ? legacy.Value.GetAsString() : null;
+            JObject legacyFields = JObject.Parse(legacy.Value.GetAsString());
+            foreach (string key in LocalOnlyCloudKeys) { legacyFields.Remove(FieldPrefix + key); }
+
+            return legacyFields.ToString();
         }
 
         private void ApplyPendingCloudSave()

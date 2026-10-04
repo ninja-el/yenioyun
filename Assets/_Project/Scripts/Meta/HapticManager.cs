@@ -36,7 +36,7 @@ namespace MatchPack.Meta
         private bool _hasAmplitudeControl;
 #endif
 
-        public bool IsHapticsEnabled => SaveManager.Instance.Data.IsHapticsEnabled;
+        public bool IsHapticsEnabled => SaveManager.Instance.Settings.IsHapticsEnabled;
 
         private void Awake()
         {
@@ -72,8 +72,8 @@ namespace MatchPack.Meta
         /// <summary>Titreşim tercihini değiştirir ve kaydeder. Açıldığında tek bir örnek titreşim verir.</summary>
         public void SetHapticsEnabled(bool isEnabled)
         {
-            SaveManager.Instance.Data.IsHapticsEnabled = isEnabled;
-            SaveManager.Instance.Save();
+            SaveManager.Instance.Settings.IsHapticsEnabled = isEnabled;
+            SaveManager.Instance.SaveSettings();
             OnHapticsEnabledChanged?.Invoke(isEnabled);
 
             if (isEnabled) { Vibrate(_missDurationMilliseconds, _missAmplitude); }
