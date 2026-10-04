@@ -92,6 +92,8 @@ model katsayıları (obje başı süre) gerçek hıza göre ayarlanmalı.
 | Nokta ekleme aralığı | 0.35 sn | `LoadingScreen` |
 | Boot yükleme yazısı noktaları | 2 ↔ 3 nokta, 0.35 sn aralıkla | `LoadingDotsText` |
 | Boot'ta oyunun açılma şartı | GDPR paneli cevaplanmış olmalı (kabul veya ret); iOS'ta ATT de cevaplanmış olmalı | `AppBootstrap` + `PrivacyManager` |
+| Boot'ta gizlilik onayı için en fazla bekleme | 15 sn (dolarsa oyun onay beklemeden açılır) | `AppBootstrap._consentTimeout` |
+| iOS ATT izin metni (`NSUserTrackingUsageDescription`) | "Verileriniz size daha ilgili reklamlar göstermek için kullanılır." (her iOS build'inde Info.plist'e yazılır) | `TrackingUsageDescriptionPostProcess` |
 | Restart butonu gecikmesi | 3 sn | `LevelResultScreen` |
 | Sonraki level butonu gecikmesi | 3 sn | `LevelResultScreen` |
 | Kazanma şartı | Dolan kutu = `LevelData.targetBoxCount` | `LevelManager` |
@@ -286,6 +288,7 @@ Envanter index'i `BoosterType` enum sırasıdır: 0 TimeBonus, 1 Shuffle, 2 Auto
 | 79 | `lastLifeRegenTime`, `infiniteLivesUntilTime` ve `eventItemCounts` yalnızca lokal `playerdata.json`'da tutulur; Cloud Save'e gönderilmez, cloud'dan okunmaz. Cloud'da can için yalnızca `currentLives` durur. Lokal kayıttaki biçimleri (UTC tick) değişmedi. Bu anahtarlar ve eski sürümlerin yazdığı `playerdata` / ses-müzik-titreşim anahtarları cloud'da varsa ilk başarılı yüklemede silinir | Oyuncu isteği: cloud kaydını küçültmek. Cloud kaydı başka cihazda yüklenince can zamanlayıcısı o cihazın lokal değeriyle (yoksa "şimdi") devam eder |
 | 80 | Rewarded ödülü (2x gold, devam, +1 can) yalnızca LevelPlay `OnAdRewarded` olayıyla verilir; Editor'de build target Android/iOS iken LevelPlay'in sahte reklam paneli (5 sn geri sayım) açılır ve ödül panel kapanınca gelir. Standalone target'ta sahte panel olmadığı için ödül doğrudan verilir. Reklam ekrandayken yeni rewarded isteği yok sayılır (`AdsManager.IsRewardedAdShowing`) | Reklam akışının Editor'de cihaza gerek kalmadan test edilebilmesi için. Sahte panel erken kapatılsa da ödül verir (SDK davranışı); "izlemeden kapatınca ödül yok" yalnızca cihazda test edilebilir |
 | 81 | Kaybedilen levele devam (gold veya reklam) kalan süreye 30 sn ekler (`LevelTimer.Resume`: kalan + `ContinueExtraSeconds`). Önceki davranış süreyi "en az 15 sn"ye çekiyordu | Oyuncu isteği. Süre bitip kaybedildiğinde sayaç 00:30'dan devam eder; süre bitmeden kaybedilirse (ör. debug F2) kalan süre de korunur |
+| 82 | GDPR paneli, GDPR cevabı kayıtlı olsa bile iOS'ta ATT durumu `NOT_DETERMINED` kaldıkça her açılışta tekrar gösterilir; panel cevaplanınca ATT penceresi istenir. Gizlilik onayı (panel + ATT) en fazla 15 sn beklenir (`AppBootstrap._consentTimeout`); süre dolarsa panel kapanır, bekleme bırakılır ve oyun onay beklemeden açılır. Cevap verilmediyse bir sonraki açılışta panel yine gelir. ATT kontrolü yalnızca cihazda yapılır, Editor'de atlanır | Oyuncu isteği. `NSUserTrackingUsageDescription` Info.plist'te yokken ATT durumu hep `NOT_DETERMINED` döndüğü için Boot sonsuza kadar bekliyordu; timeout benzer bir sorunda oyunun açılmasını garanti eder. ATT binding'i Editor'de de `NOT_DETERMINED` döndürür |
 
 ## Açık sorular
 

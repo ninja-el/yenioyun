@@ -1,3 +1,4 @@
+using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UI;
@@ -29,17 +30,22 @@ public class PrivacyManager : MonoBehaviour
         if (_declineButton != null) { _declineButton.onClick.RemoveListener(OnDeclineGDPRClicked); }
     }
 
-    public async Task RequestConsentAsync()
+    private bool _hasAnsweredPanel;
+
+    /// <summary>
+    /// GDPR panelini ve iOS'ta ATT izin penceresini sırayla gösterip cevabı bekler. ATT cevaplanmadıkça panel
+    /// her açılışta tekrar gösterilir. Token iptal edilirse bekleme bırakılır ve panel kapanır.
+    /// </summary>
+    public async Task RequestConsentAsync(CancellationToken cancellationToken)
     {
         IsConsentProcessCompleted = false;
+        _hasAnsweredPanel = false;
 
-        int gdprConsent = PlayerPrefs.GetInt("GDPR_Consent", 0);
-
-        if (gdprConsent == 0)
+        if (PlayerPrefs.GetInt("GDPR_Consent", 0) == 0 || IsTrackingUndetermined())
         {
             if (gdprPanel != null) gdprPanel.SetActive(true);
 
-            while (PlayerPrefs.GetInt("GDPR_Consent", 0) == 0)
+            while (!_hasAnsweredPanel && !cancellationToken.IsCancellationRequested)
             {
                 await Task.Yield();
             }
@@ -47,23 +53,34 @@ public class PrivacyManager : MonoBehaviour
             if (gdprPanel != null) gdprPanel.SetActive(false);
         }
 
-#if UNITY_IOS
-        if (ATTrackingStatusBinding.GetAuthorizationTrackingStatus() == ATTrackingStatusBinding.AuthorizationTrackingStatus.NOT_DETERMINED)
+#if UNITY_IOS && !UNITY_EDITOR
+        if (IsTrackingUndetermined() && !cancellationToken.IsCancellationRequested)
         {
             ATTrackingStatusBinding.RequestAuthorizationTracking();
-            while (ATTrackingStatusBinding.GetAuthorizationTrackingStatus() == ATTrackingStatusBinding.AuthorizationTrackingStatus.NOT_DETERMINED)
+            while (IsTrackingUndetermined() && !cancellationToken.IsCancellationRequested)
             {
                 await Task.Yield();
             }
         }
 #endif
-        IsConsentProcessCompleted = true;
+        IsConsentProcessCompleted = !cancellationToken.IsCancellationRequested;
+    }
+
+    // The ATT binding reports NOT_DETERMINED in the Editor too, which would block every Editor run.
+    private static bool IsTrackingUndetermined()
+    {
+#if UNITY_IOS && !UNITY_EDITOR
+        return ATTrackingStatusBinding.GetAuthorizationTrackingStatus() == ATTrackingStatusBinding.AuthorizationTrackingStatus.NOT_DETERMINED;
+#else
+        return false;
+#endif
     }
 
     public void OnAcceptGDPRClicked()
     {
         PlayerPrefs.SetInt("GDPR_Consent", 1);
         PlayerPrefs.Save();
+        _hasAnsweredPanel = true;
         Debug.Log("Kullanıcı GDPR onayını KABUL ETTİ.");
     }
 
@@ -71,6 +88,7 @@ public class PrivacyManager : MonoBehaviour
     {
         PlayerPrefs.SetInt("GDPR_Consent", -1);
         PlayerPrefs.Save();
+        _hasAnsweredPanel = true;
         Debug.Log("Kullanıcı GDPR onayını REDDETTİ.");
     }
 }
