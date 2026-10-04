@@ -3,11 +3,11 @@
 namespace UnityEngine.Purchasing.Security {
     public class GooglePlayTangle
     {
-        private static byte[] data = System.Convert.FromBase64String("FE78Cl7/kkyVPK15PjybNL4YNlRXFKz/mlQfFDz+Cl24EJzbkC6+nCQZkJSYDhS8");
-        private static int[] order = new int[] { 0,1,2 };
-        private static int key = 227;
+        private static byte[] data = System.Convert.FromBase64String("");
+        private static int[] order = new int[] { 0 };
+        private static int key = 122;
 
-        public static readonly bool IsPopulated = true;
+        public static readonly bool IsPopulated = false;
 
         public static byte[] Data() {
         	if (IsPopulated == false)
