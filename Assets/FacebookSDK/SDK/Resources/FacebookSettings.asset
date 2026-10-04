@@ -14,11 +14,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: Facebook.Unity.Settings.dll::Facebook.Unity.Settings.FacebookSettings
   selectedAppIndex: 0
   clientTokens:
-  - 
+  - 835f2a421fc93741d8b9ef122b4fbe72
   appIds:
-  - 0
+  - 166722014463793
   appLabels:
-  - App Name
+  - Bpx Go
   cookie: 1
   logging: 1
   status: 1
