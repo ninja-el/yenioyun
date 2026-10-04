@@ -390,6 +390,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MatchPack.Core.AppBootstrap
   _targetFrameRate: 60
   _privacyManager: {fileID: 1721980329}
+  _autoLoginManager: {fileID: 1381000227}
+  _cloudLoadTimeout: 3
 --- !u!4 &206099133
 Transform:
   m_ObjectHideFlags: 0

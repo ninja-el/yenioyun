@@ -194,6 +194,7 @@ namespace MatchPack.Core
             // Numara katalogla sınırlanmaz; son bölümden sonra döngüdeki bölümler artan numarayla oynanır.
             data.CurrentLevel = completedNumber + 1;
             SaveManager.Instance.Save();
+            SaveManager.Instance.UploadToCloud();
         }
 
         private void ChargeLifeForLoss()

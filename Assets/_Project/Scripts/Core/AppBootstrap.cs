@@ -6,7 +6,7 @@ using UnityEngine.SceneManagement;
 namespace MatchPack.Core
 {
     /// <summary>
-    /// Boot sahnesinin tek görevi: açılış ayarlarını uygulamak, gizlilik onayını beklemek ve
+    /// Boot sahnesinin tek görevi: açılış ayarlarını uygulamak, gizlilik onayını beklemek, giriş yapıp cloud kaydını okumak ve
     /// ardından Facebook SDK'sını başlatıp MainScene'i yüklemek. Onay süreci bitmeden MainScene yüklenmez.
     /// </summary>
     public class AppBootstrap : MonoBehaviour
@@ -16,6 +16,12 @@ namespace MatchPack.Core
 
         [Tooltip("Gizlilik onayını (GDPR + iOS ATT) yöneten bileşen. Onay süreci bitmeden oyun açılmaz.")]
         [SerializeField] private PrivacyManager _privacyManager;
+
+        [Tooltip("Unity Services girişini yapan bileşen. Atanmazsa cloud kaydı okunmaz, oyun yerel kayıtla açılır.")]
+        [SerializeField] private AutoLoginManager _autoLoginManager;
+
+        [Tooltip("Giriş ve cloud kaydı için açılışta beklenecek en uzun süre (saniye). Dolarsa oyun yerel kayıtla açılır.")]
+        [SerializeField] private float _cloudLoadTimeout = 3f;
 
         private IEnumerator Start()
         {
@@ -36,7 +42,24 @@ namespace MatchPack.Core
             // Beklenmez: Facebook init 4 sn'ye kadar sürebilir, oyunun açılışını geciktirmemeli.
             if (FacebookManager.Instance != null) { _ = FacebookManager.Instance.InitializeFacebookAsync(); }
 
+            if (_autoLoginManager != null)
+            {
+                Task cloudTask = SignInAndFetchCloudSaveAsync();
+                float deadline = Time.realtimeSinceStartup + _cloudLoadTimeout;
+                yield return new WaitUntil(() => cloudTask.IsCompleted || Time.realtimeSinceStartup >= deadline);
+            }
+            else
+            {
+                Debug.LogWarning("AppBootstrap has no AutoLoginManager assigned; cloud save is skipped.", this);
+            }
+
             yield return SceneManager.LoadSceneAsync(SceneIndices.Main, LoadSceneMode.Single);
+        }
+
+        private async Task SignInAndFetchCloudSaveAsync()
+        {
+            await _autoLoginManager.InitializeAndSignInAsync();
+            await SaveManager.FetchCloudSaveAsync();
         }
     }
 }

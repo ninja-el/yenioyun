@@ -210,7 +210,9 @@ yığın oturduğu**nda ve** level gerçekten başladığında başlatır.
 - `PlayerData` — düz `[Serializable]` C# sınıfı, JSON'a serialize edilir.
   Alanlar: `currentLevel`, `gold`, `currentLives`, `lastLifeRegenTime`, `boosterCounts`,
   `hasRemovedAds`.
-- Kayıt: Local `PlayerPrefs` (tek JSON string) → sonraki fazda Unity Cloud Save.
+- Kayıt: Local JSON dosyası (`persistentDataPath/playerdata.json`) + Unity Cloud Save (`playerdata` anahtarı).
+  Boot'ta giriş ve cloud okuma en fazla `AppBootstrap._cloudLoadTimeout` kadar beklenir; eşleme
+  `SaveManager.Awake`'te yapılır. Cloud'a yükleme yalnızca bölüm geçilince ve satın alma sonrası (karar 77).
 - `LevelData` (ScriptableObject): `levelIndex`, `duration`, `targetBoxCount`,
   `conveyorCapacity`, `items[]` (`ItemType` + adet).
 - Level'ler `Assets/_Project/Data/Levels/` altında, In-House Level Editor penceresi ile üretilir.

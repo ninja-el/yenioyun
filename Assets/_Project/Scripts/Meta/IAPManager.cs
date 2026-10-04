@@ -361,8 +361,6 @@ public class IAPManager : MonoBehaviour
                     GrantPurchasedProduct(productId, quantity);
                 }
 
-                // GrantProduct kaydı SaveManager ile yerelde yapar; cloud eşlemesi SaveManager'a bağlanınca bu satın alma da oraya gider.
-
                 Product purchasedProduct = null;
                 if (_storeController != null)
                 {

@@ -49,7 +49,7 @@ SetService(new UnityIapPurchaseService());   // eskisi: new StubPurchaseService(
 | `AddLives(int)` | `EconomyManager` | `SaveManager.Save`, `OnLivesChanged` |
 | `GrantInfiniteLives(float hours)` | `EconomyManager` | `SaveManager.Save`, `OnLivesChanged` |
 | `AddBooster(int index, int amount)` | `EconomyManager` | `SaveManager.Save` |
-| `Save()` | `SaveManager` — `Core/SaveManager.cs` | `PlayerPrefs.SetString` + `PlayerPrefs.Save` |
+| `Save()` | `SaveManager` — `Core/SaveManager.cs` | `playerdata.json` dosyasına yazar (önce `.tmp`, sonra taşıma) |
 
 Yani: **gold / can / booster eklendiğinde kayıt zaten atılıyor.** `Save()` çağırma.
 
@@ -107,6 +107,7 @@ Hepsi kendi içinde `SaveManager.Save()` çağırır.
 | `static SaveManager Instance` | |
 | `PlayerData Data` | Aktif veri |
 | `Save()` | Ekonomi methodları zaten çağırıyor |
+| `UploadToCloud()` | `ShopManager.GrantProduct` ve bölüm geçişi çağırıyor |
 | `Load()` | `Awake`'te çağrılıyor |
 | `bool HasSave` | |
 | `ResetProgress()` | Test için |

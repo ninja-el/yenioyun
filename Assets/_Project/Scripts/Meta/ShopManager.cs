@@ -144,6 +144,7 @@ namespace MatchPack.Meta
             if (product.ProductType != ShopProductType.Consumable) { RememberOwnedProduct(product.ProductId); }
 
             SaveManager.Instance.Save();
+            SaveManager.Instance.UploadToCloud();
 
             if (AudioManager.Instance != null) { AudioManager.Instance.PlayPurchaseSucceeded(); }
 
