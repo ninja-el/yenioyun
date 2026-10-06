@@ -31,6 +31,8 @@ public class AdsManager : MonoBehaviour
 
     private GameManager _boundGameManager;
 
+    private int _consecutiveInterstitialCount;
+
     private string appKey =>
 #if UNITY_ANDROID
         androidAppKey;
@@ -110,7 +112,15 @@ public class AdsManager : MonoBehaviour
             return;
         }
 
-        if (UnityEngine.Random.value < _config.InterstitialChance) ShowInterstitialAd();
+        // Sınıra ulaşıldıysa bu bölüm sonu zar atılmadan atlanır ve seri sıfırlanır.
+        if (_consecutiveInterstitialCount >= _config.MaxConsecutiveInterstitials)
+        {
+            _consecutiveInterstitialCount = 0;
+            return;
+        }
+
+        bool isShown = UnityEngine.Random.value < _config.InterstitialChance && ShowInterstitialAd();
+        _consecutiveInterstitialCount = isShown ? _consecutiveInterstitialCount + 1 : 0;
     }
 
     public void Start()
@@ -150,17 +160,21 @@ public class AdsManager : MonoBehaviour
         if (interstitialAd != null) interstitialAd.LoadAd();
     }
 
-    public void ShowInterstitialAd()
+    /// <summary>Interstitial reklamı açar. Reklam gerçekten gösterildiyse true döner.</summary>
+    public bool ShowInterstitialAd()
     {
         if (interstitialAd != null && interstitialAd.IsAdReady())
         {
-            if (!SaveManager.Instance.Data.HasRemovedAds) interstitialAd.ShowAd();
-            return;
+            if (SaveManager.Instance.Data.HasRemovedAds) return false;
+
+            interstitialAd.ShowAd();
+            return true;
         }
         else
         {
             Debug.LogWarning("Interstitial Ad is not ready!");
             LoadInterstitialAd();
+            return false;
         }
     }
     

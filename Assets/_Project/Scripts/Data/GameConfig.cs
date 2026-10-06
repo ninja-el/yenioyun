@@ -73,7 +73,10 @@ namespace MatchPack.Data
         [SerializeField, Min(1f)] private float _continueExtraSeconds = 30f;
 
         [Tooltip("Bölüm sonunda (kazanma veya kaybetme paneli açılırken) interstitial reklam gösterilme olasılığı (0-1).")]
-        [SerializeField, Range(0f, 1f)] private float _interstitialChance = 0.4f;
+        [SerializeField, Range(0f, 1f)] private float _interstitialChance = 0.3f;
+
+        [Tooltip("Art arda en fazla kaç bölüm sonunda interstitial gösterilebilir. Bu sayıya ulaşılınca sonraki bölüm sonunda reklam çıkmaz.")]
+        [SerializeField, Min(1)] private int _maxConsecutiveInterstitials = 2;
 
         public int BoxCapacity => _boxCapacity;
         public float ItemFlyDuration => _itemFlyDuration;
@@ -95,6 +98,7 @@ namespace MatchPack.Data
         public int RewardedRewardMultiplier => _rewardedRewardMultiplier;
         public float ContinueExtraSeconds => _continueExtraSeconds;
         public float InterstitialChance => _interstitialChance;
+        public int MaxConsecutiveInterstitials => _maxConsecutiveInterstitials;
 
         /// <summary>Level tamamlama gold aralığından (iki uç dahil) rastgele bir değer seçer.</summary>
         public int RollLevelCompleteGold()
