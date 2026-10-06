@@ -26,7 +26,7 @@ namespace MatchPack.UI
         [Tooltip("Reklam izleyip ödülü katlayan buton.")]
         [SerializeField] private Button _winDoubleRewardButton;
 
-        [Tooltip("Paneli kapatıp menüye dönen buton.")]
+        [Tooltip("Kapatma (X) butonu. Ödül butonuyla aynı işi yapar: sıradaki bölümü başlatır.")]
         [SerializeField] private Button _winCloseButton;
 
         [Tooltip("Kazanılan gold miktarının yazıldığı alan.")]
@@ -64,7 +64,7 @@ namespace MatchPack.UI
         {
             _winNextLevelButton.onClick.AddListener(NextLevel);
             _winDoubleRewardButton.onClick.AddListener(DoubleRewardWithAd);
-            _winCloseButton.onClick.AddListener(ClaimAndReturnToMenu);
+            _winCloseButton.onClick.AddListener(NextLevel);
 
             _loseContinueWithGoldButton.onClick.AddListener(ContinueWithGold);
             _loseContinueWithAdButton.onClick.AddListener(ContinueWithAd);
@@ -85,7 +85,7 @@ namespace MatchPack.UI
         {
             _winNextLevelButton.onClick.RemoveListener(NextLevel);
             _winDoubleRewardButton.onClick.RemoveListener(DoubleRewardWithAd);
-            _winCloseButton.onClick.RemoveListener(ClaimAndReturnToMenu);
+            _winCloseButton.onClick.RemoveListener(NextLevel);
 
             _loseContinueWithGoldButton.onClick.RemoveListener(ContinueWithGold);
             _loseContinueWithAdButton.onClick.RemoveListener(ContinueWithAd);
@@ -93,15 +93,6 @@ namespace MatchPack.UI
 
             if (EconomyManager.Instance != null) { EconomyManager.Instance.OnLevelRewardGranted -= RefreshWinPanel; }
             if (GameManager.Instance != null) { GameManager.Instance.OnLevelFailed -= RefreshLosePanel; }
-        }
-
-        /// <summary>Kazanma panelini kapatıp menüye döner. Level ödülü kazanma anında zaten verilmiştir.</summary>
-        public void ClaimAndReturnToMenu()
-        {
-            if (IsBusy) { return; }
-
-            UIManager.Instance.HideLevelResultPanels();
-            GameManager.Instance.ReturnToMenu();
         }
 
         /// <summary>
@@ -125,12 +116,6 @@ namespace MatchPack.UI
 
             // Reklam açıkken başka bir butonun gecikmesi başladıysa ödül verilir ama ikinci geçiş başlatılmaz.
             if (IsBusy) { return; }
-
-            if (!EconomyManager.Instance.HasEnoughLives)
-            {
-                UIManager.Instance.ShowHeartPopup();
-                return;
-            }
 
             _delayRoutine = StartCoroutine(DelayedActionRoutine(_doubleRewardDelaySeconds, GoToNextLevel));
         }
@@ -167,9 +152,9 @@ namespace MatchPack.UI
         }
 
         /// <summary>
-        /// Kaybetme panelindeki restart butonuna bağlanır. Kayıbın canı zaten düşüldüğü için can
-        /// harcamaz; ayarlanan gecikme kadar bekler (efektler bu sırada oynar) ve aynı leveli baştan
-        /// kurar. Can kalmadıysa can popup'ı açılır ve beklenmez.
+        /// Kaybetme panelindeki restart butonuna bağlanır. Ayarlanan gecikme kadar bekler (efektler bu
+        /// sırada oynar) ve aynı leveli 1 can düşerek baştan kurar. Can kalmadıysa can popup'ı açılır
+        /// ve beklenmez.
         /// </summary>
         public void Retry()
         {
@@ -185,19 +170,13 @@ namespace MatchPack.UI
         }
 
         /// <summary>
-        /// Kazanma panelindeki sonraki level butonuna bağlanır. Can harcamaz; ayarlanan gecikme
-        /// kadar bekler (efektler bu sırada oynar) ve sıradaki leveli kurar. Can kalmadıysa can
-        /// popup'ı açılır ve beklenmez.
+        /// Kazanma panelindeki ödül ve kapatma (X) butonlarına bağlanır. Kazanan oyuncunun canı
+        /// bölüm başında düşüldüğü için can harcamaz ve can istemez; ayarlanan gecikme kadar bekler
+        /// (efektler bu sırada oynar) ve sıradaki leveli kurar.
         /// </summary>
         public void NextLevel()
         {
             if (IsBusy) { return; }
-
-            if (!EconomyManager.Instance.HasEnoughLives)
-            {
-                UIManager.Instance.ShowHeartPopup();
-                return;
-            }
 
             _delayRoutine = StartCoroutine(DelayedActionRoutine(_nextLevelDelaySeconds, GoToNextLevel));
         }

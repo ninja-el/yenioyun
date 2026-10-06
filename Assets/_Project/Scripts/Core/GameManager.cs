@@ -28,9 +28,6 @@ namespace MatchPack.Core
 
         private Coroutine _buildRoutine;
 
-        // Kayıpta gerçekten can düşüldüyse true; devam edilirse can geri verilir. Sınırsız canda düşülmez.
-        private bool _isLifeChargedForLoss;
-
         public GameState State { get; private set; } = GameState.Menu;
         public LevelData CurrentLevel { get; private set; }
 
@@ -72,25 +69,14 @@ namespace MatchPack.Core
 
         /// <summary>
         /// Gösterilen numaraya karşılık gelen bölümü kurar; katalogdan büyük numaralar döngüdeki bölüme
-        /// eşlenir. Yükleme ekranı açılır, hazırlık bitince durum Playing olur.
+        /// eşlenir. 1 can düşer. Yükleme ekranı açılır, hazırlık bitince durum Playing olur.
         /// </summary>
         public void StartLevel(int levelNumber)
         {
-            LevelData level = _catalog != null ? _catalog.GetByNumber(levelNumber) : null;
-
-            if (level == null)
-            {
-                Debug.LogError($"GameManager.StartLevel found no level for number {levelNumber}.", this);
-                return;
-            }
-
-            // Açılıştaki GameScene yüklemesi de meşgul sayılır; o bitmeden level kurulamaz.
-            if (_buildRoutine != null || SceneLoader.Instance.IsBusy) { return; }
-
-            _buildRoutine = StartCoroutine(BuildLevelRoutine(level, levelNumber));
+            TryBuildLevel(levelNumber, true);
         }
 
-        /// <summary>Aktif bölümü baştan kurar. Sahne değişmez, içerik yeniden üretilir.</summary>
+        /// <summary>Aktif bölümü baştan kurar ve 1 can düşer. Sahne değişmez, içerik yeniden üretilir.</summary>
         public void RetryLevel()
         {
             if (CurrentLevel == null)
@@ -99,10 +85,10 @@ namespace MatchPack.Core
                 return;
             }
 
-            StartLevel(CurrentLevelNumber);
+            TryBuildLevel(CurrentLevelNumber, true);
         }
 
-        /// <summary>Sıradaki bölümü kurar. Sıradaki bölüm yoksa menüye döner.</summary>
+        /// <summary>Sıradaki bölümü can düşmeden kurar. Sıradaki bölüm yoksa menüye döner.</summary>
         public void StartNextLevel()
         {
             if (!HasNextLevel)
@@ -111,7 +97,7 @@ namespace MatchPack.Core
                 return;
             }
 
-            StartLevel(CurrentLevelNumber + 1);
+            TryBuildLevel(CurrentLevelNumber + 1, false);
         }
 
         /// <summary>Hedef kutu sayısına ulaşıldığında çağrılır.</summary>
@@ -130,37 +116,53 @@ namespace MatchPack.Core
             if (State != GameState.Playing) { return; }
 
             SetState(GameState.Lose);
-            ChargeLifeForLoss();
             OnLevelFailed?.Invoke();
         }
 
         /// <summary>
         /// Kaybedilmiş leveli yerinde devam ettirir. Bedelin (gold/reklam) ödendiğini çağıran taraf
-        /// doğrular. Level kaybedilmemiş sayıldığı için kayıpta düşülen can geri verilir.
+        /// doğrular. Can bölüm başında düşüldüğü için canla ilgili işlem yapılmaz.
         /// </summary>
         public void ResumeLevel()
         {
             if (State != GameState.Lose) { return; }
 
-            RefundLifeForLoss();
             SetState(GameState.Playing);
             OnLevelResumed?.Invoke();
         }
 
-        /// <summary>
-        /// Aktif leveli söküp menüye döner. Game sahnesi yüklü kalır. Oynanırken çıkılırsa level
-        /// kaybedilmiş sayılır ve can düşülür; aksi halde oyuncu kaybetmeden çıkıp cezadan kaçabilirdi.
-        /// </summary>
+        /// <summary>Aktif leveli söküp menüye döner. Game sahnesi yüklü kalır. Can bölüm başında düşüldüğü için burada düşülmez.</summary>
         public void ReturnToMenu()
         {
             if (_buildRoutine != null) { return; }
-
-            if (State == GameState.Playing) { ChargeLifeForLoss(); }
 
             SceneLoader.Instance.TeardownLevel();
             CurrentLevel = null;
             CurrentLevelNumber = 0;
             SetState(GameState.Menu);
+        }
+
+        private void TryBuildLevel(int levelNumber, bool chargeLife)
+        {
+            LevelData level = _catalog != null ? _catalog.GetByNumber(levelNumber) : null;
+
+            if (level == null)
+            {
+                Debug.LogError($"GameManager found no level for number {levelNumber}.", this);
+                return;
+            }
+
+            // Açılıştaki GameScene yüklemesi de meşgul sayılır; o bitmeden level kurulamaz.
+            if (_buildRoutine != null || SceneLoader.Instance.IsBusy) { return; }
+
+            // Can girişte düşülür; oyuncu bölüm ortasında uygulamayı kapatsa da can gitmiş olur.
+            if (chargeLife && EconomyManager.Instance != null && !EconomyManager.Instance.TrySpendLife())
+            {
+                Debug.LogWarning($"GameManager could not start level {levelNumber}: no lives left.", this);
+                return;
+            }
+
+            _buildRoutine = StartCoroutine(BuildLevelRoutine(level, levelNumber));
         }
 
         private IEnumerator BuildLevelRoutine(LevelData level, int levelNumber)
@@ -195,21 +197,6 @@ namespace MatchPack.Core
             data.CurrentLevel = completedNumber + 1;
             SaveManager.Instance.Save();
             SaveManager.Instance.UploadToCloud();
-        }
-
-        private void ChargeLifeForLoss()
-        {
-            _isLifeChargedForLoss = EconomyManager.Instance != null
-                && !EconomyManager.Instance.HasInfiniteLives
-                && EconomyManager.Instance.TrySpendLife();
-        }
-
-        private void RefundLifeForLoss()
-        {
-            if (!_isLifeChargedForLoss) { return; }
-
-            _isLifeChargedForLoss = false;
-            EconomyManager.Instance.AddLives(1);
         }
 
         private void SetState(GameState state)

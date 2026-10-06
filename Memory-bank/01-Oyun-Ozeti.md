@@ -64,7 +64,7 @@ Bant **kapalı bir turdur**; kutular bant üzerinde sürekli hareket eder, sabit
 
 ## Meta
 
-- **Can:** Maks. 5, yalnızca kayıpta 1 tüketilir (oynarken menüye çıkmak da kayıptır), süreyle yenilenir. Oyun kapalıyken de işler
+- **Can:** Maks. 5, level girişinde ve restart'ta 1 tüketilir (kazanıp sonraki levele geçmek can tüketmez), süreyle yenilenir. Oyun kapalıyken de işler
   (`lastLifeRegenTime` ile offline hesap).
 - **Para:** Gold (soft), IAP (hard).
 - **Reklam:** Level sonu x2 gold (rewarded), bölüm geçişlerinde interstitial.

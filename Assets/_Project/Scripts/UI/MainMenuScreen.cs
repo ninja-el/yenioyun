@@ -41,7 +41,7 @@ namespace MatchPack.UI
             }
         }
 
-        /// <summary>Can varsa leveli başlatır; can yoksa can popup'ını açar. Can yalnızca kayıpta düşer.</summary>
+        /// <summary>Can varsa 1 can düşerek leveli başlatır; can yoksa can popup'ını açar.</summary>
         public void StartLevel()
         {
             if (GameManager.Instance.State != GameState.Menu || SceneLoader.Instance.IsBusy) { return; }
