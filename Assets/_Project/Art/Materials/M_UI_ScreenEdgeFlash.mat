@@ -39,7 +39,7 @@ Material:
     - _StencilOp: 0
     - _StencilReadMask: 255
     - _StencilWriteMask: 255
-    - _Thickness: 0.14
+    - _Thickness: 0.42
     m_Colors:
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _FlashColor: {r: 0.58, g: 0.02, b: 0.02, a: 1}
