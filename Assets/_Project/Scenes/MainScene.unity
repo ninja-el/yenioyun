@@ -2321,6 +2321,8 @@ MonoBehaviour:
   _soundSwitch: {fileID: 753926035}
   _musicSwitch: {fileID: 1186194252}
   _hapticSwitch: {fileID: 910150691}
+  _deleteAccountPanel: {fileID: 1640097905}
+  _deleteAccountConfirmButton: {fileID: 2114923061}
 --- !u!114 &135012334
 MonoBehaviour:
   m_ObjectHideFlags: 0

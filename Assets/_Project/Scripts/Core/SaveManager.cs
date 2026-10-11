@@ -189,6 +189,37 @@ namespace MatchPack.Core
             JsonUtility.FromJsonOverwrite(JsonUtility.ToJson(new PlayerData()), _data);
         }
 
+        /// <summary>
+        /// Oyuncunun cloud kaydını ve Unity hesabını siler, ardından cihazdaki kaydı sıfırlar.
+        /// Giriş yoksa veya silme başarısız olursa cihazdaki kayda dokunulmaz ve false döner.
+        /// </summary>
+        public async Task<bool> DeleteAccountAsync()
+        {
+            if (!IsSignedIn)
+            {
+                Debug.LogWarning("Account could not be deleted: player is not signed in.");
+                return false;
+            }
+
+            try
+            {
+                // Hesap silinince oturum kapanır; cloud verisi oturum açıkken silinmek zorunda.
+                await CloudSaveService.Instance.Data.Player.DeleteAllAsync(
+                    new Unity.Services.CloudSave.Models.Data.Player.DeleteAllOptions());
+                await AuthenticationService.Instance.DeleteAccountAsync();
+            }
+            catch (RequestFailedException exception)
+            {
+                Debug.LogWarning($"Account could not be deleted: {exception.Message}");
+                return false;
+            }
+
+            _knownCloudLevel = UnknownCloudLevel;
+            _staleCloudKeys.Clear();
+            ResetProgress();
+            return true;
+        }
+
         // Ayar dosyası yoksa ayarlar eski playerdata.json'dan okunur; alan adları aynı olduğu için doğrudan eşleşir.
         private void LoadSettings()
         {

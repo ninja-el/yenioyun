@@ -33,12 +33,19 @@ namespace MatchPack.UI
         [Tooltip("Titreşim (taptic) anahtarı.")]
         [SerializeField] private ToggleSwitch _hapticSwitch;
 
+        [Tooltip("Hesap silme uyarı paneli (WarningPanel).")]
+        [SerializeField] private GameObject _deleteAccountPanel;
+
+        [Tooltip("Uyarı panelindeki onay (Yes) butonu; cloud kaydını ve hesabı siler.")]
+        [SerializeField] private Button _deleteAccountConfirmButton;
+
         private void Awake()
         {
             _openButton.onClick.AddListener(Open);
             _closeButton.onClick.AddListener(Close);
             _continueButton.onClick.AddListener(Close);
             _exitButton.onClick.AddListener(ExitToMenu);
+            _deleteAccountConfirmButton.onClick.AddListener(HandleDeleteAccountConfirmed);
 
             _soundSwitch.OnValueChanged += HandleSoundChanged;
             _musicSwitch.OnValueChanged += HandleMusicChanged;
@@ -56,6 +63,7 @@ namespace MatchPack.UI
             _closeButton.onClick.RemoveListener(Close);
             _continueButton.onClick.RemoveListener(Close);
             _exitButton.onClick.RemoveListener(ExitToMenu);
+            _deleteAccountConfirmButton.onClick.RemoveListener(HandleDeleteAccountConfirmed);
 
             _soundSwitch.OnValueChanged -= HandleSoundChanged;
             _musicSwitch.OnValueChanged -= HandleMusicChanged;
@@ -98,6 +106,18 @@ namespace MatchPack.UI
             {
                 _hapticSwitch.SetValueWithoutNotify(HapticManager.Instance.IsHapticsEnabled);
             }
+        }
+
+        private async void HandleDeleteAccountConfirmed()
+        {
+            _deleteAccountConfirmButton.interactable = false;
+            bool isDeleted = await SaveManager.Instance.DeleteAccountAsync();
+            _deleteAccountConfirmButton.interactable = true;
+
+            if (!isDeleted) { return; }
+
+            _deleteAccountPanel.SetActive(false);
+            ExitToMenu();
         }
 
         private void HandleSoundChanged(bool isOn)
