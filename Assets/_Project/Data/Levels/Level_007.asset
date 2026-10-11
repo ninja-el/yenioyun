@@ -25,13 +25,13 @@ MonoBehaviour:
     _scaleMultiplier: 1.5
   - _type: {fileID: 11400000, guid: 01158ec69015b1b4a98514f12c11ff07, type: 2}
     _count: 6
-    _scaleMultiplier: 2
+    _scaleMultiplier: 2.2
   - _type: {fileID: 11400000, guid: bd448a08822f60a47a59adf6504f2142, type: 2}
     _count: 9
     _scaleMultiplier: 1.5
-  - _type: {fileID: 11400000, guid: afd8870a29fe3f546911f4c13a99b27a, type: 2}
+  - _type: {fileID: 11400000, guid: 3373c4147ce91254c83416af5fa69230, type: 2}
     _count: 6
-    _scaleMultiplier: 2.2
+    _scaleMultiplier: 2
   - _type: {fileID: 11400000, guid: d328ba2a22678474c8c08c500608d8c3, type: 2}
     _count: 6
     _scaleMultiplier: 2
@@ -39,3 +39,4 @@ MonoBehaviour:
     _count: 9
     _scaleMultiplier: 1.5
   _goldRewardMultiplier: 1
+  _bonusItems: []

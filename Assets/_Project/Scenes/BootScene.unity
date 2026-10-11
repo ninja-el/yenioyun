@@ -390,6 +390,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MatchPack.Core.AppBootstrap
   _targetFrameRate: 60
   _privacyManager: {fileID: 1721980329}
+  _consentTimeout: 15
   _autoLoginManager: {fileID: 1381000227}
   _cloudLoadTimeout: 3
 --- !u!4 &206099133
@@ -945,7 +946,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 1, g: 0.21226418, b: 0.21226418, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -1205,7 +1206,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.20629746, g: 1, b: 0.1462264, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1

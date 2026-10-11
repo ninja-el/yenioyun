@@ -73,7 +73,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: afc34139102945188afd3871f66c8e10, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MatchPack.Gameplay.StackItem
-  _collider: {fileID: 2881243013977886486}
+  _collider: {fileID: 5767877342254582846}
   _rigidbody: {fileID: 1689878982639005828}
 --- !u!1001 &8546096498074913636
 PrefabInstance:
@@ -127,10 +127,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Prop_Ball_05
       objectReference: {fileID: 0}
-    - target: {fileID: 6747667592816654653, guid: 3f8e8c9284831e94da7f8e9691b02314, type: 3}
-      propertyPath: m_Layer
-      value: 6
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -141,8 +137,8 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 6264321540543751047, guid: 3f8e8c9284831e94da7f8e9691b02314, type: 3}
   m_PrefabInstance: {fileID: 8546096498074913636}
   m_PrefabAsset: {fileID: 0}
---- !u!136 &2881243013977886486 stripped
-CapsuleCollider:
-  m_CorrespondingSourceObject: {fileID: 5865356036156507250, guid: 3f8e8c9284831e94da7f8e9691b02314, type: 3}
+--- !u!64 &5767877342254582846 stripped
+MeshCollider:
+  m_CorrespondingSourceObject: {fileID: 2779363764605863770, guid: 3f8e8c9284831e94da7f8e9691b02314, type: 3}
   m_PrefabInstance: {fileID: 8546096498074913636}
   m_PrefabAsset: {fileID: 0}

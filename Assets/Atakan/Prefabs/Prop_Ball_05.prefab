@@ -11,8 +11,8 @@ GameObject:
   - component: {fileID: 6264321540543751047}
   - component: {fileID: 7007755866929572898}
   - component: {fileID: 5090329392990640360}
-  - component: {fileID: 5865356036156507250}
-  m_Layer: 0
+  - component: {fileID: 2779363764605863770}
+  m_Layer: 6
   m_Name: Prop_Ball_05
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -91,8 +91,8 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!136 &5865356036156507250
-CapsuleCollider:
+--- !u!64 &2779363764605863770
+MeshCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -109,8 +109,7 @@ CapsuleCollider:
   m_IsTrigger: 0
   m_ProvidesContacts: 0
   m_Enabled: 1
-  serializedVersion: 2
-  m_Radius: 0.27754718
-  m_Height: 0.32810128
-  m_Direction: 1
-  m_Center: {x: 0, y: 0.0015365258, z: 0}
+  serializedVersion: 5
+  m_Convex: 1
+  m_CookingOptions: 30
+  m_Mesh: {fileID: -3546705696349406418, guid: 25c4bf8c0db29bd4494044b01a44499e, type: 3}

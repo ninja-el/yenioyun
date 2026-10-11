@@ -19,29 +19,30 @@ MonoBehaviour:
   _items:
   - _type: {fileID: 11400000, guid: fcf12b19557776c4c873c37d5656e731, type: 2}
     _count: 6
-    _scaleMultiplier: 3
+    _scaleMultiplier: 175
   - _type: {fileID: 11400000, guid: 3e1b170c334298442aa6670eefb89f2f, type: 2}
     _count: 9
-    _scaleMultiplier: 2.5
+    _scaleMultiplier: 200
   - _type: {fileID: 11400000, guid: 6c4bac4b3b3e8f8429ccd743b50be229, type: 2}
     _count: 6
-    _scaleMultiplier: 3
+    _scaleMultiplier: 175
   - _type: {fileID: 11400000, guid: 672406cf4b743114093ff269208b6617, type: 2}
     _count: 9
-    _scaleMultiplier: 2
+    _scaleMultiplier: 270
   - _type: {fileID: 11400000, guid: 7baad724dc16aaf469a0a9609212c82d, type: 2}
     _count: 6
-    _scaleMultiplier: 2
+    _scaleMultiplier: 1.7
   - _type: {fileID: 11400000, guid: fcae6bdcd544a8f44aacb17001917bbb, type: 2}
     _count: 6
-    _scaleMultiplier: 2
+    _scaleMultiplier: 1.7
   - _type: {fileID: 11400000, guid: a2bab7e09226ae7498c7a8750bfbc203, type: 2}
     _count: 6
-    _scaleMultiplier: 1
+    _scaleMultiplier: 1.2
   - _type: {fileID: 11400000, guid: a57afda733c44932a89376e9488e09df, type: 2}
     _count: 6
-    _scaleMultiplier: 1
+    _scaleMultiplier: 1.2
   - _type: {fileID: 11400000, guid: 6b9cfa483e62f364cb1fe99edad6e3fa, type: 2}
     _count: 6
-    _scaleMultiplier: 1
+    _scaleMultiplier: 1.2
   _goldRewardMultiplier: 1
+  _bonusItems: []

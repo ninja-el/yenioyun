@@ -22,7 +22,7 @@ MonoBehaviour:
     _scaleMultiplier: 2
   - _type: {fileID: 11400000, guid: 5d0898ac073e0f84bbe65a3f8dfcd194, type: 2}
     _count: 6
-    _scaleMultiplier: 2
+    _scaleMultiplier: 2.5
   - _type: {fileID: 11400000, guid: 20208b09e696e354cb7b8893a9eb4a57, type: 2}
     _count: 6
     _scaleMultiplier: 2
@@ -31,5 +31,6 @@ MonoBehaviour:
     _scaleMultiplier: 2
   - _type: {fileID: 11400000, guid: cc07822a3193d864f89a7b090adf5476, type: 2}
     _count: 6
-    _scaleMultiplier: 2
+    _scaleMultiplier: 1.5
   _goldRewardMultiplier: 1
+  _bonusItems: []

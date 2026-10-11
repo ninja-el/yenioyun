@@ -28,7 +28,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1.48, y: 1.48, z: 1.48}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 388004022778220195}
@@ -73,7 +73,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: afc34139102945188afd3871f66c8e10, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MatchPack.Gameplay.StackItem
-  _collider: {fileID: 9146481390180963572}
+  _collider: {fileID: 6669439789152732860}
   _rigidbody: {fileID: 7688637595743137895}
 --- !u!1001 &644331577024508137
 PrefabInstance:
@@ -83,14 +83,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 91424590821071517}
     m_Modifications:
-    - target: {fileID: 24320125295091694, guid: 5d5ae2564c8ecf148946cd2f0684b79e, type: 3}
-      propertyPath: m_Layer
-      value: 6
-      objectReference: {fileID: 0}
-    - target: {fileID: 138894699587613723, guid: 5d5ae2564c8ecf148946cd2f0684b79e, type: 3}
-      propertyPath: m_Layer
-      value: 6
-      objectReference: {fileID: 0}
     - target: {fileID: 978222015796395594, guid: 5d5ae2564c8ecf148946cd2f0684b79e, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -131,57 +123,9 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 1980906812841902711, guid: 5d5ae2564c8ecf148946cd2f0684b79e, type: 3}
-      propertyPath: m_Layer
-      value: 6
-      objectReference: {fileID: 0}
-    - target: {fileID: 2232376661079229292, guid: 5d5ae2564c8ecf148946cd2f0684b79e, type: 3}
-      propertyPath: m_Layer
-      value: 6
-      objectReference: {fileID: 0}
-    - target: {fileID: 2408347282778476805, guid: 5d5ae2564c8ecf148946cd2f0684b79e, type: 3}
-      propertyPath: m_Layer
-      value: 6
-      objectReference: {fileID: 0}
-    - target: {fileID: 3682861022368483578, guid: 5d5ae2564c8ecf148946cd2f0684b79e, type: 3}
-      propertyPath: m_Layer
-      value: 6
-      objectReference: {fileID: 0}
-    - target: {fileID: 4352199016642922686, guid: 5d5ae2564c8ecf148946cd2f0684b79e, type: 3}
-      propertyPath: m_Layer
-      value: 6
-      objectReference: {fileID: 0}
-    - target: {fileID: 5559268252166997927, guid: 5d5ae2564c8ecf148946cd2f0684b79e, type: 3}
-      propertyPath: m_Layer
-      value: 6
-      objectReference: {fileID: 0}
     - target: {fileID: 6780615042855702069, guid: 5d5ae2564c8ecf148946cd2f0684b79e, type: 3}
       propertyPath: m_Name
       value: Kingfisher_LOD0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6780615042855702069, guid: 5d5ae2564c8ecf148946cd2f0684b79e, type: 3}
-      propertyPath: m_Layer
-      value: 6
-      objectReference: {fileID: 0}
-    - target: {fileID: 6827026848455612200, guid: 5d5ae2564c8ecf148946cd2f0684b79e, type: 3}
-      propertyPath: m_Layer
-      value: 6
-      objectReference: {fileID: 0}
-    - target: {fileID: 6917652210301929821, guid: 5d5ae2564c8ecf148946cd2f0684b79e, type: 3}
-      propertyPath: m_Layer
-      value: 6
-      objectReference: {fileID: 0}
-    - target: {fileID: 7193852508789565616, guid: 5d5ae2564c8ecf148946cd2f0684b79e, type: 3}
-      propertyPath: m_Layer
-      value: 6
-      objectReference: {fileID: 0}
-    - target: {fileID: 7466516848312872140, guid: 5d5ae2564c8ecf148946cd2f0684b79e, type: 3}
-      propertyPath: m_Layer
-      value: 6
-      objectReference: {fileID: 0}
-    - target: {fileID: 7492263152905226906, guid: 5d5ae2564c8ecf148946cd2f0684b79e, type: 3}
-      propertyPath: m_Layer
-      value: 6
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -193,8 +137,8 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 978222015796395594, guid: 5d5ae2564c8ecf148946cd2f0684b79e, type: 3}
   m_PrefabInstance: {fileID: 644331577024508137}
   m_PrefabAsset: {fileID: 0}
---- !u!136 &9146481390180963572 stripped
-CapsuleCollider:
-  m_CorrespondingSourceObject: {fileID: 8511790629610185757, guid: 5d5ae2564c8ecf148946cd2f0684b79e, type: 3}
+--- !u!64 &6669439789152732860 stripped
+MeshCollider:
+  m_CorrespondingSourceObject: {fileID: 6088791934335383125, guid: 5d5ae2564c8ecf148946cd2f0684b79e, type: 3}
   m_PrefabInstance: {fileID: 644331577024508137}
   m_PrefabAsset: {fileID: 0}

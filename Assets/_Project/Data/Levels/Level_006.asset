@@ -19,20 +19,21 @@ MonoBehaviour:
   _items:
   - _type: {fileID: 11400000, guid: ff1301115ba57ba4f9ce04d08144e4dd, type: 2}
     _count: 6
-    _scaleMultiplier: 2.5
+    _scaleMultiplier: 200
   - _type: {fileID: 11400000, guid: 300dccbcf866b734c9fe2d72080128d3, type: 2}
     _count: 6
-    _scaleMultiplier: 2.2
+    _scaleMultiplier: 250
   - _type: {fileID: 11400000, guid: 8f3696e88b2aac347b41a568ba5b99da, type: 2}
     _count: 9
     _scaleMultiplier: 2
   - _type: {fileID: 11400000, guid: 4bf2c081bf1c7f04ba049fc024364866, type: 2}
     _count: 6
-    _scaleMultiplier: 2
+    _scaleMultiplier: 1.7
   - _type: {fileID: 11400000, guid: 2a72c319fd4625649b135f955bfe2942, type: 2}
     _count: 6
-    _scaleMultiplier: 2.3
+    _scaleMultiplier: 2.5
   - _type: {fileID: 11400000, guid: e2549c4e04ad3d1449d9b56c39392f65, type: 2}
     _count: 9
     _scaleMultiplier: 1.5
   _goldRewardMultiplier: 1
+  _bonusItems: []

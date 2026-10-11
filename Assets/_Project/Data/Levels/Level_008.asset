@@ -18,24 +18,25 @@ MonoBehaviour:
   _conveyorCapacity: 4
   _items:
   - _type: {fileID: 11400000, guid: 542b1aad77c60834cb98b231bc26a9a8, type: 2}
-    _count: 6
-    _scaleMultiplier: 2
+    _count: 3
+    _scaleMultiplier: 2.5
   - _type: {fileID: 11400000, guid: ecda3d0e48a2eab4685a36cf48b7c047, type: 2}
     _count: 6
-    _scaleMultiplier: 3
+    _scaleMultiplier: 3.2
   - _type: {fileID: 11400000, guid: 4eec69152472c2542b47fd50097b232f, type: 2}
     _count: 6
     _scaleMultiplier: 2.3
   - _type: {fileID: 11400000, guid: 32d8a0c87e00d9a469dbc7d99be8c1a1, type: 2}
-    _count: 9
+    _count: 12
     _scaleMultiplier: 2
   - _type: {fileID: 11400000, guid: 0eb35d3df45342a4fb5b4d23dc178725, type: 2}
     _count: 9
     _scaleMultiplier: 2
   - _type: {fileID: 11400000, guid: 7969865ae3813b04d80b7a3cff119c4f, type: 2}
     _count: 9
-    _scaleMultiplier: 2
+    _scaleMultiplier: 1.5
   - _type: {fileID: 11400000, guid: 65125f2e53dddaa45859f2debf9f21a8, type: 2}
     _count: 9
     _scaleMultiplier: 2
   _goldRewardMultiplier: 1
+  _bonusItems: []

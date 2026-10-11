@@ -19,11 +19,12 @@ MonoBehaviour:
   _items:
   - _type: {fileID: 11400000, guid: 6b9cfa483e62f364cb1fe99edad6e3fa, type: 2}
     _count: 9
-    _scaleMultiplier: 2
+    _scaleMultiplier: 1.5
   - _type: {fileID: 11400000, guid: 9efc18f4578aedc43bead681f4445e66, type: 2}
     _count: 12
-    _scaleMultiplier: 2
+    _scaleMultiplier: 1.5
   - _type: {fileID: 11400000, guid: a2bab7e09226ae7498c7a8750bfbc203, type: 2}
     _count: 9
-    _scaleMultiplier: 2
+    _scaleMultiplier: 1.5
   _goldRewardMultiplier: 1
+  _bonusItems: []
