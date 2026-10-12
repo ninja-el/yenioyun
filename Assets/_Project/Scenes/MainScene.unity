@@ -1147,6 +1147,7 @@ GameObject:
   - component: {fileID: 98819517}
   - component: {fileID: 98819519}
   - component: {fileID: 98819518}
+  - component: {fileID: 98819520}
   m_Layer: 0
   m_Name: Text (TMP)
   m_TagString: Untagged
@@ -1265,6 +1266,20 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &98819520
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 98819516}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e29a4c78b3d5416f82c9d0e514a7b63d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MatchPack.Localization.LocalizedText
+  key: ui.settings.delete_account
+  target: {fileID: 98819518}
 --- !u!222 &98819519
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -1284,6 +1299,7 @@ GameObject:
   - component: {fileID: 103554456}
   - component: {fileID: 103554458}
   - component: {fileID: 103554457}
+  - component: {fileID: 103554459}
   m_Layer: 0
   m_Name: Text (TMP)
   m_TagString: Untagged
@@ -1406,6 +1422,20 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &103554459
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 103554455}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e29a4c78b3d5416f82c9d0e514a7b63d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MatchPack.Localization.LocalizedText
+  key: ui.delete_account.info
+  target: {fileID: 103554457}
 --- !u!222 &103554458
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -2566,12 +2596,12 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 173883680}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e29a4c78b3d5416f82c9d0e514a7b63d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MatchPack.Localization.LocalizedText
-  key: ui.settings.exit
+  key: ui.delete_account.yes
   target: {fileID: 173883683}
 --- !u!114 &173883683
 MonoBehaviour:
@@ -5472,6 +5502,7 @@ GameObject:
   - component: {fileID: 356400923}
   - component: {fileID: 356400925}
   - component: {fileID: 356400924}
+  - component: {fileID: 356400926}
   m_Layer: 0
   m_Name: Title
   m_TagString: Untagged
@@ -5590,6 +5621,20 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &356400926
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 356400922}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e29a4c78b3d5416f82c9d0e514a7b63d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MatchPack.Localization.LocalizedText
+  key: ui.delete_account.title
+  target: {fileID: 356400924}
 --- !u!222 &356400925
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -12768,12 +12813,12 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 861605944}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e29a4c78b3d5416f82c9d0e514a7b63d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MatchPack.Localization.LocalizedText
-  key: ui.settings.continue
+  key: ui.delete_account.no
   target: {fileID: 861605947}
 --- !u!114 &861605947
 MonoBehaviour:
@@ -28897,6 +28942,7 @@ GameObject:
   - component: {fileID: 1781249388}
   - component: {fileID: 1781249390}
   - component: {fileID: 1781249389}
+  - component: {fileID: 1781249391}
   m_Layer: 0
   m_Name: Text (TMP)
   m_TagString: Untagged
@@ -29015,6 +29061,20 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &1781249391
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1781249387}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e29a4c78b3d5416f82c9d0e514a7b63d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MatchPack.Localization.LocalizedText
+  key: ui.tab.coming_soon
+  target: {fileID: 1781249389}
 --- !u!222 &1781249390
 CanvasRenderer:
   m_ObjectHideFlags: 0

@@ -29,6 +29,23 @@ namespace MatchPack.Data
         [Tooltip("Dolan kutunun banttan ayrılıp kaybolma süresi (saniye).")]
         [SerializeField, Min(0.01f)] private float _boxExitDuration = 0.35f;
 
+        [Tooltip("Kutunun makinenin içindeki (EntryPoint üzerindeki) en küçük ölçeği. 1 = küçülme yok.")]
+        [SerializeField, Range(0.1f, 1f)] private float _boxMachineMinScale = 0.5f;
+
+        [Tooltip("Makineden çıkan kutunun EntryPoint'ten kaç slot ileride tam boyuta ulaşacağı.")]
+        [SerializeField, Min(0.01f)] private float _boxMachineGrowSlots = 0.75f;
+
+        [Tooltip("Makineye giren kutunun EntryPoint'e kaç slot kala küçülmeye başlayacağı.")]
+        [SerializeField, Min(0.01f)] private float _boxMachineShrinkSlots = 0.5f;
+
+        [Tooltip("Ölçek geçişinin hızlı kısmının mesafedeki payı: makineden en uzak uçtaki dilim. 0.25 = küçülmenin " +
+            "ilk %25'i, büyümenin son %25'i.")]
+        [SerializeField, Range(0.01f, 0.99f)] private float _boxMachineFastDistanceShare = 0.25f;
+
+        [Tooltip("Ölçek değişiminin ne kadarının hızlı dilimde gerçekleşeceği. 0.75 = değişimin %75'i. Mesafe payıyla " +
+            "aynı değer verilirse geçiş doğrusal olur.")]
+        [SerializeField, Range(0.01f, 0.99f)] private float _boxMachineFastScaleShare = 0.75f;
+
         [Tooltip("Bir önceki kutuyla aynı tipte kutunun (art arda 2.) seçilme ağırlığının çarpanı. 1 = normal, " +
             "0.5 = yarı yarıya daha düşük ihtimal, 0 = başka tip kaldıkça hiç gelmez.")]
         [SerializeField, Range(0f, 1f)] private float _secondInRowBoxWeight = 0.5f;
@@ -84,6 +101,11 @@ namespace MatchPack.Data
         public float BoxEntryDelay => _boxEntryDelay;
         public float BoxEntryDuration => _boxEntryDuration;
         public float BoxExitDuration => _boxExitDuration;
+        public float BoxMachineMinScale => _boxMachineMinScale;
+        public float BoxMachineGrowSlots => _boxMachineGrowSlots;
+        public float BoxMachineShrinkSlots => _boxMachineShrinkSlots;
+        public float BoxMachineFastDistanceShare => _boxMachineFastDistanceShare;
+        public float BoxMachineFastScaleShare => _boxMachineFastScaleShare;
         public float SecondInRowBoxWeight => _secondInRowBoxWeight;
         public float ThirdInRowBoxWeight => _thirdInRowBoxWeight;
         public bool IsMissPenaltyEnabled => _isMissPenaltyEnabled;

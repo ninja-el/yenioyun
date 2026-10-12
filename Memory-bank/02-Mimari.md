@@ -148,8 +148,9 @@ kutu bulunduğu yerden doğrudan oraya gider.
   listeden alır. `PoolManager` prefab başına ayrı havuz açtığı için ek iş gerekmez.
 - Slotlar **sanaldır**: GameObject değildir, havuzdan alınmaz. Slot `i`'nin yol üzerindeki
   mesafesi `(_beltOffset + i / slotCount) * pathLength`'tir.
-- Kutular tur boyunca dönmez: `Conveyor` yalnızca `transform.position` yazar, rotasyon prefab'tan
-  gelir ve hiç değişmez. `ConveyorPath.Evaluate` yine de yolun teğet rotasyonunu döner; onu şu an
+- Kutular tur boyunca dönmez: `Conveyor` `transform.position` ve makine çevresindeki ölçeği
+  (`Box.SetScaleFactor`) yazar, rotasyon prefab'tan gelir ve hiç değişmez. Ölçek, slotun
+  `EntryPoint`'e olan yol mesafesinden hesaplanır: kutu makineye yaklaşırken küçülür, çıkarken büyür. `ConveyorPath.Evaluate` yine de yolun teğet rotasyonunu döner; onu şu an
   sadece gizmo çizimi kullanır.
 - Bandın görsel dönüşü (doku kayması, tahrik silindirleri) `Conveyor`'ın hız değerinden beslenir.
 - Kutu uçuş hedefi hareketlidir; `MatchResolver` sabit bir noktaya değil, kutunun o anki yuvasına

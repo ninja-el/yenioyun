@@ -434,8 +434,12 @@ namespace MatchPack.Gameplay
 
                 // Kutu tur boyunca dönmez; sabit yönünü korur ki üzerindeki ikon her zaman okunsun.
                 // Bu yüzden yolun rotasyonu kullanılmaz, yalnızca konum yazılır.
-                _path.Evaluate(_path.GetSlotDistance(i, _beltOffset), out Vector3 position, out _);
-                position += Vector3.up * box.BaseHeight;
+                float distance = _path.GetSlotDistance(i, _beltOffset);
+                float scale = GetMachineScale(distance);
+                box.SetScaleFactor(scale);
+
+                _path.Evaluate(distance, out Vector3 position, out _);
+                position += Vector3.up * (box.BaseHeight * scale);
 
                 if (_slotStates[i] == SlotState.Entering)
                 {
@@ -452,6 +456,27 @@ namespace MatchPack.Gameplay
 
                 box.transform.position = position;
             }
+        }
+
+        // Ölçek zamandan değil giriş noktasına olan yol mesafesinden hesaplanır: makine giriş noktasının
+        // üzerinde durduğu için kutu ona yaklaşırken küçülür, uzaklaşırken büyür; bant durunca geçiş de durur.
+        private float GetMachineScale(float slotDistance)
+        {
+            float slotLength = _path.TotalLength / _path.SlotCount;
+            float ahead = Mathf.Repeat(slotDistance - _path.EntryDistance, _path.TotalLength);
+            float behind = _path.TotalLength - ahead;
+
+            float progress = ahead <= behind
+                ? ahead / (_config.BoxMachineGrowSlots * slotLength)
+                : behind / (_config.BoxMachineShrinkSlots * slotLength);
+
+            // Üs, eğri (1 - mesafe payı) noktasında (1 - ölçek payı) değerinden geçecek şekilde seçilir:
+            // kutu makinenin yakınında küçük kalır, değişimin çoğu makineden en uzak dilimde olur.
+            float exponent = Mathf.Log(1f - _config.BoxMachineFastScaleShare)
+                / Mathf.Log(1f - _config.BoxMachineFastDistanceShare);
+            float eased = Mathf.Pow(Mathf.Clamp01(progress), exponent);
+
+            return Mathf.Lerp(_config.BoxMachineMinScale, 1f, eased);
         }
 
         private void UpdateLeavingBoxes()

@@ -22,6 +22,10 @@ Değer değişirse önce bu dosya güncellenir.
 | Kutu giriş gecikmesi | 0.5 sn | `GameConfig` |
 | Kutu giriş animasyonu süresi | 0.4 sn | `GameConfig` |
 | Kutu çıkış animasyonu süresi (yalnızca joker yüzünden iptal edilen boş kutu) | 0.35 sn | `GameConfig` |
+| Kutunun makine içindeki en küçük ölçeği (`EntryPoint` üzerinde) | 0.1 | `GameConfig` |
+| Makineden çıkan kutunun tam boyuta ulaştığı mesafe | `EntryPoint`'ten 0.75 slot ileride | `GameConfig` |
+| Makineye giren kutunun küçülmeye başladığı mesafe | `EntryPoint`'e 0.5 slot kala | `GameConfig` |
+| Kutu ölçek geçişinin eğrisi | Değişimin %75'i mesafenin makineden en uzak %25'inde (küçülmenin ilk, büyümenin son çeyreği); üs eğrisi. Ölçek zamandan değil yol mesafesinden hesaplanır | `GameConfig` |
 | Art arda 2. aynı tip kutunun seçilme ağırlığı çarpanı | 0.5 (normalin yarısı) | `GameConfig` |
 | Art arda 3. (ve sonrası) aynı tip kutunun seçilme ağırlığı çarpanı | 0 (kuyrukta başka tip kaldıkça gelmez) | `GameConfig` |
 | Dolan kutunun kapak kapanma süresi | 0.25 sn (kısa kapaklar 0, uzun kapaklar 0.12 sn gecikmeyle) | `Box` prefab |

@@ -152,6 +152,12 @@ namespace MatchPack.Gameplay
             RefreshIcon();
         }
 
+        /// <summary>Kutuyu prefab ölçeğinin verilen katına getirir. Bant, makineye giriş ve çıkışta çağırır.</summary>
+        public void SetScaleFactor(float factor)
+        {
+            transform.localScale = _baseScale * factor;
+        }
+
         /// <summary>Obje kabul edilebiliyorsa yuvayı ona ayırır. Obje henüz yerleşmez, uçuşa başlar.</summary>
         public bool TryAddItem(StackItem item, out Transform slot)
         {
@@ -241,6 +247,8 @@ namespace MatchPack.Gameplay
             // Ölçek doğrudan katedilen yükseklikten hesaplanır: kutu yukarı çıktıkça küçülür ve tam
             // yükselme mesafesinin sonunda 0 ölçeğe varır.
             float startY = transform.position.y;
+            // Kutu makinenin yakınında dolduysa küçülmüş hâldedir; ayrılış o ölçekten devam eder.
+            Vector3 startScale = transform.localScale;
             _departureSequence
                 .Insert(lidsEnd, DOVirtual
                     .Float(0f, 1f, _riseDuration, progress =>
@@ -248,7 +256,7 @@ namespace MatchPack.Gameplay
                         Vector3 position = transform.position;
                         position.y = startY + _riseDistance * progress;
                         transform.position = position;
-                        transform.localScale = _baseScale * (1f - progress);
+                        transform.localScale = startScale * (1f - progress);
                     })
                     .SetEase(Ease.InOutSine))
                 .OnComplete(() =>

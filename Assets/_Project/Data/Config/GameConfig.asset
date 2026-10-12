@@ -14,6 +14,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _boxCapacity: 3
   _itemFlyDuration: 0.35
+  _beltSpeed: 0.8
+  _boxEntryDelay: 0.5
+  _boxEntryDuration: 0.4
+  _boxExitDuration: 0.35
+  _boxMachineMinScale: 0.1
+  _boxMachineGrowSlots: 0.75
+  _boxMachineShrinkSlots: 0.5
+  _boxMachineFastDistanceShare: 0.25
+  _boxMachineFastScaleShare: 0.75
+  _secondInRowBoxWeight: 0.5
+  _thirdInRowBoxWeight: 0
   _isMissPenaltyEnabled: 0
   _missesBeforePenalty: 3
   _missPenaltySeconds: 5
@@ -21,6 +32,9 @@ MonoBehaviour:
   _lifeRegenSeconds: 900
   _levelCompleteGoldMin: 40
   _levelCompleteGoldMax: 60
+  _continueCostGold: 800
+  _lifeRefillCostGold: 2000
+  _rewardedRewardMultiplier: 2
   _continueExtraSeconds: 30
   _interstitialChance: 0.3
   _maxConsecutiveInterstitials: 2
