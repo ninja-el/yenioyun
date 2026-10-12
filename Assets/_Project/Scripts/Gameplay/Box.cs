@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using BoxGo.VFX;
 using DG.Tweening;
 using MatchPack.Core;
 using MatchPack.Data;
@@ -76,7 +77,13 @@ namespace MatchPack.Gameplay
         [Tooltip("Yükselip küçülerek kaybolmanın süresi.")]
         [SerializeField, Min(0f)] private float _riseDuration = 0.6f;
 
+        [Tooltip("Kutu kapanırken oynayan efekt prefab'ı (VFX_BoxClose). Atanırsa kabarma, yükselme ve küçülmeyi " +
+            "efekt oynatır; yükselme mesafesi ve süresi yine bu bileşenden alınır. Boşsa kutu efektsiz yükselir.")]
+        [SerializeField] private BoxGoCloseVFX _closeVfxPrefab;
+
         private readonly List<StackItem> _items = new List<StackItem>();
+        private BoxGoCloseVFX _closeVfx;
+        private Action _onDepartureComplete;
         private int _arrivedCount;
         private bool _isJokerByDefault;
         private Quaternion _baseRotation;
@@ -244,6 +251,8 @@ namespace MatchPack.Gameplay
                 lidsEnd = Mathf.Max(lidsEnd, _lids[i].Delay + _lidCloseDuration);
             }
 
+            if (TryPlayCloseVfx(lidsEnd, onComplete)) { return; }
+
             // Ölçek doğrudan katedilen yükseklikten hesaplanır: kutu yukarı çıktıkça küçülür ve tam
             // yükselme mesafesinin sonunda 0 ölçeğe varır.
             float startY = transform.position.y;
@@ -292,10 +301,68 @@ namespace MatchPack.Gameplay
             Setup(null);
         }
 
+        // Efekt kutunun kabarmasını, yükselmesini ve küçülmesini kendi saatiyle oynatır; halka ve parçacıklar
+        // kutuyla eş zamanlı kalsın diye yükselme tween'i yerine o kullanılır. Kapaklar kabarma sırasında kapanır.
+        private bool TryPlayCloseVfx(float lidsEnd, Action onComplete)
+        {
+            if (_closeVfxPrefab == null) { return false; }
+
+            GameObject instance = PoolManager.Instance.Get(_closeVfxPrefab.gameObject);
+            if (instance == null) { return false; }
+
+            BoxGoCloseVFX vfx = instance.GetComponent<BoxGoCloseVFX>();
+
+            // Makinenin yakınında dolan kutu küçülmüş hâldedir; efekt de o boyuta iner, yükselme mesafesi değişmez.
+            float width = _closeVfxPrefab.boxWidth * (transform.localScale.x / _baseScale.x);
+            vfx.transform.position = transform.position;
+            vfx.boxWidth = width;
+            vfx.duration = lidsEnd + _riseDuration;
+            vfx.exitDistance = _riseDistance / Mathf.Max(width, MinBoundsSize);
+            vfx.surfaceNormal = transform.up;
+            vfx.Play(transform);
+
+            // Efekt başlayamazsa bitiş çağrısı hiç gelmez ve kutu bantta asılı kalırdı.
+            if (!vfx.IsPlaying)
+            {
+                PoolManager.Instance.Release(instance);
+                return false;
+            }
+
+            _closeVfx = vfx;
+            _onDepartureComplete = onComplete;
+            vfx.onCompleted.AddListener(HandleCloseVfxCompleted);
+            return true;
+        }
+
+        // Efekt bu çağrıdan önce kutuyu ilk konum ve ölçeğine geri alır; kutu aynı karede havuza döndüğü için görünmez.
+        private void HandleCloseVfxCompleted()
+        {
+            Action onComplete = _onDepartureComplete;
+            DetachCloseVfx();
+
+            _departureSequence?.Kill();
+            _departureSequence = null;
+            onComplete?.Invoke();
+        }
+
+        private void DetachCloseVfx()
+        {
+            _closeVfx.onCompleted.RemoveListener(HandleCloseVfxCompleted);
+            _closeVfx = null;
+            _onDepartureComplete = null;
+        }
+
         private void StopDeparture()
         {
             _departureSequence?.Kill();
             _departureSequence = null;
+
+            if (_closeVfx == null) { return; }
+
+            // Yarıda kesilen efekt kutunun transform'unu yazmayı sürdürmesin diye hemen havuza döner.
+            GameObject instance = _closeVfx.gameObject;
+            DetachCloseVfx();
+            PoolManager.Instance.Release(instance);
         }
 
         // Ayrılışı yarıda kesilen ya da tamamlayan kutu havuza küçülmüş ve kapağı kapalı döner;

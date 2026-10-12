@@ -31,6 +31,7 @@ Değer değişirse önce bu dosya güncellenir.
 | Dolan kutunun kapak kapanma süresi | 0.25 sn (kısa kapaklar 0, uzun kapaklar 0.12 sn gecikmeyle) | `Box` prefab |
 | Dolan kutunun yükselme mesafesi (sonunda 0 ölçek) | 2.5 birim | `Box` prefab |
 | Dolan kutunun yükselip küçülme süresi | 0.6 sn (InOutSine; ölçek katedilen yükseklikten hesaplanır) | `Box` prefab |
+| Kutu kapanma efekti (`VFX_BoxClose`, `Assets/Atakan/BoxGoCloseVFX` paketi) | Kutu genişliği 1.4 birim (3 yuva x 0.454); süre = kapak kapanma sonu + yükselme süresi, yükselme mesafesi `Box` prefab'ından. Efekt kabarma (%12), halka, parçacık ve yükselip küçülmeyi tek saatle oynatır; havuzdan alınır, `BoxCloseVfxRecycler` iade eder | `VFX_BoxClose` + `Box` prefab |
 | Yığın alanı iç ölçüsü | 6 x 27 x 9 (genişlik x yükseklik x derinlik), merkez (0, 13.5, 0); taban y=0 | `StackArea` (GameScene) |
 | Alan duvar kalınlığı | 1.0 birim (zemin + 4 duvar + tavan) | `StackArea` |
 | Doğma noktaları arası ek boşluk | 0 birim, her eksende (collider kutuları değer ama çakışmaz; kutu collider merkezine kurulur ve objeyle döner) | `StackArea` (GameScene) |
