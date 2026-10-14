@@ -1,0 +1,20 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+  <ui:Style src="SdkHubWindow.uss" />
+  <ui:VisualElement name="root" class="hub-root">
+    <ui:VisualElement name="sidebar" class="sidebar">
+      <ui:VisualElement class="brand">
+        <ui:Label text="AZTECH GAMES" class="brand-publisher" />
+        <ui:Label text="SDK Hub" class="brand-title" />
+      </ui:VisualElement>
+      <ui:ScrollView name="navList" class="nav-list" mode="Vertical" horizontal-scroller-visibility="Hidden" />
+      <ui:VisualElement class="sidebar-footer">
+        <ui:Button name="refreshButton" text="Refresh" class="btn btn-ghost footer-refresh" />
+        <ui:VisualElement name="settingsButton" class="icon-button" />
+      </ui:VisualElement>
+    </ui:VisualElement>
+    <ui:VisualElement class="main">
+      <ui:Label name="statusBar" class="status-bar status-bar--hidden" />
+      <ui:ScrollView name="content" class="content" />
+    </ui:VisualElement>
+  </ui:VisualElement>
+</ui:UXML>

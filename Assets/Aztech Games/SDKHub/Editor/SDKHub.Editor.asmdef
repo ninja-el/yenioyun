@@ -1,0 +1,20 @@
+{
+    "name": "SDKHub.Editor",
+    "rootNamespace": "SDKHub.Editor",
+    "references": [
+        "SDKHub.Runtime",
+        "UnityEngine.UI",
+        "Unity.TextMeshPro"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": false,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

@@ -1,0 +1,22 @@
+{
+    "name": "SDKHub.Editor.iOS",
+    "rootNamespace": "SDKHub.Editor.IOS",
+    "references": [
+        "SDKHub.Editor",
+        "SDKHub.Runtime",
+        "UnityEditor.iOS.Extensions.Xcode"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": false,
+    "defineConstraints": [
+        "UNITY_IOS"
+    ],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
