@@ -15,8 +15,17 @@ namespace MatchPack.Gameplay
     {
         private const float ShrinkExponent = 0.6f;
         private const float MinBeamHeight = 0.01f;
+        private const float EntryScaleSettleProgress = 0.65f;
+        private const int EntryPathSamplesPerSegment = 16;
 
         private static readonly int CollectedId = Shader.PropertyToID("_Collected");
+
+        // Referans videodan ölçülmüş rota: yakından büyük giriş, yukarı kavis, sağa geniş dönüş, merkeze yerleşme.
+        private static readonly Vector2[] DefaultEntryRoute =
+        {
+            new Vector2(-1.25f, -0.75f), new Vector2(-0.65f, -0.25f), new Vector2(-0.52f, 1.45f),
+            new Vector2(0.65f, 1.8f), new Vector2(1.3f, 0.75f), new Vector2(0.6f, -0.18f), Vector2.zero
+        };
 
         [Header("Parçalar")]
         [Tooltip("Kameraya dönen UFO görseli.")]
@@ -30,6 +39,9 @@ namespace MatchPack.Gameplay
 
         [Tooltip("Işın boyunca yükselip daralan halkalar.")]
         [SerializeField] private LineRenderer[] _rings;
+
+        [Tooltip("Girişte UFO'nun arkasında kalan uçuş izi.")]
+        [SerializeField] private TrailRenderer _trail;
 
         [Header("Duruş")]
         [Tooltip("UFO görselinin ölçeği.")]
@@ -47,18 +59,25 @@ namespace MatchPack.Gameplay
         [Tooltip("Objelerin içine girdiği nokta; kameradan bakınca UFO merkezinin bu kadar altıdır.")]
         [SerializeField, Min(0f)] private float _intakeDepth = 0.73f;
 
-        [Tooltip("UFO'nun ekrana girdiği nokta, toplama noktasına göre.")]
-        [SerializeField] private Vector3 _entryOffset = new Vector3(5f, 2f, 0f);
+        [Header("Giriş")]
+        [Tooltip("Giriş rotası: toplama noktasına göre kameranın sağ/yukarı yönünde dünya birimi. UFO noktalardan yumuşak bir eğriyle geçer; son nokta toplama noktasıdır.")]
+        [SerializeField] private Vector2[] _entryRoute = (Vector2[])DefaultEntryRoute.Clone();
 
-        [Tooltip("Girişte UFO'nun başlangıç eğimi (derece). İnerken sıfıra döner.")]
-        [SerializeField] private float _entryTilt = -15f;
+        [Tooltip("Ekran dışından gelişin giriş süresine eklediği süre. Ekran dışındaki başlangıç noktası her girişte kameraya ve UFO'nun boyutuna göre hesaplanır; UFO tüm yolu bu süre ile giriş süresinin toplamında, hızlı girip kesintisiz yavaşlayarak geçer.")]
+        [SerializeField, Min(0.01f)] private float _entryLeadInDuration = 0.3f;
+
+        [Tooltip("Girişin başında UFO ölçeğinin çarpanı. Rotanın ilk %65'inde normal ölçeğe iner.")]
+        [SerializeField, Min(0.01f)] private float _entryScale = 2.6f;
+
+        [Tooltip("Giriş boyunca sağa sola yatmanın açısı (derece).")]
+        [SerializeField, Min(0f)] private float _entryRoll = 12f;
 
         [Header("Zamanlama")]
         [Tooltip("Ekrana girip toplama noktasına inme süresi.")]
-        [SerializeField, Min(0.01f)] private float _enterDuration = 0.65f;
+        [SerializeField, Min(0.01f)] private float _enterDuration = 1.35f;
 
         [Tooltip("Tek bir objenin UFO'ya çekilme süresi.")]
-        [SerializeField, Min(0.01f)] private float _pullDuration = 0.72f;
+        [SerializeField, Min(0.01f)] private float _pullDuration = 0.45f;
 
         [Tooltip("Art arda çekilen objelerin başlangıçları arasındaki fark; her obje için bu aralıkta (en az, en çok) rastgele seçilir.")]
         [SerializeField] private Vector2 _pullStaggerRange = new Vector2(0.1f, 0.2f);
@@ -107,7 +126,9 @@ namespace MatchPack.Gameplay
         private readonly List<float> _pullStarts = new List<float>();
 
         private MaterialPropertyBlock _properties;
-        private Transform _camera;
+        private Vector2[] _entryPath = Array.Empty<Vector2>();
+        private float[] _entryPathLengths = Array.Empty<float>();
+        private Camera _camera;
         private Box _box;
         private Action<AutoMatchUfo> _onFinished;
         private Coroutine _routine;
@@ -124,7 +145,7 @@ namespace MatchPack.Gameplay
         {
             if (_camera == null) { return; }
 
-            _body.rotation = _camera.rotation * Quaternion.Euler(0f, 0f, _tilt);
+            _body.rotation = _camera.transform.rotation * Quaternion.Euler(0f, 0f, _tilt);
         }
 
         /// <summary>
@@ -136,7 +157,7 @@ namespace MatchPack.Gameplay
         {
             _box = box;
             _onFinished = onFinished;
-            _camera = camera != null ? camera.transform : null;
+            _camera = camera;
 
             _items.Clear();
             _startPoses.Clear();
@@ -164,12 +185,14 @@ namespace MatchPack.Gameplay
             _tilt = 0f;
             _body.localScale = Vector3.one * _bodyScale;
             SetBeamVisible(false);
+            SetTrailEmitting(false);
         }
 
         public void OnDespawned()
         {
             if (_routine != null) { StopCoroutine(_routine); }
 
+            SetTrailEmitting(false);
             _routine = null;
             _box = null;
             _camera = null;
@@ -204,18 +227,34 @@ namespace MatchPack.Gameplay
 
         private IEnumerator EnterRoutine(Vector3 hover)
         {
-            Vector3 entry = hover + _entryOffset;
+            // Ekran dışı noktası UFO'nun giriş boyutuna göre hesaplandığı için ölçek önce verilir.
+            _body.localScale = Vector3.one * (_bodyScale * _entryScale);
+            BuildEntryPath(hover);
+            transform.position = hover + GetEntryPathOffset(0f);
+            SetTrailEmitting(true);
 
-            for (float time = 0f; time < _enterDuration; time += Time.deltaTime)
+            float totalLength = _entryPathLengths[_entryPathLengths.Length - 1];
+            float leadInLength = _entryPathLengths[EntryPathSamplesPerSegment];
+            float routeLength = totalLength - leadInLength;
+            float totalDuration = _entryLeadInDuration + _enterDuration;
+
+            for (float time = 0f; time < totalDuration; time += Time.deltaTime)
             {
-                float progress = Mathf.SmoothStep(0f, 1f, time / _enterDuration);
-                transform.position = Vector3.Lerp(entry, hover, progress);
-                _tilt = Mathf.Lerp(_entryTilt, 0f, progress);
+                // Yol tek bir yavaşlama eğrisiyle geçilir: hızlı girer, durma noktasına kadar kesintisiz yavaşlar.
+                float remaining = 1f - time / totalDuration;
+                float distance = totalLength * (1f - remaining * remaining);
+                float progress = routeLength > 0f ? Mathf.Clamp01((distance - leadInLength) / routeLength) : 1f;
+                transform.position = hover + GetEntryPathOffset(GetEntryPathPosition(distance));
+                float scaleProgress = Mathf.SmoothStep(0f, 1f, progress / EntryScaleSettleProgress);
+                _body.localScale = Vector3.one * (_bodyScale * Mathf.Lerp(_entryScale, 1f, scaleProgress));
+                _tilt = _entryRoll * (Mathf.Sin(progress * Mathf.PI * 2f) - (1f - progress));
                 yield return null;
             }
 
             transform.position = hover;
+            _body.localScale = Vector3.one * _bodyScale;
             _tilt = 0f;
+            SetTrailEmitting(false);
         }
 
         private IEnumerator CollectRoutine(Vector3 hover, float groundHeight)
@@ -317,7 +356,7 @@ namespace MatchPack.Gameplay
             float height = Mathf.Max(MinBeamHeight, down.y < -0.01f ? drop / -down.y : drop);
             Vector3 ground = intake + down * height;
 
-            _beam.SetPositionAndRotation(ground, _camera != null ? _camera.rotation : Quaternion.identity);
+            _beam.SetPositionAndRotation(ground, _camera != null ? _camera.transform.rotation : Quaternion.identity);
             _beam.localScale = new Vector3(_beamRadius, height, _beamRadius);
 
             for (int i = 0; i < _rings.Length; i++)
@@ -354,6 +393,14 @@ namespace MatchPack.Gameplay
             }
         }
 
+        private void SetTrailEmitting(bool isEmitting)
+        {
+            _trail.emitting = isEmitting;
+
+            // Havuzdan gelen UFO'nun eski konumundan yeni girişe çizgi uzanmasın; kapanırken iz kendi süresinde söner.
+            if (isEmitting) { _trail.Clear(); }
+        }
+
         private void SetLitLamps(int count)
         {
             _litLampCount = count;
@@ -376,16 +423,134 @@ namespace MatchPack.Gameplay
 
         private Vector3 GetScreenDown()
         {
-            return _camera != null ? -_camera.up : Vector3.down;
+            return _camera != null ? -_camera.transform.up : Vector3.down;
+        }
+
+        // Yol, ekran dışındaki başlangıç noktası ve ardından giriş rotasıdır.
+        private void BuildEntryPath(Vector3 hover)
+        {
+            int routeLength = Mathf.Max(1, _entryRoute.Length);
+            if (_entryPath.Length != routeLength + 1) { _entryPath = new Vector2[routeLength + 1]; }
+
+            for (int i = 0; i < routeLength; i++)
+            {
+                _entryPath[i + 1] = i < _entryRoute.Length ? _entryRoute[i] : Vector2.zero;
+            }
+
+            _entryPath[0] = GetOffscreenEntryPoint(hover, _entryPath[1], routeLength > 1 ? _entryPath[2] : Vector2.zero);
+            MeasureEntryPath();
+        }
+
+        // Yolun baştan itibaren birikimli uzunluğu, parça başına sabit sayıda örnekle tutulur.
+        private void MeasureEntryPath()
+        {
+            int sampleCount = (_entryPath.Length - 1) * EntryPathSamplesPerSegment + 1;
+            if (_entryPathLengths.Length != sampleCount) { _entryPathLengths = new float[sampleCount]; }
+
+            Vector2 previous = SampleEntryPath(0f);
+            _entryPathLengths[0] = 0f;
+
+            for (int i = 1; i < sampleCount; i++)
+            {
+                Vector2 point = SampleEntryPath((float)i / EntryPathSamplesPerSegment);
+                _entryPathLengths[i] = _entryPathLengths[i - 1] + Vector2.Distance(previous, point);
+                previous = point;
+            }
+        }
+
+        // Yol üzerindeki mesafeyi yol parametresine çevirir; parça uzunlukları farklı olsa da hız kesintisiz kalır.
+        private float GetEntryPathPosition(float distance)
+        {
+            int last = _entryPathLengths.Length - 1;
+            if (distance <= 0f) { return 0f; }
+            if (distance >= _entryPathLengths[last]) { return (float)last / EntryPathSamplesPerSegment; }
+
+            int index = 1;
+            while (_entryPathLengths[index] < distance) { index++; }
+
+            float t = Mathf.InverseLerp(_entryPathLengths[index - 1], _entryPathLengths[index], distance);
+            return (index - 1 + t) / EntryPathSamplesPerSegment;
+        }
+
+        // Rotanın ilk noktası, rotanın geliş yönünde UFO'nun tamamı görüş alanından çıkana kadar geriye uzatılır.
+        private Vector2 GetOffscreenEntryPoint(Vector3 hover, Vector2 first, Vector2 next)
+        {
+            if (_camera == null) { return first; }
+
+            Vector2 direction = first - next;
+            if (direction.sqrMagnitude < 0.0001f) { direction = -first; }
+            if (direction.sqrMagnitude < 0.0001f) { direction = Vector2.left; }
+            direction.Normalize();
+
+            Vector3 local = _camera.transform.InverseTransformPoint(hover);
+            float halfHeight = _camera.orthographic
+                ? _camera.orthographicSize
+                : local.z * Mathf.Tan(_camera.fieldOfView * Mathf.Deg2Rad * 0.5f);
+            float margin = _bodyRenderer.bounds.extents.magnitude;
+            var limit = new Vector2(halfHeight * _camera.aspect + margin, halfHeight + margin);
+            var start = new Vector2(local.x + first.x, local.y + first.y);
+
+            float distance = Mathf.Min(GetExitDistance(start.x, direction.x, limit.x), GetExitDistance(start.y, direction.y, limit.y));
+            return first + direction * Mathf.Max(0f, distance);
+        }
+
+        private static float GetExitDistance(float start, float direction, float limit)
+        {
+            if (Mathf.Approximately(direction, 0f)) { return float.MaxValue; }
+
+            return ((direction > 0f ? limit : -limit) - start) / direction;
+        }
+
+        private Vector3 GetEntryPathOffset(float position)
+        {
+            Vector2 point = SampleEntryPath(position);
+            Vector3 right = _camera != null ? _camera.transform.right : Vector3.right;
+            Vector3 up = _camera != null ? _camera.transform.up : Vector3.up;
+            return right * point.x + up * point.y;
+        }
+
+        // Centripetal Catmull-Rom: eğri yol noktalarının hepsinden geçer; parça uzunlukları çok farklı olsa da
+        // (ekran dışı parça rotanın parçalarından çok uzun) sivri kıvrım veya düğüm oluşturmaz.
+        private Vector2 SampleEntryPath(float position)
+        {
+            int last = _entryPath.Length - 1;
+            if (last < 1) { return Vector2.zero; }
+
+            position = Mathf.Clamp(position, 0f, last);
+            int index = Mathf.Min(Mathf.FloorToInt(position), last - 1);
+            float u = position - index;
+
+            Vector2 b = _entryPath[index];
+            Vector2 c = _entryPath[index + 1];
+            Vector2 a = index > 0 ? _entryPath[index - 1] : 2f * b - c;
+            Vector2 d = index + 2 <= last ? _entryPath[index + 2] : 2f * c - b;
+
+            float t1 = GetKnotInterval(a, b);
+            float t2 = t1 + GetKnotInterval(b, c);
+            float t3 = t2 + GetKnotInterval(c, d);
+            float t = Mathf.Lerp(t1, t2, u);
+
+            Vector2 a1 = Vector2.LerpUnclamped(a, b, t / t1);
+            Vector2 a2 = Vector2.LerpUnclamped(b, c, (t - t1) / (t2 - t1));
+            Vector2 a3 = Vector2.LerpUnclamped(c, d, (t - t2) / (t3 - t2));
+            Vector2 b1 = Vector2.LerpUnclamped(a1, a2, t / t2);
+            Vector2 b2 = Vector2.LerpUnclamped(a2, a3, (t - t1) / (t3 - t1));
+            return Vector2.LerpUnclamped(b1, b2, (t - t1) / (t2 - t1));
+        }
+
+        private static float GetKnotInterval(Vector2 from, Vector2 to)
+        {
+            return Mathf.Max(Mathf.Sqrt(Vector2.Distance(from, to)), 0.0001f);
         }
 
         // Ekranın ortasından geçen görüş ışınının verilen yükseklikteki noktası.
         private Vector3 GetScreenCenterPoint(float height, Vector3 fallback)
         {
-            if (_camera == null || _camera.forward.y > -0.01f) { return fallback + Vector3.up * _collectHeight; }
+            Transform view = _camera != null ? _camera.transform : null;
+            if (view == null || view.forward.y > -0.01f) { return fallback + Vector3.up * _collectHeight; }
 
-            float distance = (height - _camera.position.y) / _camera.forward.y;
-            return _camera.position + _camera.forward * distance;
+            float distance = (height - view.position.y) / view.forward.y;
+            return view.position + view.forward * distance;
         }
 
         private Vector3 GetBoxHoverPoint(float scaleRatio)

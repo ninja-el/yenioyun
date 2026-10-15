@@ -18,6 +18,7 @@ namespace MatchPack.EditorTools
         private const string BeamShaderPath = "Assets/_Project/Art/VFX/UfoBeam.shader";
         private const string BillboardMaterialPath = "Assets/_Project/Art/Materials/M_Ufo_Billboard.mat";
         private const string BeamMaterialPath = "Assets/_Project/Art/Materials/M_Ufo_Beam.mat";
+        private const string TrailMaterialPath = "Assets/_Project/Art/Materials/M_Ufo_Trail.mat";
         private const string BeamMeshPath = "Assets/_Project/Art/Models/SM_UfoBeam.asset";
         private const string PrefabPath = "Assets/_Project/Prefabs/Gameplay/AutoMatchUfo.prefab";
         private const string BoosterDataPath = "Assets/_Project/Data/Boosters/Booster_AutoMatch.asset";
@@ -33,6 +34,13 @@ namespace MatchPack.EditorTools
         private const int RingPointCount = 48;
         private const float RingWidth = 0.022f;
         private static readonly Color BeamColor = new Color(0.08f, 0.75f, 1f, 0.6f);
+        // Referans paketin iz değerleri ~2.5 kat dar görüşlü bir kamera içindi; oyun kamerasına göre ölçeklendi.
+        // Süre, izin UFO görselinin altından taşacak kadar uzun tutuldu.
+        private const float TrailTime = 0.5f;
+        private const float TrailMinVertexDistance = 0.025f;
+        private const float TrailWidth = 0.45f;
+        private static readonly Color TrailStartColor = new Color(0.55f, 0.3f, 1f, 0.9f);
+        private static readonly Color TrailEndColor = new Color(0.2f, 0.85f, 1f, 0f);
 
         [MenuItem("MatchPack/Build Auto-Match UFO")]
         public static void Build()
@@ -53,7 +61,12 @@ namespace MatchPack.EditorTools
             beamMaterial.SetColor("_Color", BeamColor);
             EditorUtility.SetDirty(beamMaterial);
 
-            GameObject prefab = BuildPrefab(billboardMaterial, beamMaterial, LoadOrCreateBeamMesh());
+            // İz ışınla aynı shader'ı kullanır ama beyaz renkle; ışının mavi rengi izin kendi renklerini soldurmasın.
+            Material trailMaterial = LoadOrCreateMaterial(TrailMaterialPath, beamShader);
+            trailMaterial.SetColor("_Color", Color.white);
+            EditorUtility.SetDirty(trailMaterial);
+
+            GameObject prefab = BuildPrefab(billboardMaterial, beamMaterial, trailMaterial, LoadOrCreateBeamMesh());
             AssignToBoosterData(prefab);
 
             AssetDatabase.SaveAssets();
@@ -149,7 +162,7 @@ namespace MatchPack.EditorTools
             return mesh;
         }
 
-        private static GameObject BuildPrefab(Material billboardMaterial, Material beamMaterial, Mesh beamMesh)
+        private static GameObject BuildPrefab(Material billboardMaterial, Material beamMaterial, Material trailMaterial, Mesh beamMesh)
         {
             var root = new GameObject("AutoMatchUfo");
 
@@ -162,7 +175,8 @@ namespace MatchPack.EditorTools
                 body.transform.SetParent(root.transform, false);
 
                 float spriteHeight = BodyWidth * SourceCrop.height / SourceCrop.width;
-                MeshRenderer sprite = CreateMeshChild(body.transform, "Sprite", Resources.GetBuiltinResource<Mesh>("Quad.fbx"), billboardMaterial);
+                Mesh quad = Resources.GetBuiltinResource<Mesh>("Quad.fbx");
+                MeshRenderer sprite = CreateMeshChild(body.transform, "Sprite", quad, billboardMaterial);
                 sprite.transform.localScale = new Vector3(BodyWidth, spriteHeight, 1f);
 
                 MeshRenderer beam = CreateMeshChild(root.transform, "Beam", beamMesh, beamMaterial);
@@ -173,10 +187,13 @@ namespace MatchPack.EditorTools
                     rings[i] = CreateRing(root.transform, beamMaterial, i);
                 }
 
+                TrailRenderer trail = CreateTrail(root.transform, trailMaterial);
+
                 var serialized = new SerializedObject(ufo);
                 serialized.FindProperty("_body").objectReferenceValue = body.transform;
                 serialized.FindProperty("_bodyRenderer").objectReferenceValue = sprite;
                 serialized.FindProperty("_beam").objectReferenceValue = beam.transform;
+                serialized.FindProperty("_trail").objectReferenceValue = trail;
 
                 SerializedProperty ringsProperty = serialized.FindProperty("_rings");
                 ringsProperty.arraySize = RingCount;
@@ -223,6 +240,25 @@ namespace MatchPack.EditorTools
             line.shadowCastingMode = ShadowCastingMode.Off;
             line.receiveShadows = false;
             return line;
+        }
+
+        private static TrailRenderer CreateTrail(Transform parent, Material material)
+        {
+            var child = new GameObject("Trail");
+            child.transform.SetParent(parent, false);
+
+            TrailRenderer trail = child.AddComponent<TrailRenderer>();
+            trail.sharedMaterial = material;
+            trail.emitting = false;
+            trail.time = TrailTime;
+            trail.minVertexDistance = TrailMinVertexDistance;
+            trail.startWidth = TrailWidth;
+            trail.endWidth = 0f;
+            trail.startColor = TrailStartColor;
+            trail.endColor = TrailEndColor;
+            trail.shadowCastingMode = ShadowCastingMode.Off;
+            trail.receiveShadows = false;
+            return trail;
         }
 
         private static void AssignToBoosterData(GameObject prefab)
